@@ -1,0 +1,57 @@
+.table-toolbar {
+
+  .left-actions {
+    padding: 0 .5rem;
+    flex: 0 0 50%;
+    align-items: flex-start;
+    display: flex;
+  }
+
+  .right-actions {
+    padding: 0 .5rem;
+    flex: 0 0 50%;
+    justify-content: flex-end;
+    display: flex;
+  }
+
+  .ui.basic.button, .ui.basic.buttons .button {
+    padding: 0.5rem !important;
+    border-radius: 50% !important;
+    border: 1px !important;
+    background-color: transparent !important;
+    transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    color: rgba(0, 0, 0, .6) !important;
+
+    > i.icon, > .icons {
+      height: 24px;
+      width: 24px;
+      align-items: center;
+      display: flex;
+      justify-content: center;
+    }
+
+    > i.icon {
+      position: unset;
+    }
+
+    &:hover, &:active {
+      background: rgba(0, 0, 0, 0.08) !important;
+      color: rgba(0, 0, 0, .6) !important;
+    }
+
+    &.active, &.active:active, &.active:focus {
+      background: #2185D3 !important;
+      color: white !important;
+    }
+  }
+
+  .ui.basic.button:active, .ui.basic.buttons .button:active {
+    background: rgba(0, 0, 0, 0.08) !important;
+    color: rgba(0, 0, 0, .6) !important;
+  }
+
+  .ui.basic.button:focus, .ui.basic.buttons .button:focus {
+    background: transparent !important;
+    color: rgba(0, 0, 0, .6) !important;
+  }
+}
