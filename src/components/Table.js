@@ -12,22 +12,22 @@ import DropZone from "./DropZone";
 import FilterColumn from "./FilterColumn";
 import ContextMenu from "./ContextMenu";
 
-import { isEqual, pad, isNumber, removeSpecialCharacters, getAllChildren, getAllParents } from "./Utils";
-import { getClipboardTextFromExcel, hasOwnProperty, replaceAll, KEY_CODES } from "utils/index";
-import { calculateGranTotal } from "utils/business";
+import { isEqual, pad, isNumber, removeSpecialCharacters, getAllChildren, getAllParents } from "../../utils/Utils";
+import { getClipboardTextFromExcel, hasOwnProperty, replaceAll, KEY_CODES, calculateGranTotal } from "../../utils/index";
 import {
    flatColumns,
    generateGroupColumns,
    isColumnEditable,
    mergeColumnsWithProperties,
    generateExtraColumnProperties
-} from "components/Table/utils/column";
+} from "../../utils/column";
 
 import "./styles/Table.scss";
 import "./styles/Dnd.scss";
 import "./styles/Toolbar.scss";
 import "./styles/EmptyStateCard.scss";
-import { addFreezeColumns } from "components/Table/utils/table-utils";
+import { addFreezeColumns } from "../../utils/table-utils";
+import withDndContext from "with-dnd-context"; 
 
 configure({
    ignoreTags: [],
@@ -56,7 +56,7 @@ const generateRowsToExpand = (expandRows) => {
    }, {});
 };
 
-export default class Table extends React.Component {
+class Table extends React.Component {
 
    constructor(props) {
       super(props);
@@ -1492,203 +1492,201 @@ export default class Table extends React.Component {
             )
          })
       );
-      const { tableHeaderOptions, profiles = [] } = this.props;
+      const { tableHeaderOptions, profiles = [], shouldCreateContext = false } = this.props;
       const { profile_selected } = this.state;
       const profileSelected = profiles.find((e) => profile_selected === e.id);
 
-      return (
-         <HotKeys handlers={this.keyBoardHandlers} keyMap={keyMap}
-            style={{ outline: 'none', height: '100%', width: '100%', ...tableWrapperStyle }}>
-            <div style={droppableStyle}>
-               {!isTableHeaderHidden && <TableHeader
-                  tableHeaderOptions={tableHeaderOptions}
-                  profiles={this.props.profiles}
-                  profileSelected={profile_selected}
-                  filter={this.props.filter}
-                  setRef={this.tableToolbar}
-                  shouldRenderTitle={shouldRenderTitle}
-                  selected_rows={selected_rows}
-                  title={title}
-                  actions={actions}
-                  toggleSettings={this.toggleSettings}
-                  enableProfileConfiguration={this.props.enableProfileConfiguration}
-                  onChangeProfile={this.handleChangeProfile}
-                  onCreateProfile={this.handleCreateProfile}
-                  columns={this.props.columns}
-                  rows={this.state.structure}
-                  allowToDownloadCVS={this.props.allowToDownloadCVS}
-                  rows_extended={this.state.rows_extended}
-                  expandRows={
-                     {
-                        displayButton: this.props.isExpandRowsButtonActive,
-                        isRowSelected: this.props.selected_rows.length > 0 ? true : false,
-                        isRowHeaderSelected: (this.props.selected_rows.filter((row_id) => this.props.rows[row_id] && this.props.rows[row_id].is_item === false)).length > 0 ? true : false,
-                        action: this.expandRows,
-                        ...(tableHeaderOptions.expandRows || {})
-                     }
+      return (<HotKeys handlers={this.keyBoardHandlers} keyMap={keyMap}
+         style={{ outline: 'none', height: '100%', width: '100%', ...tableWrapperStyle }}>
+         <div style={droppableStyle}>
+            {!isTableHeaderHidden && <TableHeader
+               tableHeaderOptions={tableHeaderOptions}
+               profiles={this.props.profiles}
+               profileSelected={profile_selected}
+               filter={this.props.filter}
+               setRef={this.tableToolbar}
+               shouldRenderTitle={shouldRenderTitle}
+               selected_rows={selected_rows}
+               title={title}
+               actions={actions}
+               toggleSettings={this.toggleSettings}
+               enableProfileConfiguration={this.props.enableProfileConfiguration}
+               onChangeProfile={this.handleChangeProfile}
+               onCreateProfile={this.handleCreateProfile}
+               columns={this.props.columns}
+               rows={this.state.structure}
+               allowToDownloadCVS={this.props.allowToDownloadCVS}
+               rows_extended={this.state.rows_extended}
+               expandRows={
+                  {
+                     displayButton: this.props.isExpandRowsButtonActive,
+                     isRowSelected: this.props.selected_rows.length > 0 ? true : false,
+                     isRowHeaderSelected: (this.props.selected_rows.filter((row_id) => this.props.rows[row_id] && this.props.rows[row_id].is_item === false)).length > 0 ? true : false,
+                     action: this.expandRows,
+                     ...(tableHeaderOptions.expandRows || {})
                   }
-                  collapseRows={
-                     {
-                        displayButton: this.props.isCollapseRowsButtonActive,
-                        isRowSelected: this.props.selected_rows.length > 0 ? true : false,
-                        isRowHeaderSelected: (this.props.selected_rows.filter((row_id) => this.props.rows[row_id] && this.props.rows[row_id].is_item === false)).length > 0 ? true : false,
-                        action: this.collapseRows,
-                        ...(tableHeaderOptions.collapseRows || {})
-                     }
+               }
+               collapseRows={
+                  {
+                     displayButton: this.props.isCollapseRowsButtonActive,
+                     isRowSelected: this.props.selected_rows.length > 0 ? true : false,
+                     isRowHeaderSelected: (this.props.selected_rows.filter((row_id) => this.props.rows[row_id] && this.props.rows[row_id].is_item === false)).length > 0 ? true : false,
+                     action: this.collapseRows,
+                     ...(tableHeaderOptions.collapseRows || {})
                   }
-               />}
-
-               {/* ------------ TABLE ------------*/}
-               <table className={`the-table-header ${this.state.name}`} ref={this.tableHeader} style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-               }}>
-                  {groupColumns && groupColumns.length > 0 && (
-                     <thead>
-                        <tr className="Table-Row-Header tr_shaded">
-                           {isDragColumnVisible &&
-                              <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`}
-                                 style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-
-                           {renderColumns(groupColumns)}
-                        </tr>
-                     </thead>
-                  )}
+               }
+            />}
+   
+            {/* ------------ TABLE ------------*/}
+            <table className={`the-table-header ${this.state.name}`} ref={this.tableHeader} style={{
+               display: 'flex',
+               flexDirection: 'column',
+            }}>
+               {groupColumns && groupColumns.length > 0 && (
                   <thead>
                      <tr className="Table-Row-Header tr_shaded">
                         {isDragColumnVisible &&
-                           <td colSpan="1" className={`${columns && columns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}
-                              {this.props.enableSelectAll && <Button
-                                 size="large"
-                                 compact
-                                 className="select-all-button"
-                                 basic
-                                 icon={selected_rows.length === Object.keys(rows).length && Object.keys(rows).length > 0 ? "check square outline" : "square outline"}
-                                 onClick={() => {
-                                    if (selected_rows.length < Object.keys(rows).length && Object.keys(rows).length) {
-                                       this.selectAllRows(rows);
-                                    } else {
-                                       this.deselectAllRows();
-                                    }
-                                 }} />}
-                           </td>}
-                        {
-                           renderColumns(columns)
-                        }
+                           <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`}
+                              style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
+   
+                        {renderColumns(groupColumns)}
                      </tr>
-                     {this?.props?.totalRow?.freeze && <Row
-                        isDragColumnVisible={this.props.isDragColumnVisible}
-                        expandCollapseColumnIndex={this.props.expandCollapseColumnIndex}
-                        key={-1}
-                        index={-1}
-                        row={this.props.totalRow}
-                        is_open={true}
-                        is_selected={false}
-                        columns={this.getVisibleColumns().map(col => ({ ...col, editable: false }))}
-                        depth={-1}
-                        cellActive={-1}
-                        onPaste={this.props.onPasteCell}
-                        type={this.props.type}
-                        customRowClass={this.props.customRowClass}
-                        ignoreItemStyle={this.props.ignoreItemStyle}
-                     />}
                   </thead>
-               </table>
-
-               <table
-                  className={`table-drag-n-drop the-table ${this.props.className} scrolly_table scrolling_table_2 ${this.state.name}`}
-                  style={tableStyle}
-                  ref={this.container}
-               >
-                  {groupColumns && groupColumns.length > 0 && (
-                     <thead>
-                        <tr className="Table-Row-Header">
-                           {isDragColumnVisible &&
-                              <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-
-                           {renderColumns(groupColumns)}
-                        </tr>
-                     </thead>
-                  )}
+               )}
+               <thead>
+                  <tr className="Table-Row-Header tr_shaded">
+                     {isDragColumnVisible &&
+                        <td colSpan="1" className={`${columns && columns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}
+                           {this.props.enableSelectAll && <Button
+                              size="large"
+                              compact
+                              className="select-all-button"
+                              basic
+                              icon={selected_rows.length === Object.keys(rows).length && Object.keys(rows).length > 0 ? "check square outline" : "square outline"}
+                              onClick={() => {
+                                 if (selected_rows.length < Object.keys(rows).length && Object.keys(rows).length) {
+                                    this.selectAllRows(rows);
+                                 } else {
+                                    this.deselectAllRows();
+                                 }
+                              }} />}
+                        </td>}
+                     {
+                        renderColumns(columns)
+                     }
+                  </tr>
+                  {this?.props?.totalRow?.freeze && <Row
+                     isDragColumnVisible={this.props.isDragColumnVisible}
+                     expandCollapseColumnIndex={this.props.expandCollapseColumnIndex}
+                     key={-1}
+                     index={-1}
+                     row={this.props.totalRow}
+                     is_open={true}
+                     is_selected={false}
+                     columns={this.getVisibleColumns().map(col => ({ ...col, editable: false }))}
+                     depth={-1}
+                     cellActive={-1}
+                     onPaste={this.props.onPasteCell}
+                     type={this.props.type}
+                     customRowClass={this.props.customRowClass}
+                     ignoreItemStyle={this.props.ignoreItemStyle}
+                  />}
+               </thead>
+            </table>
+   
+            <table
+               className={`table-drag-n-drop the-table ${this.props.className} scrolly_table scrolling_table_2 ${this.state.name}`}
+               style={tableStyle}
+               ref={this.container}
+            >
+               {groupColumns && groupColumns.length > 0 && (
                   <thead>
                      <tr className="Table-Row-Header">
                         {isDragColumnVisible &&
                            <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-
-                        {renderColumns(columns)
-                        }
+   
+                        {renderColumns(groupColumns)}
                      </tr>
                   </thead>
-                  <tbody
-
-                     style={{
-                        display: 'table',
-                        padding: paddingBodyTable ? paddingBodyTable : 'none'
-                     }}>
-                     {
-                        isEmpty ?
-                           (
-                              <NoRowsCard
-                                 noRowsMessage={noRowsMessage}
-                                 onDrop={this.props.onDropInZone}
-                                 canDrop={this.props.canDropInZone}
-                                 isCtrlPressed={this.state.isCtrlPressed}
-                              />
-                           )
-                           :
-                           ([
-                              <DropZone
-                                 key='dropzone'
-                                 onDrop={this.props.onDropInZone}
-                                 canDrop={this.props.canDropInZone}
-                                 isCtrlPressed={this.state.isCtrlPressed}
-                              />,
-                              this.initGenerateRows()
-                           ])
+               )}
+               <thead>
+                  <tr className="Table-Row-Header">
+                     {isDragColumnVisible &&
+                        <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
+   
+                     {renderColumns(columns)
                      }
-
-                  </tbody>
-               </table>
-
-
-               {/* ------------ EXTRA ------------*/}
-
-               {
-                  isLoading &&
-                  <Dimmer active={isLoading} inverted>
-                     <Loader>Cargando</Loader>
-                  </Dimmer>
-               }
-               {bottomToolbar != null && bottomToolbar}
-
-               <Settings
-                  profile={profileSelected}
-                  isOpen={this.state.is_setting_open}
-                  columns={this.getColumnsPlain()}
-                  onClose={this.toggleSettings}
-                  toggleColumn={this.toggleColumn}
-                  onSubmit={this.onSubmitSettings}
-                  onConfirmDelete={this.handleDeleteProfile}
-                  isColumnVisible={this.isColumnVisible}>
-               </Settings>
-
-               {this.state.contextMenu.visible && <ContextMenu
-                  onClose={() => {
-                     this.setState({
-                        contextMenu: {
-                           visible: false
-                        }
-                     })
-                  }}
-                  x={this.state.contextMenu.x}
-                  y={this.state.contextMenu.y}
-                  actions={this.state.contextMenu.actions}
-               />
-               }
-            </div>
-
-         </HotKeys>
-      )
+                  </tr>
+               </thead>
+               <tbody
+   
+                  style={{
+                     display: 'table',
+                     padding: paddingBodyTable ? paddingBodyTable : 'none'
+                  }}>
+                  {
+                     isEmpty ?
+                        (
+                           <NoRowsCard
+                              noRowsMessage={noRowsMessage}
+                              onDrop={this.props.onDropInZone}
+                              canDrop={this.props.canDropInZone}
+                              isCtrlPressed={this.state.isCtrlPressed}
+                           />
+                        )
+                        :
+                        ([
+                           <DropZone
+                              key='dropzone'
+                              onDrop={this.props.onDropInZone}
+                              canDrop={this.props.canDropInZone}
+                              isCtrlPressed={this.state.isCtrlPressed}
+                           />,
+                           this.initGenerateRows()
+                        ])
+                  }
+   
+               </tbody>
+            </table>
+   
+   
+            {/* ------------ EXTRA ------------*/}
+   
+            {
+               isLoading &&
+               <Dimmer active={isLoading} inverted>
+                  <Loader>Cargando</Loader>
+               </Dimmer>
+            }
+            {bottomToolbar != null && bottomToolbar}
+   
+            <Settings
+               profile={profileSelected}
+               isOpen={this.state.is_setting_open}
+               columns={this.getColumnsPlain()}
+               onClose={this.toggleSettings}
+               toggleColumn={this.toggleColumn}
+               onSubmit={this.onSubmitSettings}
+               onConfirmDelete={this.handleDeleteProfile}
+               isColumnVisible={this.isColumnVisible}>
+            </Settings>
+   
+            {this.state.contextMenu.visible && <ContextMenu
+               onClose={() => {
+                  this.setState({
+                     contextMenu: {
+                        visible: false
+                     }
+                  })
+               }}
+               x={this.state.contextMenu.x}
+               y={this.state.contextMenu.y}
+               actions={this.state.contextMenu.actions}
+            />
+            }
+         </div>
+   
+      </HotKeys>);
    }
 }
 
@@ -1837,3 +1835,5 @@ Table.defaultProps = {
       includeChildren: true,
    }
 };
+
+export default withDndContext(Table);

@@ -5,11 +5,11 @@ import {Icon, Progress} from "semantic-ui-react";
 import es from 'date-fns/locale/es';
 import DatePicker from 'react-datepicker';
 import Cleave from 'cleave.js/react';
-import InputConfirm from "components/InputConfirm";
+import InputConfirm from "./InputConfirm";
 import NumberFormat from 'react-number-format';
 import moment from 'moment';
 
-import { KEY_CODES } from "utils/index";
+import { KEY_CODES } from "../../utils/index";
 
 class InputField extends React.Component {
 

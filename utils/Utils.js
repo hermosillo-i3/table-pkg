@@ -1,5 +1,5 @@
 import moment from "moment";
-import { sortByCode } from "../../utils/index";
+import { sortByCode } from "./index";
 import _uniqBy from "lodash/uniqBy";
 
 export const isEqual = (value, other) => {
@@ -78,35 +78,6 @@ export const isNumber = (value) => {
    return !isNaN(value)
 };
 
-export const getChildrenOfParent = (parent, items) => {
-   const getChildren = (children = []) => {
-      return children.map((e) => items[e])
-   };
-   return getChildren(parent._children);
-};
-export const getParent = (child, items) => {
-   return items[child.parent_id];
-};
-
-export const getChildrenFunction = items => {
-   const getChildren = (children) => {
-      return children.reduce((acum, child_id) => {
-         let new_children = [];
-         let child = items[child_id];
-         if (child.hasOwnProperty('_children')) {
-            new_children = getChildren(child._children)
-         }
-
-         return [
-            ...acum,
-            ...new_children,
-            child_id
-         ]
-      }, [])
-   };
-   return getChildren;
-};
-
 export const getAllChildren = (childrenIds, items) => {
    return childrenIds.reduce((total, key) => {
       const item = items[key];
@@ -123,76 +94,6 @@ export const getAllChildren = (childrenIds, items) => {
       return arrayToReturn;
    }, []);
 };
-
-export const getRootElementsFunction = items => {
-
-   return Object.keys(items).reduce((acum, key) => {
-      if (items[key].parent_id == null) {
-         return [
-            ...acum,
-            items[key]
-         ]
-      }
-      return acum
-   }, []);
-
-};
-
-export const chunk = (str, n) => {
-   var ret = [];
-   var i;
-   var len;
-
-   for (i = 0, len = str.length; i < len; i += n) {
-      ret.push(str.substr(i, n))
-   }
-
-   return ret
-};
-
-/** Generate a new code for a table row from the current codes in the table following these rules
- * It will the next lowest code posible.
- * Given an array of codes such as ['1','2']. The next lowest posible code will be '3'
- * Given an array of codes such as ['1','3']. The next lowest posible code will be '2'
- * @param {Array} _array The list of codes that are already in the table
- * @param {Boolean} code_length The length of the new code, EJ. if the code is 1 but length = 2 , the code will be 01
- * @return {String} The generated code
- */
-export const generateCode = (_array, code_length = 2) => {
-   let code;
-   if (_array.length > 0) {
-      // Remove any invalid code
-      let array = _array.filter(item => item.code != null)
-      array = _uniqBy(array, 'code').sort(sortByCode());
-      // Get the GAP between codes.
-      let index = 0;
-      let isValid;
-      let prevElement;
-      let currentElement;
-
-      const firstElement = array[0];
-      const increase = firstElement.code === '0'.padStart(code_length, '0') ? 0 : 1;
-      do {
-         prevElement = currentElement
-         currentElement = array[index];
-         const code_array = currentElement.code.split('.');
-         const code = code_array[code_array.length - 1] === '' ? code_array[code_array.length - 2] : code_array[code_array.length - 1]
-         isValid = (index + increase) === parseInt(code)
-         index++;
-      } while (isValid && index < array.length);
-
-      const last = isValid ? currentElement : prevElement;
-      const code_array = last ? last.code.split('.') : ['00'];
-      code = code_array[code_array.length - 1] === '' ? code_array[code_array.length - 2] : code_array[code_array.length - 1]
-      code = parseInt(code);
-      code = (code + 1).toString().padStart(code_length, '0')
-   } else {
-      // There are not any codes so it can start from 0
-      code = (1).toString().padStart(code_length, '0');
-   }
-
-   return code;
-}
 
 export const formatColumn = (format, value) => {
 
@@ -334,120 +235,6 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
    return textWithSpecial.replace(regex, '');
 };
 
- /** Re-calculates the code of children items when header's code changes.
- * @param {Object} row_header The entity that contains the code and sub rows
- * @param {String} new_code The property that will be used to group items
- * @param {Array<Object>} rows The full list of taken codes. It is used to repetition can be avoid
- * @return {Array<Object>} The list of new children with updated code
- */
-  export const recalculateChildrenCodes = (row_header, new_code, rows) => {
-
-   let itsValidCode = true;
-      // Validate existing code
-      for (const packageID in rows) {
-         if (new_code === rows[packageID].code) {
-            throw new Error('Código inválido: El código que ingresaste ya existe.');
-         }
-      }
-      // Validate the code entered.
-      let previousCode = row_header.code.split(".");
-      let newCode = new_code.split(".");
-      // Remove the first element if the code starts with '.' for validation purposes.
-      if (previousCode[0] === "") {
-         previousCode.shift();
-      }
-      if (newCode[0] === "") {
-         newCode.shift();
-      }
-      if (previousCode.length !== newCode.length) { // Check that the code has the correct number of points.
-         itsValidCode = false;
-      }
-      if (itsValidCode) {
-         for (let x = 0; x < row_header.depth; x++) { // Check that are not modifying the code of a wbs item parent
-            if (previousCode[x] !== newCode[x]) {
-               itsValidCode = false;
-            }
-         }
-      }
-      if (!itsValidCode) {
-         throw new Error('Código inválido: El código que ingresaste no corresponde al nivel de desglose actual.');
-      }
-      // Get all the subrows entities
-      if (row_header.subrows && row_header.subrows.length > 0) {
-         let row_entities = [];
-         let getAllSubrows = function (row) {
-            row_entities.push({
-               id: row.id,
-               code: row.code,
-            })
-            if (row.subrows && row.subrows.length > 0) {
-               row.subrows.forEach((current_row) => {
-                  getAllSubrows(current_row)
-               })
-            }
-         }
-         getAllSubrows(row_header);
-         // Change the code for the new code
-         let dephtPosition = row_header.depth;
-         if (row_entities[0].code.indexOf(".") === 0) {
-            dephtPosition++;
-         }
-         const newValue = new_code.split(".");
-         row_entities.forEach((row) => {
-            row.code = row.code.split(".");
-            row.code[dephtPosition] = newValue[dephtPosition];
-            row.code = row.code.join('.');
-         })
-
-         return row_entities;
-      }else{
-         // It has no children
-         return [{
-            id: row_header.id,
-            code: new_code,
-         }]
-      }
-};
-
-
-
-/**
- * @typedef {Object} TreeItem
- * @property {Number} parent_id
- * @property {Number} id
- * @property {Boolean} is_item
- * @property {Array<TreeItem>} children
- */
-
-/**
- * Get an array of all the parents of an item
- * @param {TreeItem} item The leaf item
- * @param {Array<TreeItem>} list_of_items A complete tree of items
- * @returns {Array<Number>} An array with the Ids of the parents
- */
- export const getParentId = (item, list_of_items) => {
-   const recursiveAux = (item, list_of_items_object) => {
-     if (item.parent_id === null) {
-       return [];
-     } else {
-       const parent = list_of_items_object[item.parent_id];
-       return [
-         item.parent_id,
-         ...recursiveAux(parent, list_of_items_object),
-       ]
-     }
-   }
- 
- 
-   const list_of_items_object = list_of_items.reduce((acum, item) => {
-     return {
-       ...acum,
-       [item.id]: item,
-     }
-   }, {});
- 
-   return recursiveAux(item, list_of_items_object)
- }
  
  /**
  * Converts a tree structure array to a flat array using a target property that will be used as the key. Ut uses recursion

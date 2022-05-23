@@ -5,10 +5,10 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faGripVertical} from "@fortawesome/free-solid-svg-icons";
 import flow from 'lodash/flow'
 import {ItemTypes} from './Constants'
-import {formatColumn, isFunction} from "./Utils";
+import {formatColumn, isFunction} from "../../utils/Utils";
 
 import {DragSource, DropTarget} from 'react-dnd'
-import {isColumnEditable} from "components/Table/utils/column";
+import {isColumnEditable} from "../../utils/column";
 
 
 const RowTarget = {
@@ -475,7 +475,8 @@ class Row extends React.Component {
    }
 }
 
-export default flow(
+const component = flow(
    DragSource(ItemTypes.ROW, RowSource, collectSource),
    DropTarget(ItemTypes.ROW, RowTarget, collectTarget)
-)(Row);
+)(Row)
+export default component;

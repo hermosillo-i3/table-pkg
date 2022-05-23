@@ -2,9 +2,9 @@ import React from 'react'
 import { Icon, Popup, Button, Modal } from "semantic-ui-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
-import ModalForm from "components/ModalForm";
+import ModalForm from "./ModalForm";
 import { CSVLink } from "react-csv";
-import { convertTreeStructureToFlatArray } from "./Utils";
+import { convertTreeStructureToFlatArray } from "../../utils/Utils";
 
 
 const styles = {

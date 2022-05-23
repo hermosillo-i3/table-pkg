@@ -1,0 +1,100 @@
+.empty-table-card-container {
+  margin: auto;
+  -webkit-transition: width 0.15s ease-in-out 0s, height 0.15s ease-in-out 0s, background-color 0.15s ease-in-out 0s; /* For Safari 3.1 to 6.0 */
+  transition: width 0.15s ease-in-out 0s, height 0.15s ease-in-out 0s, background-color 0.15s ease-in-out 0s;
+  display: flex;
+  margin-top: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, .04);
+
+  h4.ui.header, h5.ui.header {
+    color: #909090;
+  }
+
+  .ui.header .sub.header {
+    color: #909090;
+  }
+
+  .empty-table-card {
+    position: relative;
+  }
+
+
+  .empty-table-card-icon, .empty-table-card-icon-multiple {
+    border-radius: 7px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(235, 235, 235);
+    background: -moz-linear-gradient(180deg, rgba(235, 235, 235, 1) 0%, rgba(224, 224, 224, 1) 100%);
+    background: -webkit-linear-gradient(180deg, rgba(235, 235, 235, 1) 0%, rgba(224, 224, 224, 1) 100%);
+    background: linear-gradient(180deg, rgba(235, 235, 235, 1) 0%, rgba(224, 224, 224, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ebebeb", endColorstr="#e0e0e0", GradientType=1);
+
+    &.absolute {
+      position: absolute;
+      top: 0;
+    }
+
+    .icon {
+      color: #CCCCCC;
+    }
+  }
+
+  .empty-table-card-icon-multiple {
+    background: #d3d3d3;
+    -webkit-transform: rotate(20deg);
+    transform: rotate(20deg);
+  }
+
+  .empty-table-card-icon-small{
+    @extend .empty-table-card-icon ;
+    width: 70px;
+    height: 90px;
+  }
+
+  .empty-table-card-icon-medium{
+    @extend .empty-table-card-icon ;
+    width: 100px;
+    height: 125px;
+  }
+
+  .empty-table-card-icon-multiple-small{
+    @extend .empty-table-card-icon-multiple ;
+    width: 70px;
+    height: 90px;
+  }
+
+  .empty-table-card-icon-multiple-medium{
+    @extend .empty-table-card-icon-multiple ;
+    width: 100px;
+    height: 125px;
+  }
+}
+
+.is_over_zone {
+  background: #3C85FB;
+  height: 420px;
+  width: 420px;
+
+  h4.ui.header, h5.ui.header {
+    color: white !important;
+
+  }
+}
+
+.empty-table-card-container-small {
+  @extend .empty-table-card-container ;
+  height: 270px;
+  width: 270px;
+}
+.empty-table-card-container-medium {
+  @extend .empty-table-card-container ;
+  height: 370px;
+  width: 370px;
+}
