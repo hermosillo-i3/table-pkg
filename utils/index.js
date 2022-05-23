@@ -848,7 +848,7 @@ export const calculateGranTotal = (rows, fields) => {
       if (row.parent_id == null) {
          let tmp = {}
          fields.forEach(field => {
-            tmp[field] = acum[field].plus(row[field] ? row[field] : 0)
+            tmp[field] = acum[field].plus(Number(row[field] ?? 0))
          });
          return tmp
       } else
