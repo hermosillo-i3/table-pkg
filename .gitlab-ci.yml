@@ -6,6 +6,10 @@ cache:
   paths:
     - node_modules/
 
+before_script:  
+  - apt-get update
+  - apt-get -y install python3.8
+
 stages:
   - deploy
 
