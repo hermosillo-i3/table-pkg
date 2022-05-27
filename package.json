@@ -40,6 +40,7 @@
     "formik": "^2.2.6",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
+    "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",
     "uuid": "^3.3.3",
     "with-dnd-context": "^1.0.4"
@@ -60,7 +61,6 @@
     "babel-loader": "^8.2.5",
     "cross-env": "^7.0.3",
     "html-webpack-plugin": "^5.5.0",
-    "node-sass": "^4.14.1",
     "react": "^18.1.0",
     "react-csv": "^2.2.2",
     "react-datepicker": "^2.9.6",
