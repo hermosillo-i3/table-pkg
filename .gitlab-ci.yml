@@ -8,7 +8,7 @@ cache:
 
 before_script:  
   - apt-get update
-  - apt install python2
+  - apt -y install python2
 
 stages:
   - deploy
