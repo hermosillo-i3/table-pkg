@@ -9,7 +9,7 @@ import InputConfirm from "./InputConfirm";
 import NumberFormat from 'react-number-format';
 import moment from 'moment';
 
-import { KEY_CODES } from "../../utils/index";
+import { KEY_CODES } from "../utils/index";
 
 class InputField extends React.Component {
 
@@ -242,6 +242,7 @@ class InputField extends React.Component {
                               }
                            };
                         }}
+                        minRows={1}
                         type='text'
                         value={this.state.currentValue}
                         onChange={this.onChange}

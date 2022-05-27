@@ -5,10 +5,10 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faGripVertical} from "@fortawesome/free-solid-svg-icons";
 import flow from 'lodash/flow'
 import {ItemTypes} from './Constants'
-import {formatColumn, isFunction} from "../../utils/Utils";
+import {formatColumn, isFunction} from "../utils/Utils";
 
 import {DragSource, DropTarget} from 'react-dnd'
-import {isColumnEditable} from "../../utils/column";
+import {isColumnEditable} from "../utils/column";
 
 
 const RowTarget = {
@@ -274,7 +274,7 @@ class Row extends React.Component {
                value = this.formatColumn(format, value)
             }
 
-            return <div className={`left-align-flex value ${column.customColumnClass}`}>
+            return <div className={`left-align-flex value ${column.customColumnClass} expanded-column`}>
                <span>{value}</span></div>;
          }
       }

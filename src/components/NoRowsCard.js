@@ -1,7 +1,7 @@
 import React from 'react'
 import { DropTarget } from 'react-dnd'
 import { ItemTypes } from './Constants'
-import EmptyStateCard from "./EmptyStateCard";
+import EmptyStateCard from "./EmptyStateCard/EmptyStateCard";
 
 const dropConnector = {
 	drop(props, monitor) {

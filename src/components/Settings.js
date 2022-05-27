@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {Table, Button, Input, Checkbox, Modal, Confirm, Icon} from "semantic-ui-react";
 import PropTypes from 'prop-types'
-import {getColumnKey} from "../../utils/column";
-import {convertArrayToObjectV2} from "../../utils/index";
+import {getColumnKey} from "../utils/column";
+import {convertArrayToObjectV2} from "../utils/index";
 
 const Settings = (props) => {
 

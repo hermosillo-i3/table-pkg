@@ -1,18 +1,27 @@
 {
-  "name": "fivebim-table",
+  "name": "@hermosillo/fivebim-table",
   "version": "0.1.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean-ws": "del /s /q /f .\\dist",
-    "clean": "rm -rf ./dist/components",
-    "compile-ws": "npm run clean-ws && cross-env NODE_ENV=production babel src --out-dir dist --copy-files",
-    "compile": "npm run clean && cross-env NODE_ENV=production babel src --out-dir dist --copy-files"
+    "clean": "rm -rf ./dist",
+    "build-ws": "npm run clean-ws && npm run compile && npm run copy-ws",
+    "build": "npm run clean && npm run compile && npm run copy",
+    "copy": "cp package.json ./dist",
+    "copy-ws": "copy package.json dist",
+    "compile": "cross-env NODE_ENV=production babel src --out-dir dist --copy-files",
+    "storybook": "start-storybook -p 6006 -s src",
+    "build-storybook": "build-storybook",
+    "build-gitlab": "npm run compile && npm run copy"
   },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@gitlab.com/hermosilloi3/custom-table.git"
+  },
+  "publishConfig": {
+    "@hermosilloi3:registry": "https://gitlab.com/api/v4/projects/36223189/packages/npm/"
   },
   "author": "",
   "license": "ISC",
@@ -21,9 +30,10 @@
   },
   "homepage": "https://gitlab.com/hermosilloi3/custom-table#readme",
   "dependencies": {
-    "@babel/core": "^7.17.12",
+    "@fortawesome/fontawesome-svg-core": "^1.2.15",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/react-fontawesome": "^0.1.4",
+    "@storybook/react": "^6.5.5",
     "babel-plugin-macros": "^3.1.0",
     "cleave.js": "^1.6.0",
     "decimal.js": "^10.3.1",
@@ -36,20 +46,33 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.17.10",
+    "@babel/core": "^7.18.2",
     "@babel/preset-env": "^7.17.12",
     "@babel/preset-react": "^7.17.12",
-    "cross-env": "^7.0.3"
-  },
-  "peerDependencies": {
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "@storybook/addon-actions": "^6.5.5",
+    "@storybook/addon-essentials": "^6.5.5",
+    "@storybook/addon-interactions": "^6.5.5",
+    "@storybook/addon-links": "^6.5.5",
+    "@storybook/builder-webpack4": "^6.5.5",
+    "@storybook/manager-webpack4": "^6.5.5",
+    "@storybook/preset-scss": "^1.0.3",
+    "@storybook/testing-library": "0.0.11",
+    "babel-loader": "^8.2.5",
+    "cross-env": "^7.0.3",
+    "html-webpack-plugin": "^5.5.0",
+    "node-sass": "^4.14.1",
+    "react": "^18.1.0",
     "react-csv": "^2.2.2",
     "react-datepicker": "^2.9.6",
     "react-dnd": "^7.0.2",
     "react-dnd-html5-backend": "^7.0.2",
+    "react-dom": "^18.1.0",
     "react-hotkeys": "^2.0.0",
+    "react-number-format": "^4.4.1",
     "react-select": "^2.2.0",
     "react-textarea-autosize": "^7.1.0",
+    "sass-loader": "^6.0.6",
+    "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2"
   }
 }

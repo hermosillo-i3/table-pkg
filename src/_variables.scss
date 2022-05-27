@@ -1,0 +1,54 @@
+//  Font-families
+@import url('https://fonts.googleapis.com/css?family=Open+Sans|Roboto:100,300,400,700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono');
+
+$primary_font: "Roboto", Helvetica, Arial, sans-serif;
+$secondary_font: 'IBM Plex Mono', monospace;
+
+//Colors
+
+$redux: #744cbc;
+$dark-gray: #333333;
+$dark-blue: #364051;
+$off-white: #f7f7f7;
+$grey: #666;
+$light-grey: #c1c1c1;
+$hover-gray: rgba(0, 0, 0, 0.07);
+$blue: rgb(63, 163, 213);
+$color_empty_state: #a6a6a6;
+$color_hermosillo: #e65a28;
+
+//Font size
+$fs-size: 1.2rem;
+$fm-size: 1.4rem;
+$fl-size: 1.8rem;
+
+// Height layout
+$header_height: 3.599rem;
+$sub_header_height: 3rem;
+$route_page_heigth: calc(100vh - #{$header_height} - #{$sub_header_height});
+$selected-list-item-color: #0396FF;
+
+$red: #db2828;
+$orange: #f2711c;
+$yellow: #fbbd08;
+$olive: #b5cc18;
+$green: #21ba45;
+$teal: #00b5ad;
+$blue: #2185d0;
+$violet: #6435c9;
+$purple: #a333c8;
+$pink: #e03997;
+$brown: #a5673f;
+$grey: #767676;
+$black: #1b1c1d;
+$background-gray-color: #f4f5fa;
+
+
+// Breakpoints for responsive behavior.
+
+$monitor16-breakpoint: 1366px;
+$laptop-sm-breakpoint: 1240px;
+$laptop-mini-breakpoint: 960px;
+$laptop-vertical-breakpoint: 800px;
+

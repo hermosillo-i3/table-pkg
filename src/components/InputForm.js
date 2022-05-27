@@ -1,6 +1,6 @@
 import React from 'react'
 import capitalize from "lodash/capitalize";
-import { replaceAll } from '../../utils/index'
+import { replaceAll } from '../utils/index'
 import es from 'date-fns/locale/es';
 import DatePicker from "react-datepicker";
 import { Checkbox, Dropdown, Form } from "semantic-ui-react";

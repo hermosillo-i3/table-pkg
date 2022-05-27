@@ -1,6 +1,6 @@
 import React from 'react'
 import {Header} from "semantic-ui-react";
-import Toolbar from "./Toolbar";
+import Toolbar from "./Toolbar/Toolbar";
 
 const TableHeader = ({
                         profileSelected,
