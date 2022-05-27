@@ -7,9 +7,8 @@ cache:
     - node_modules/
 
 before_script:  
-  - add-apt-repository ppa:deadsnakes/ppa
   - apt-get update
-  - apt-get -y install python3.8
+  - apt install python2
 
 stages:
   - deploy
