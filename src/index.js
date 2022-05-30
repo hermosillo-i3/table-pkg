@@ -10,6 +10,7 @@ import InputField from './components/InputField';
 import NoRowsCard from './components/NoRowsCard';
 import Settings from './components/Settings';
 import Toolbar from './components/Toolbar/Toolbar';
+import Utils from './utils/Utils';
 
 export default Table;
 
@@ -25,4 +26,5 @@ export {
     NoRowsCard,
     Settings,
     Toolbar,
+    Utils,
 };
