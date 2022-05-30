@@ -490,3 +490,24 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
  
    return recursiveAux(item, list_of_items)
  };
+
+ export default {
+   isEqual,
+   pad,
+   isNumber,
+   getChildrenOfParent,
+   getParent,
+   getChildrenFunction,
+   getAllChildren,
+   getRootElementsFunction,
+   chunk,
+   generateCode,
+   formatColumn,
+   isFunction,
+   applyFilter,
+   removeSpecialCharacters,
+   recalculateChildrenCodes,
+   getParentId,
+   convertTreeStructureToFlatArray,
+   getAllParents,
+ }
