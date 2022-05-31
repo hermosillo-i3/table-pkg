@@ -21,7 +21,7 @@ install:
     - npm install --no-progress  --legacy-peer-deps
 
 pages:
-  stage: ages
+  stage: pages
   script:
     - npm run build-storybook
   artifacts:
