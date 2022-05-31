@@ -23,7 +23,7 @@ install:
 pages:
   stage: pages
   script:
-    - npm run build-storybook
+    - npm run storybook
   artifacts:
     paths:
     - .storybook
