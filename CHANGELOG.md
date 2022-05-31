@@ -4,6 +4,13 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.1.5
+Date: May 31, 2022
+* [NEW]
+  * Added gitlab pages support
+* [UPDATE]
+  * Removed storybook non-used pages
+
 ## V 0.1.4
 Date: May 30, 2022
 * [FIX]

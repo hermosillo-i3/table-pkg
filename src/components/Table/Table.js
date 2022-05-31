@@ -844,7 +844,7 @@ class Table extends React.Component {
                return {
                   ...acum,
                   [row.id]: {
-                     ...this.state.rows_extended[row.id],
+                     ...this.state.rows_extended[row.id] ?? {},
                      should_render: shouldRender
                   }
                }
@@ -1729,6 +1729,7 @@ Table.propTypes = {
       filter: PropTypes.bool,
       sortable: PropTypes.bool,
       sortMethod: PropTypes.func,
+      help_info: PropTypes.string,
    })).isRequired,
    rows: PropTypes.object.isRequired,
    actions: PropTypes.arrayOf(PropTypes.shape({

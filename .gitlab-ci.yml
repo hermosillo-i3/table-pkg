@@ -11,12 +11,29 @@ before_script:
   - apt -y install python2
 
 stages:
+  - install
+  - pages
   - deploy
+
+install:
+  stage: install
+  script:
+    - npm install --no-progress  --legacy-peer-deps
+
+pages:
+  stage: ages
+  script:
+    - npm run build-storybook
+  artifacts:
+    paths:
+    - .storybook
+    - storybook-static
+  only:
+  - main
 
 deploy:
   stage: deploy
   script:
-    - npm install --no-progress  --legacy-peer-deps
     - yarn build-gitlab
     - cd dist
     - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}">.npmrc
