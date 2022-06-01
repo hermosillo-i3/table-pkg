@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.1.6
+Date: Jun 1, 2022
+* [UPDATE]
+  * Gitlab deploy for storybook
+
 ## V 0.1.5
 Date: May 31, 2022
 * [NEW]
