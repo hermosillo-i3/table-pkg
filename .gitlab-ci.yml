@@ -35,7 +35,7 @@ setup:
 
 
 storybook:
-  stage: build-and-test
+  stage: setup
   artifacts:
     expire_in: 2 weeks
     when: always
