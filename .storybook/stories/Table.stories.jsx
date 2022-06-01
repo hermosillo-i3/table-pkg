@@ -4,7 +4,7 @@ import Table from '../../src';
 import 'semantic-ui-css/semantic.min.css';
 
 export default {
-  title: 'Example/Table',
+  title: 'FiveBim/Table',
   component: Table,
   argTypes: {
   },

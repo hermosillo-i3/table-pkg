@@ -4,6 +4,13 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.0
+Date: Jun 1, 2022
+* [NEW]
+  * Custom theming for storybook
+* [UPDATE]
+  * Removed storybook introduction
+
 ## V 0.1.8
 Date: Jun 1, 2022
 * [UPDATE]
