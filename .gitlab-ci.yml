@@ -19,7 +19,7 @@ stages:
 
 before_script:  
   - apt-get update
-  - apt-get -y install python3.8
+  - apt -y install python2
 
 install:
   stage: install
