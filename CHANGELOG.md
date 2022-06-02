@@ -4,6 +4,13 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.2
+Date: Jun 2, 2022
+* [UPDATE]
+  * Restructure of dependencies
+* [FIX]
+  * Crashed image on compiled page
+
 ## V 0.2.1
 Date: Jun 1, 2022
 * [FIX]

@@ -12,8 +12,5 @@ module.exports = {
     "@storybook/addon-interactions",
     '@storybook/preset-scss'
   ],
-  "staticDir": [
-    './assets/'
-  ],
   "framework": "@storybook/react"
 }
