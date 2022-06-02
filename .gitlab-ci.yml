@@ -2,9 +2,11 @@ image: node:latest
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
-cache:
+cache: &global_cache
   paths:
     - node_modules/
+    - public/
+    
 
 before_script:  
   - apt-get update
@@ -15,16 +17,23 @@ stages:
   - pages
   - deploy
 
+before_script:  
+  - apt-get update
+  - apt-get -y install python3.8
+
 install:
   stage: install
+  cache:
+    # inherit all global cache settings
+    <<: *global_cache
   script:
     - npm install --no-progress  --legacy-peer-deps
 
 pages:
   stage: pages
   cache:
-    paths:
-      - public
+    # inherit all global cache settings
+    <<: *global_cache
   script:
     - npm run build-storybook
   artifacts:
@@ -35,6 +44,9 @@ pages:
 
 deploy:
   stage: deploy
+  cache:
+    # inherit all global cache settings
+    <<: *global_cache
   script:
     - yarn build-gitlab
     - cd dist
