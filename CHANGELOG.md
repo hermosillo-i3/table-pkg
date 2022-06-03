@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.3
+Date: Jun 3, 2022
+* [FIX]
+  * Util that convert tree structure to flat array
+
 ## V 0.2.2
 Date: Jun 2, 2022
 * [UPDATE]

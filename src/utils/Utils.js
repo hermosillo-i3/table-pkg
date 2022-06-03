@@ -463,7 +463,7 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
        if (!Array.isArray(row[child_property])) {
          throw new Error('The property ' + child_property + ' must be an array')
        }
-       rowsToReturn.push(...convertTreeStructureToFlatArray(row[child_property]))
+       rowsToReturn.push(...convertTreeStructureToFlatArray(row[child_property], child_property))
      }
    }
    return rowsToReturn;
