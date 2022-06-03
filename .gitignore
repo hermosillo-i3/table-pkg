@@ -4,3 +4,4 @@ dist
 storybook-static
 public
 .npmrc
+package-lock.json
