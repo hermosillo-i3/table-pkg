@@ -1730,6 +1730,7 @@ Table.propTypes = {
       sortable: PropTypes.bool,
       sortMethod: PropTypes.func,
       help_info: PropTypes.string,
+      freeze: PropTypes.bool,
    })).isRequired,
    rows: PropTypes.object.isRequired,
    actions: PropTypes.arrayOf(PropTypes.shape({

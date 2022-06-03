@@ -4,6 +4,12 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.5
+Date: Jun 3, 2022
+* [UPDATE]
+  * Proptypes for table column
+  * Storybook to add a freeze story
+
 ## V 0.2.3
 Date: Jun 3, 2022
 * [FIX]
