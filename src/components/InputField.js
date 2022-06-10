@@ -2,12 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Textarea from 'react-textarea-autosize';
 import {Icon, Progress} from "semantic-ui-react";
-import es from 'date-fns/locale/es';
-import DatePicker from 'react-datepicker';
 import Cleave from 'cleave.js/react';
 import InputConfirm from "./InputConfirm";
 import NumberFormat from 'react-number-format';
 import moment from 'moment';
+import dateFormatter from "../utils/dateFormatter";
+
 
 import { KEY_CODES } from "../utils/index";
 
@@ -118,7 +118,8 @@ class InputField extends React.Component {
 
    }
 
-   onChangeDate(date) {
+   onChangeDate(e) {
+      let date = e.target.value;
       if (date) {
          //  Remove Hours to fix bug with PT,CT
          date = moment(date).format('YYYY-MM-DD')
@@ -208,7 +209,7 @@ class InputField extends React.Component {
 
    render() {
 
-      const {isFocused, format, limit, customProps = {}, onPaste, maxValue, customColumnClass} = this.props;
+      const {isFocused, format, limit, customProps = {}, onPaste, maxValue, customColumnClass, compressLongText} = this.props;
       const {currentValue, isTextAreaMultiLineActive} = this.state;
       const type = typeof format === 'string' ? format : format.type;
       const decimals = typeof format === 'string' ? 2 : format.decimals;
@@ -411,7 +412,7 @@ class InputField extends React.Component {
          }
 
          case "text": {
-            return (
+            return isFocused ? (
                <input
                   className={`InputField ${customColumnClass}`} 
                   ref={(input) => {
@@ -434,7 +435,8 @@ class InputField extends React.Component {
                   }}
                   {...customProps}
                />
-            )
+            ) : (<div className={`left-align-flex value ${customColumnClass} expanded-column`}>
+            <span className={`${compressLongText ? 'compress-row' : ''}`}>{this.state.currentValue}</span></div>)
          }
 
          case "select": {
@@ -481,22 +483,17 @@ class InputField extends React.Component {
 
             return (
                <React.Fragment>
-                  <DatePicker
-                     className={`InputField ${customColumnClass}`} 
-                     showYearDropdown
-                     customInput={<input/>}
-                     selected={selected}
-                     onChange={this.onChangeDate}
-                     locale={es}
-                     placeholderText="Selecciona una fecha"
-                     dateFormat="d MMMM, yyyy"
-                     isClearable={true}
-                     onFocus={this.onFocus}
-                     onKeyDown={(e) => {
-                        this.onKeyDown(e);
-                        if (this.props.onKeyDownHotKeys) this.props.onKeyDownHotKeys(e);
-                     }}
-                     {...customProps}
+                  <input 
+                  type='date' 
+                  onFocus={this.onFocus} 
+                  className={`InputField ${customColumnClass}`} 
+                  onChange={this.onChangeDate} 
+                  value={selected ? dateFormatter(selected).format('YYYY-MM-DD') : null}
+                  onKeyDown={(e) => {
+                     this.onKeyDown(e);
+                     if (this.props.onKeyDownHotKeys) this.props.onKeyDownHotKeys(e);
+                  }} 
+                  {...customProps}
                   />
                </React.Fragment>
             )

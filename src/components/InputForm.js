@@ -1,8 +1,7 @@
 import React from 'react'
 import capitalize from "lodash/capitalize";
 import { replaceAll } from '../utils/index'
-import es from 'date-fns/locale/es';
-import DatePicker from "react-datepicker";
+import dateFormatter from "../utils/dateFormatter";
 import { Checkbox, Dropdown, Form } from "semantic-ui-react";
 import Select from "react-select";
 import Cleave from 'cleave.js/react';
@@ -56,16 +55,16 @@ export default ({
 
             case 'date':
                return (
-                  <DatePicker
-                     locale={es}
-                     selected={field.value} {...field} {...props}
-                     onChange={(date) => {
-                        const { onChange } = props;
-                        if (onChange)
-                           onChange(date);
-                        setFieldTouched(field.name, true);
-                        setFieldValue(field.name, date);
-                     }} />
+                  <input 
+                  type='datetime' 
+                  value={field.value ? dateFormatter(field.value).format('YYYY-MM-DD') : null}  {...field} {...props}
+                  onChange={(date) => {
+                     const { onChange } = props;
+                     if (onChange)
+                        onChange(date);
+                     setFieldTouched(field.name, true);
+                     setFieldValue(field.name, date);
+                  }} />
                );
             case 'select':
                return (

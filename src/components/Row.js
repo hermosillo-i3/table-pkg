@@ -245,6 +245,7 @@ class Row extends React.Component {
                      }}
                      customProps={column.customProps}
                      customColumnClass={column.customColumnClass}
+                     compressLongText={column.compressLongText}
                   />
                )
             } else {
@@ -275,7 +276,7 @@ class Row extends React.Component {
             }
 
             return <div className={`left-align-flex value ${column.customColumnClass} expanded-column`}>
-               <span>{value}</span></div>;
+               <span className={`${column.compressLongText ? 'compress-row' : ''}`}>{value}</span></div>;
          }
       }
 

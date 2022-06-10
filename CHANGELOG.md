@@ -4,7 +4,17 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
-## V 0.2.5
+## V 0.2.8
+Date: Jun 10, 2022
+* [NEW]
+  * Compress text funcionality for table rows
+  * Native datepicker
+* [UPDATE]
+  * React datepicker removed
+* [FIX]
+  * Dropzone sticky row
+
+## V 0.2.6
 Date: Jun 3, 2022
 * [UPDATE]
   * Restructure of dependencies
@@ -14,7 +24,7 @@ Date: Jun 3, 2022
 * [UPDATE]
   * Removed unused dependencies
 
-## V 0.2.5
+## V 0.2.4
 Date: Jun 3, 2022
 * [UPDATE]
   * Proptypes for table column

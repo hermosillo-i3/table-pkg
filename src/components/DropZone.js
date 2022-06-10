@@ -41,10 +41,12 @@ class DropZone extends React.Component {
 
     //  Styles
 
-    let trStyle = {
+    let thStyle = {
       backgroundColor: '#3C85FB',
       textAlign: 'center',
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      position: 'sticky',
+      top: 0,
     }
 
     const tdStyle = {
@@ -62,9 +64,9 @@ class DropZone extends React.Component {
       return null
 
     return connectDropTarget(
-      <tr style={trStyle} className='Table-Row'>
+      <th style={thStyle} className='Table-Row'>
         <td style={tdStyle}><Header as='h4' style={pStyle}>Arrastra y suelta aquí los elementos</Header></td>
-      </tr>
+      </th>
     )
     
     

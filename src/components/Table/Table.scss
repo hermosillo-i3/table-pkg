@@ -927,6 +927,17 @@ input.InputField {
    color: #b7bfc6;
    max-height: 16px;
  }
+
+span.compress-row {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+span.compress-row:hover {
+   white-space: normal !important;
+   font-weight: bolder;
+ }
  
  
  .Table-Row .drag-drop-td {

@@ -2,6 +2,8 @@ import React, {useCallback, useState} from 'react';
 
 import Table from '../../src';
 import 'semantic-ui-css/semantic.min.css';
+import {DragDropContextProvider} from 'react-dnd'
+import HTML5Backend from "react-dnd-html5-backend";
 
 export default {
   title: 'FiveBim/Table',
@@ -202,6 +204,7 @@ FilterAndSelect.args = {
     ],
     isExpandRowsButtonActive: false,
     isCollapseRowsButtonActive: false,
+    enableSelectAll: true,
 };
 
 export const FormattedColumns = Template.bind({});
@@ -213,7 +216,7 @@ FormattedColumns.args = {
             description: 'Ventana',
             amount: 50,
             is_item: true,
-            date: new Date(),
+            date: new Date('2020-01-02'),
             percentage: 8.20,
         },
         2: {
@@ -249,7 +252,7 @@ FormattedColumns.args = {
             description: 'Comida',
             amount: 20,
             is_item: true,
-            date: new Date(),
+            date: null,
             percentage: 10,
         },
     },
@@ -265,6 +268,7 @@ FormattedColumns.args = {
             Header: 'Fecha',
             assesor: 'date',
             format: 'date',
+            editable: true,
         }, {
             Header: 'Porcentaje',
             assesor: 'percentage',
@@ -503,4 +507,227 @@ FreezeColumns.args = {
             format: 'date',
         }
     ],
+};
+
+export const IgnoreItemStyle = Template.bind({});
+IgnoreItemStyle.args = {
+    rows: {
+        1: {
+            id: 1,
+            parent_id: null,
+            description: 'Partida 1',
+            amount: 50,
+            is_item: false,
+            _children: [3],
+        },
+        2: {
+            id: 2,
+            parent_id: null,
+            description: 'Partida 2',
+            amount: 20,
+            is_item: false,
+            _children: [5],
+        },
+        3: {
+            id: 3,
+            parent_id: 1,
+            description: 'Sub Partida 1',
+            amount: 50,
+            is_item: false,
+            _children: [4],
+        },
+        4: {
+            id: 4,
+            parent_id: 3,
+            description: 'Concepto 1',
+            amount: 50,
+            is_item: true,
+            _children: [],
+        },
+        5: {
+            id: 5,
+            parent_id: 2,
+            description: 'Concepto 2',
+            amount: 20,
+            is_item: true,
+            _children: [],
+        },
+    },
+    columns: [
+        {
+            Header: 'Descripcion',
+            assesor: 'description'
+        }, {
+            Header: 'Monto',
+            assesor: 'amount',
+        },
+    ],
+    ignoreItemStyle: true,
+};
+
+export const CompressText = Template.bind({});
+CompressText.args = {
+    rows: {
+        1: {
+            id: 1,
+            parent_id: null,
+            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque congue risus elit, ut euismod metus tempus ut. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Ut id massa velit. Aliquam pulvinar lorem ac tellus accumsan vehicula. Aenean cursus vulputate velit, eu luctus nunc mollis ac. Duis varius leo nec lectus consectetur, non vulputate dolor eleifend. Vivamus semper tortor quam. Praesent eleifend ipsum est, nec vulputate ex laoreet eget.',
+            amount: 50,
+            is_item: true,
+        },
+        2: {
+            id: 2,
+            parent_id: null,
+            description: 'Pellentesque posuere risus eu aliquet vehicula. Ut urna erat, consequat eget porta id, rhoncus et sapien. Etiam eget placerat mauris. Vestibulum pulvinar dui sed lorem hendrerit bibendum. Praesent sed mattis elit. Integer vulputate egestas ante ac feugiat. Morbi cursus velit lorem, quis suscipit est laoreet vitae. In eu erat a neque rutrum posuere tincidunt mattis magna. Etiam nec ipsum faucibus, accumsan urna at, hendrerit lacus. Curabitur nunc arcu, mattis nec sapien nec, dapibus elementum orci.',
+            amount: 20,
+            is_item: true,
+        },
+        3: {
+            id: 3,
+            parent_id: null,
+            description: 'Duis sollicitudin magna ac justo pretium fringilla ut vitae lorem. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas molestie malesuada leo, quis tempus nulla consequat eu. Aliquam bibendum lacus sit amet sem gravida, a placerat massa dictum. Aliquam malesuada blandit vestibulum. Fusce sit amet orci augue. Donec vehicula massa ipsum, porttitor lacinia ex ultricies sit amet. Fusce molestie vitae elit at blandit. Etiam porta nunc tellus, quis lobortis nulla venenatis eu. Aliquam viverra ipsum eget ligula viverra egestas. Proin elementum malesuada lacinia.',
+            amount: 50,
+            is_item: true,
+        },
+        4: {
+            id: 4,
+            parent_id: null,
+            description: 'Duis a sem ut eros fermentum tincidunt. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vestibulum lobortis enim ac lacus consectetur, vel tincidunt justo viverra. Morbi luctus auctor orci, ut finibus lacus gravida id. Sed vel nisi lectus. Vestibulum malesuada fringilla vulputate. Nunc molestie ligula eget lacus venenatis gravida. Morbi viverra suscipit erat et interdum.',
+            amount: 50,
+            is_item: true,
+        },
+        5: {
+            id: 5,
+            parent_id: null,
+            description: 'Pellentesque nec rutrum ipsum. Curabitur tempus convallis consectetur. Sed tincidunt non magna a ornare. Cras dui urna, rutrum a iaculis nec, varius id diam. Etiam posuere fringilla nibh eu fermentum. Sed id elit tristique, luctus mauris quis, ullamcorper ligula. Nullam rutrum purus nunc, non porttitor enim hendrerit posuere.',
+            amount: 20,
+            is_item: true,
+        },
+    },
+    columns: [
+        {
+            Header: 'Descripcion',
+            assesor: 'description',
+            compressLongText: true,
+        }, {
+            Header: 'Monto',
+            assesor: 'amount',
+            format: 'currency',
+        }
+    ],
+    isExpandRowsButtonActive: false,
+    isCollapseRowsButtonActive: false,
+};
+
+// Total case
+export const TotalRow = Template.bind({});
+TotalRow.args = {
+    rows: {
+        1: {
+            id: 1,
+            parent_id: null,
+            description: 'Ventana',
+            amount: 50,
+            is_item: true,
+        },
+        2: {
+            id: 2,
+            parent_id: null,
+            description: 'Ladrillo',
+            amount: 20,
+            is_item: true,
+        },
+        3: {
+            id: 3,
+            parent_id: null,
+            description: 'Cemento',
+            amount: 50,
+            is_item: true,
+        },
+        4: {
+            id: 4,
+            parent_id: null,
+            description: 'Saco',
+            amount: 50,
+            is_item: true,
+        },
+        5: {
+            id: 5,
+            parent_id: null,
+            description: 'Comida',
+            amount: 20,
+            is_item: true,
+        },
+    },
+    columns: [
+        {
+            Header: 'Descripcion',
+            assesor: 'description'
+        }, {
+            Header: 'Monto',
+            assesor: 'amount',
+            format: 'currency',
+        }
+    ],
+    totalRow: {
+        description: 'Total',
+        amount: 190,
+    },
+};
+
+export const ExpandRows = Template.bind({});
+ExpandRows.args = {
+    rows: {
+        1: {
+            id: 1,
+            parent_id: null,
+            description: 'Partida 1',
+            amount: 50,
+            is_item: false,
+            _children: [3],
+        },
+        2: {
+            id: 2,
+            parent_id: null,
+            description: 'Partida 2',
+            amount: 20,
+            is_item: false,
+            _children: [5],
+        },
+        3: {
+            id: 3,
+            parent_id: 1,
+            description: 'Sub Partida 1',
+            amount: 50,
+            is_item: false,
+            _children: [4],
+        },
+        4: {
+            id: 4,
+            parent_id: 3,
+            description: 'Concepto 1',
+            amount: 50,
+            is_item: true,
+            _children: [],
+        },
+        5: {
+            id: 5,
+            parent_id: 2,
+            description: 'Concepto 2',
+            amount: 20,
+            is_item: true,
+            _children: [],
+        },
+    },
+    columns: [
+        {
+            Header: 'Descripcion',
+            assesor: 'description'
+        }, {
+            Header: 'Monto',
+            assesor: 'amount',
+            format: 'currency',
+        },
+    ],
+    expandRows: [1, 2],
 };

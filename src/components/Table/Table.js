@@ -1731,6 +1731,7 @@ Table.propTypes = {
       sortMethod: PropTypes.func,
       help_info: PropTypes.string,
       freeze: PropTypes.bool,
+      compressLongText: PropTypes.bool,
    })).isRequired,
    rows: PropTypes.object.isRequired,
    actions: PropTypes.arrayOf(PropTypes.shape({
@@ -1798,6 +1799,7 @@ Table.propTypes = {
    scrollToRow: PropTypes.number,
    allowToDownloadCVS: PropTypes.bool,
    filterOptions: PropTypes.object,
+   ignoreItemStyle: PropTypes.bool,
 };
 
 Table.defaultProps = {
@@ -1831,7 +1833,7 @@ Table.defaultProps = {
    isExpandByDefault: false,
    filterOptions: {
       includeChildren: true,
-   }
+   },
 };
 
 export default withDndContext(Table);
