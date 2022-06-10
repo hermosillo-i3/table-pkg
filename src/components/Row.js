@@ -394,6 +394,7 @@ class Row extends React.Component {
                   is_editable = isColumnEditable(col, row);
                }
                const readOnlyClass = !is_editable ? 'cell-read-only' : '';
+               const columnClass = col.columnClass ? isFunction(col.columnClass) ? col.columnClass(col, row) : col.columnClass : '';
                return (col.Cell ? (
                      <td
                         onClick={(e) => this.onCellClick(col, row, colIndex, rowIndex, e)}
@@ -406,7 +407,7 @@ class Row extends React.Component {
                            maxWidth: col.width,
                            overflow: col.overflow ? col.overflow : 'inherit'
                         }}
-                        className={`cell ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''}`}
+                        className={`cell ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''}`}
                      >
                         <div
                            className={`flex ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""} ${readOnlyClass}`}>
@@ -442,7 +443,7 @@ class Row extends React.Component {
                            maxWidth: col.width,
                            overflow: col.overflow ? col.overflow : 'inherit'
                         }}
-                        className={`cell ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''}`}
+                        className={`cell ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''}`}
                      >
                         <div
                            className={`flex ${readOnlyClass} ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""}`}>

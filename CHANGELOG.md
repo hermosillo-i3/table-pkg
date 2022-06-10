@@ -4,6 +4,13 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.9
+Date: Jun 10, 2022
+* [UPDATE]
+  * Table reference for sync on multiple
+  * Row custom classname for column
+  * EmptyStateCard validation for icon when null
+
 ## V 0.2.8
 Date: Jun 10, 2022
 * [NEW]

@@ -18,26 +18,28 @@ const EmptyStateCard = (props) => {
   }
 
   
-  return (
-    <div className={`empty-table-card-container-${size} ${isOver && canDrop ? 'is_over_zone' : ''}`}>
-      <div className="empty-table-card">
-        <div className={`empty-table-card-icon-${size}`}>
-          <FontAwesomeIcon rotation={iconRotation} icon={icon} size={iconSize} className='icon' />
-        </div>
-        {isMultiple && (
-          <div className={`empty-table-card-icon-multiple-${size} absolute`}>
-            <FontAwesomeIcon rotation={iconRotation} icon={icon} size={iconSize} className='icon' />
-          </div>
-        )}
-        <div className={`empty-table-card-icon-${size} absolute`}>
-          <FontAwesomeIcon rotation={iconRotation} icon={icon} size={iconSize} className='icon' />
-        </div>
+  const isIconNotNull = icon !== null && icon !== undefined && icon !== '';
+
+return (
+  <div className={`empty-table-card-container-${size} ${isOver && canDrop ? 'is_over_zone' : ''}`}>
+    <div className="empty-table-card">
+      <div className={`empty-table-card-icon-${size}`}>
+        {isIconNotNull && <FontAwesomeIcon rotation={iconRotation} icon={icon} size={iconSize} className='icon' />}
       </div>
-      <Header as={size === 'medium' ? 'h4' : 'h5'}>{title}
-        {subtitle && <Header.Subheader>{subtitle}</Header.Subheader>}
-      </Header>
+      {isMultiple && (
+        <div className={`empty-table-card-icon-multiple-${size} absolute`}>
+          {isIconNotNull &&<FontAwesomeIcon rotation={iconRotation} icon={icon} size={iconSize} className='icon' />}
+        </div>
+      )}
+      <div className={`empty-table-card-icon-${size} absolute`}>
+        {isIconNotNull &&<FontAwesomeIcon rotation={iconRotation} icon={icon} size={iconSize} className='icon' />}
+      </div>
     </div>
-  )
+    <Header as={size === 'medium' ? 'h4' : 'h5'}>{title}
+      {subtitle && <Header.Subheader>{subtitle}</Header.Subheader>}
+    </Header>
+  </div>
+)
 }
 
 EmptyStateCard.propTypes = {

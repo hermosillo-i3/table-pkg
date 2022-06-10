@@ -1593,7 +1593,14 @@ class Table extends React.Component {
             <table
                className={`table-drag-n-drop the-table ${this.props.className} scrolly_table scrolling_table_2 ${this.state.name}`}
                style={tableStyle}
-               ref={this.container}
+               ref={(current) => {
+                  this.container = {
+                      current
+                  };
+                  if (this.props.setRef) {
+                      this.props.setRef(current);
+                  }
+              }}
             >
                {groupColumns && groupColumns.length > 0 && (
                   <thead>

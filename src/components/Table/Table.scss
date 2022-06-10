@@ -955,3 +955,21 @@ span.compress-row:hover {
    text-align: center;
    display: block;
  }
+
+.custom-column-1 {
+  background: lightsteelblue;
+}
+
+.custom-column-2 {
+  background-color: gray;
+  background-image: linear-gradient(45deg, white 25%, transparent 25.5%, transparent 50%, white 50.5%, white 75%, transparent 75.5%, transparent);
+  background-size: 20px 20px;
+}
+
+.custom-column-3 {
+  background: greenyellow;
+}
+
+.custom-column-4 {
+  background: rgb(255, 100, 90);
+}

@@ -282,9 +282,9 @@ FormattedColumns.args = {
     ],
 };
 
-export const CustomCell = Template.bind({});
+export const CustomColumnCell = Template.bind({});
 // Cell Custom
-CustomCell.args = {
+CustomColumnCell.args = {
     rows: {
         1: {
             id: 1,
@@ -730,4 +730,83 @@ ExpandRows.args = {
         },
     ],
     expandRows: [1, 2],
+};
+
+export const CustomColumnClass = Template.bind({});
+CustomColumnClass.args = {
+    rows: {
+        1: {
+            id: 1,
+            parent_id: null,
+            description: 'Ventana',
+            amount: 50,
+            is_item: true,
+            date: new Date('2020-01-02'),
+            percentage: 8.20,
+        },
+        2: {
+            id: 2,
+            parent_id: null,
+            description: 'Ladrillo',
+            amount: 20,
+            is_item: true,
+            date: new Date(),
+            percentage: 40.5,
+        },
+        3: {
+            id: 3,
+            parent_id: null,
+            description: 'Cemento',
+            amount: 50,
+            is_item: true,
+            date: new Date(),
+            percentage: 35.25,
+        },
+        4: {
+            id: 4,
+            parent_id: null,
+            description: 'Saco',
+            amount: 50,
+            is_item: true,
+            date: new Date(),
+            percentage: 20,
+        },
+        5: {
+            id: 5,
+            parent_id: null,
+            description: 'Comida',
+            amount: 20,
+            is_item: true,
+            date: null,
+            percentage: 10,
+        },
+    },
+    columns: [
+        {
+            Header: 'Descripcion',
+            assesor: 'description',
+            columnClass: 'custom-column-1'
+        }, {
+            Header: 'Monto',
+            assesor: 'amount',
+            format: 'currency',
+            columnClass: (col, row) => {
+                if (row.amount > 30) {
+                    return 'custom-column-3';
+                }
+
+                return 'custom-column-4';
+            }
+        }, {
+            Header: 'Fecha',
+            assesor: 'date',
+            format: 'date',
+            editable: true,
+        }, {
+            Header: 'Porcentaje',
+            assesor: 'percentage',
+            format: 'percentage',
+            columnClass: 'custom-column-2'
+        }
+    ],
 };
