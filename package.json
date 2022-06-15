@@ -1,6 +1,6 @@
 {
   "name": "@hermosilloi3/fivebim-table",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,8 +14,7 @@
     "compile": "babel src --out-dir dist --copy-files",
     "storybook": "start-storybook -p 6006 -s .storybook",
     "build-storybook": "build-storybook -o public",
-    "build-gitlab": "npm run compile && npm run copy",
-    "prepare": "husky install"
+    "build-gitlab": "npm run compile && npm run copy"
   },
   "repository": {
     "type": "git",

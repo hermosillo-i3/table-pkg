@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.11
+Date: Jun 15, 2022
+* [UPDATE]
+  * Removed husky prepare script
+
 ## V 0.2.10
 Date: Jun 15, 2022
 * [FIX]
