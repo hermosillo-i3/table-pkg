@@ -28,6 +28,9 @@ install:
     <<: *global_cache
   script:
     - npm install --no-progress  --legacy-peer-deps
+  only:
+    - main
+    - gitlab-pages
 
 pages:
   stage: pages
@@ -40,7 +43,7 @@ pages:
     paths:
       - public
   only:
-    - main
+    - gitlab-pages
 
 deploy:
   stage: deploy

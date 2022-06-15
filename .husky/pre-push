@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+node hooks/main_requirements.js
+mainBranch=`git rev-parse --abbrev-ref HEAD`
+if [ "$mainBranch" = "main" ]; then
+    git checkout gitlab-pages
+    git merge main
+    git push origin gitlab-pages
+    git checkout main
+fi

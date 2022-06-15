@@ -928,13 +928,13 @@ input.InputField {
    max-height: 16px;
  }
 
-span.compress-row {
+.compress-row {
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
 
-span.compress-row:hover {
+.compress-row:hover {
    white-space: normal !important;
    font-weight: bolder;
  }

@@ -70,7 +70,7 @@ const updatePackageBuild = (newCommitDate) => {
    }
 };
 
-exec('git rev-list --format=format:\'%cI\' --max-count=1 `git rev-parse HEAD`', (error, stdout, stderr) => {
+exec('git rev-list --format=format:\'%cI\' -- --max-count=1 `git rev-parse HEAD`', (error, stdout, stderr) => {
    if (error) {
       console.log(`error: ${error.message}`);
       return;
