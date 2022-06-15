@@ -16,18 +16,6 @@ const execute = async (command) => {
 
 const main = async () => {
    const branch = await execute('git rev-parse --abbrev-ref HEAD');
-   if (branch.trim() === 'develop') {
-      // Only works on develop branch
-      const filesChanged = await execute('git diff origin/develop develop --name-only --pretty=format:')
-      const diffText = await execute('git log origin/develop..HEAD --pretty=oneline --abbrev-commit')
-
-      const hasUpdateChangeLog = filesChanged.includes('CHANGELOG.md')
-      const isCommitFromMergeRelease = diffText.includes('Merge branch \'release/');
-
-      if (!hasUpdateChangeLog && !isCommitFromMergeRelease) {
-         throw new Error('El CHANGELOG no se ha actualizado.')
-      }
-   }
 
    const branchName = 'main';
    if (branch.trim() === branchName) {
@@ -37,12 +25,18 @@ const main = async () => {
       const origin = JSON.parse(originRaw);
       const current = JSON.parse(currentRaw);
 
+      const filesChanged = await execute('git diff origin/main main --name-only --pretty=format:')
+
+      const hasUpdateChangeLog = filesChanged.includes('CHANGELOG.md')
+      if (!hasUpdateChangeLog) {
+         throw new Error('El CHANGELOG no se ha actualizado.')
+      }
+
       if (origin.version === current.version) {
          throw new Error('La versión del package.json no se ha actualizado')
       }
    }
 }
-
 main().then((data) => {
    console.log('Se ejecutó correctamente')
 }).catch((e) => {

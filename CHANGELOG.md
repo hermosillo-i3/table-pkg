@@ -4,6 +4,14 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.10
+Date: Jun 15, 2022
+* [FIX]
+  * Compress text class
+  * Support for compress text editable
+* [UPDATE]
+  * Husky hooks for pre-push and post-commit
+
 ## V 0.2.9
 Date: Jun 10, 2022
 * [UPDATE]

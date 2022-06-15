@@ -254,7 +254,7 @@ class InputField extends React.Component {
                   )
                } else {
                   return(
-                     <p className={`Text ${customColumnClass}`} onClick={(e) => this.onCreateTextArea(e)}>
+                     <p className={`Text ${customColumnClass} ${compressLongText ? 'compress-row' : ''}`} onClick={(e) => this.onCreateTextArea(e)}>
                         {this.state.currentValue}
                      </p>
                   )
