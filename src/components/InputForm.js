@@ -322,10 +322,11 @@ export default ({
                         onChange={(e) => {
                            let value = e.target.value;
 
-                           const regex = /^[0-9]{0,2}$/;
+                           const limitLength = props.limitLength ?? 2;
+                           const regex = new RegExp(`^[0-9]{0,${limitLength}}$`);
 
 
-                           if (regex.exec(value)) {
+                           if (regex.test(value)) {
                               setFieldValue(field.name, value);
                               if (props.onChange)
                                  props.onChange(value)

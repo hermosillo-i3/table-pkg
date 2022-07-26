@@ -5,3 +5,4 @@ storybook-static
 public
 .npmrc
 package-lock.json
+.vscode
