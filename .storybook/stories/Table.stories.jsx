@@ -2,8 +2,6 @@ import React, {useCallback, useState} from 'react';
 
 import Table from '../../src';
 import 'semantic-ui-css/semantic.min.css';
-import {DragDropContextProvider} from 'react-dnd'
-import HTML5Backend from "react-dnd-html5-backend";
 
 export default {
   title: 'FiveBim/Table',
@@ -20,8 +18,10 @@ const Template = (args) => {
 
 const SelectTemplate = (args) => {
     const [selectedRows, setSelectedRows] = useState([]);
-    const onRowSelect = useCallback((rows) => setSelectedRows(rows), [setSelectedRows]);
-    return <Table selected_rows={selectedRows} onRowSelect={onRowSelect} {...args}/>
+    const onRowSelect = useCallback((rows) => {
+        setSelectedRows(rows)
+    }, [setSelectedRows]);
+    return <Table {...args} selected_rows={selectedRows} onRowSelect={onRowSelect}/>
 };
 
 export const Default = Template.bind({});
