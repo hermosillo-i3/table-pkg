@@ -73,7 +73,7 @@ export const pad = (number, size) => {
 };
 
 export const isNumber = (value) => {
-   if (value === null)
+   if (value == null)
       return false
    return !isNaN(value)
 };
@@ -82,7 +82,7 @@ export const getChildrenOfParent = (parent, items) => {
    const getChildren = (children = []) => {
       return children.map((e) => items[e])
    };
-   return getChildren(parent._children);
+   return getChildren(parent?._children);
 };
 export const getParent = (child, items) => {
    return items[child.parent_id];
@@ -94,7 +94,7 @@ export const getChildrenFunction = items => {
          let new_children = [];
          let child = items[child_id];
          if (child.hasOwnProperty('_children')) {
-            new_children = getChildren(child._children)
+            new_children = getChildren(child?._children)
          }
 
          return [
@@ -114,10 +114,10 @@ export const getAllChildren = (childrenIds, items) => {
          ...total,
          item,
       ];
-      if (item._children && item._children.length > 0) {
+      if (item?._children && item?._children.length > 0) {
          arrayToReturn = [
             ...arrayToReturn,
-            ...getAllChildren(item._children, items),
+            ...getAllChildren(item?._children, items),
          ];
       }
       return arrayToReturn;
@@ -162,7 +162,7 @@ export const generateCode = (_array, code_length = 2) => {
    let code;
    if (_array.length > 0) {
       // Remove any invalid code
-      let array = _array.filter(item => item.code != null)
+      let array = _array.filter(item => item?.code != null)
       array = _uniqBy(array, 'code').sort(sortByCode());
       // Get the GAP between codes.
       let index = 0;
@@ -261,16 +261,16 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
 
          let item = items[child];
          if (item) {
-            if (item.is_item) {
+            if (item?.is_item) {
                if (filterMethod(item)) {
                   isValid = true
-                  validItems[item.id] = true;
+                  validItems[item?.id] = true;
 
                   return true;
                }
             } else {
-               if (item._children && item._children.length > 0) {
-                  isValidChild = lookInChildren(item._children);
+               if (item?._children && item?._children.length > 0) {
+                  isValidChild = lookInChildren(item?._children);
                } else {
                   isValidChild = includeEmptyHeaders
                }
@@ -296,8 +296,8 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
             }
          }
       } else {
-         if (pack._children && pack._children.length > 0) {
-            if (lookInChildren(pack._children)) {
+         if (pack?._children && pack?._children.length > 0) {
+            if (lookInChildren(pack?._children)) {
                return {
                   ...acum,
                   [key]: pack
@@ -427,12 +427,12 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
  */
  export const getParentId = (item, list_of_items) => {
    const recursiveAux = (item, list_of_items_object) => {
-     if (item.parent_id === null) {
+     if (item?.parent_id == null) {
        return [];
      } else {
-       const parent = list_of_items_object[item.parent_id];
+       const parent = list_of_items_object[item?.parent_id];
        return [
-         item.parent_id,
+         item?.parent_id,
          ...recursiveAux(parent, list_of_items_object),
        ]
      }
@@ -442,7 +442,7 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
    const list_of_items_object = list_of_items.reduce((acum, item) => {
      return {
        ...acum,
-       [item.id]: item,
+       [item?.id]: item,
      }
    }, {});
  
@@ -475,19 +475,18 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
   * @param {Object} list_of_items A complete tree of items
   * @returns {Array<Object>} The array of the parents of the item
   */
- export const getAllParents = (item, list_of_items) => {
+ export  const getAllParents = (item, list_of_items) => {
    const recursiveAux = (item, list_of_items_object) => {
-     if (item.parent_id === null) {
+     if (item?.parent_id == null) {
        return [];
      } else {
-       const parent = list_of_items_object[item.parent_id];
+       const parent = list_of_items_object[item?.parent_id];
        return [
          parent,
          ...recursiveAux(parent, list_of_items_object),
        ]
      }
    }
- 
    return recursiveAux(item, list_of_items)
  };
 

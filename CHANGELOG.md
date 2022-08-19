@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.13
+Date: Aug 18, 2022
+* [FIX]
+  * Chain validation for null objects
+
 ## V 0.2.12
 Date: Jul 26, 2022
 * [UPDATE]

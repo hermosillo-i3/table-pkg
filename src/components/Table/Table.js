@@ -632,7 +632,7 @@ class Table extends React.Component {
 
       const applyFilter = (row) => {
          return column_filters.every(filter => {
-            const cellValue = row[filter.key]
+            const cellValue = row?.[filter.key];
             let filterFormat = typeof filter.format === 'object' ? filter.format.type : filter.format;
 
             if (cellValue != null) {
