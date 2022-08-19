@@ -11,7 +11,7 @@ import NoRowsCardComponent from './components/NoRowsCard';
 import SettingsComponent from './components/Settings';
 import ToolbarComponent from './components/Toolbar/Toolbar';
 import UtilsComponent from './utils/Utils';
-import DragDropContext from './components/DragDropContext';
+import DragDropContextComponent from './components/DragDropContext';
 
 export const Table = TableComponent;
 export const Row = RowComponent;
