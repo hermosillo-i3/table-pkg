@@ -23,7 +23,7 @@ import {
 
 import "./Table.scss";
 import { addFreezeColumns } from "../../utils/table-utils";
-import withDndContext from "with-dnd-context"; 
+import DragDropContext from '../DragDropContext';
 
 configure({
    ignoreTags: [],
@@ -1843,4 +1843,4 @@ Table.defaultProps = {
    },
 };
 
-export default withDndContext(Table);
+export default DragDropContext(Table);
