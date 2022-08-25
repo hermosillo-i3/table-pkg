@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.16
+Date: Aug 25, 2022
+* [UPDATE]
+  * Added save of data when hitting enter for input field types
+
 ## V 0.2.15
 Date: Aug 19, 2022
 * [FIX]
