@@ -274,7 +274,17 @@ class InputField extends React.Component {
                   onBlur={this.onBlur}
                   onKeyDown={(e) => {
                      this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) this.props.onKeyDownHotKeys(e);
+                     if (this.props.onKeyDownHotKeys) {
+                        this.props.onKeyDownHotKeys(e);
+                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                           this.setState((prevState) => ({
+                              isTextAreaMultiLineActive: true,
+                           }))
+                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
+                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
+                           this.onBlur(e);
+                        }
+                     };
                   }}
                   onPaste={(e) => {
                      if (onPaste) {
@@ -301,7 +311,17 @@ class InputField extends React.Component {
                   }}
                   onKeyDown={(e) => {
                      this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) this.props.onKeyDownHotKeys(e);
+                     if (this.props.onKeyDownHotKeys) {
+                        this.props.onKeyDownHotKeys(e);
+                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                           this.setState((prevState) => ({
+                              isTextAreaMultiLineActive: true,
+                           }))
+                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
+                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
+                           this.onBlur(e);
+                        }
+                     };
                   }}
                   trigger={
                      <Progress progress
@@ -328,7 +348,17 @@ class InputField extends React.Component {
                   onFocus={this.onFocus}
                   onKeyDown={(e) => {
                      this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) this.props.onKeyDownHotKeys(e);
+                     if (this.props.onKeyDownHotKeys) {
+                        this.props.onKeyDownHotKeys(e);
+                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                           this.setState((prevState) => ({
+                              isTextAreaMultiLineActive: true,
+                           }))
+                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
+                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
+                           this.onBlur(e);
+                        }
+                     };
                   }}
                />
             )
@@ -364,7 +394,17 @@ class InputField extends React.Component {
                   }}
                   onKeyDown={(e) => {
                      this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) this.props.onKeyDownHotKeys(e);
+                     if (this.props.onKeyDownHotKeys) {
+                        this.props.onKeyDownHotKeys(e);
+                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                           this.setState((prevState) => ({
+                              isTextAreaMultiLineActive: true,
+                           }))
+                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
+                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
+                           this.onBlur(e);
+                        }
+                     };
                   }}
                   onBlur={this.onBlur}
                   onFocus={this.onFocus}
@@ -400,7 +440,17 @@ class InputField extends React.Component {
                   thousandSeparator={true}
                   onKeyDown={(e) => {
                      this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) this.props.onKeyDownHotKeys(e);
+                     if (this.props.onKeyDownHotKeys) {
+                        this.props.onKeyDownHotKeys(e);
+                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                           this.setState((prevState) => ({
+                              isTextAreaMultiLineActive: true,
+                           }))
+                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
+                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
+                           this.onBlur(e);
+                        }
+                     };
                   }}
                   onPaste={(e) => {
                      if (onPaste) {
@@ -431,7 +481,17 @@ class InputField extends React.Component {
                   onFocus={this.onFocus}
                   onKeyDown={(e) => {
                      this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) this.props.onKeyDownHotKeys(e);
+                     if (this.props.onKeyDownHotKeys) {
+                        this.props.onKeyDownHotKeys(e);
+                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                           this.setState((prevState) => ({
+                              isTextAreaMultiLineActive: true,
+                           }))
+                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
+                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
+                           this.onBlur(e);
+                        }
+                     };
                   }}
                   {...customProps}
                />
