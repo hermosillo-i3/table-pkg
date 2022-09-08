@@ -218,6 +218,7 @@ FormattedColumns.args = {
             is_item: true,
             date: new Date('2020-01-02'),
             percentage: 8.20,
+            boolean: true,
         },
         2: {
             id: 2,
@@ -227,6 +228,7 @@ FormattedColumns.args = {
             is_item: true,
             date: new Date(),
             percentage: 40.5,
+            boolean: true,
         },
         3: {
             id: 3,
@@ -236,6 +238,7 @@ FormattedColumns.args = {
             is_item: true,
             date: new Date(),
             percentage: 35.25,
+            boolean: false,
         },
         4: {
             id: 4,
@@ -245,6 +248,7 @@ FormattedColumns.args = {
             is_item: true,
             date: new Date(),
             percentage: 20,
+            boolean: true,
         },
         5: {
             id: 5,
@@ -254,6 +258,7 @@ FormattedColumns.args = {
             is_item: true,
             date: null,
             percentage: 10,
+            boolean: false,
         },
     },
     columns: [
@@ -278,6 +283,10 @@ FormattedColumns.args = {
             assesor: 'percentage',
             format: 'progress-bar',
             editable: true,
+        }, {
+            Header: 'Boleano',
+            assesor: 'boolean',
+            format: 'boolean',
         }
     ],
 };

@@ -2,7 +2,7 @@
   "name": "@hermosilloi3/fivebim-table",
   "version": "0.2.16",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean-ws": "del /s /q /f .\\dist",

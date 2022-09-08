@@ -265,6 +265,7 @@ class Row extends React.Component {
 
 
          } else {
+            // The cell is not editable
             if (column.hasOwnProperty('format')) {
                if (format === 'boolean' && value) {
                   return <Icon
