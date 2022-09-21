@@ -5,7 +5,6 @@ import {Icon, Progress} from "semantic-ui-react";
 import Cleave from 'cleave.js/react';
 import InputConfirm from "./InputConfirm";
 import NumberFormat from 'react-number-format';
-import moment from 'moment';
 import dateFormatter from "../utils/dateFormatter";
 
 
@@ -122,7 +121,7 @@ class InputField extends React.Component {
       let date = e.target.value;
       if (date) {
          //  Remove Hours to fix bug with PT,CT
-         date = moment(date).format('YYYY-MM-DD')
+         date = dateFormatter(date).format('YYYY-MM-DD')
       }
       this.setState((prevState) => ({
          currentValue: date

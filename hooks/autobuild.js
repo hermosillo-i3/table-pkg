@@ -1,4 +1,4 @@
-const moment = require('moment');
+const dateFormatter = require('../src/utils/dateFormatter');
 const {exec} = require('child_process');
 const fs = require('fs');
 
@@ -57,10 +57,10 @@ const addNewChangesToCommit = () => {
 };
 
 const updatePackageBuild = (newCommitDate) => {
-   const buildId = moment().unix();
+   const buildId = dateFormatter().unix();
    const currentBuildId = getCurrentBuildNumber();
-   const buildBeforeDate = moment.unix(currentBuildId).add(1, 'seconds');
-   const now30SecondsBefore = moment.unix(currentBuildId).subtract(30, 'seconds');
+   const buildBeforeDate = dateFormatter.unix(currentBuildId).add(1, 'seconds');
+   const now30SecondsBefore = dateFormatter.unix(currentBuildId).subtract(30, 'seconds');
    const isFromAmed = newCommitDate.isBetween(now30SecondsBefore, buildBeforeDate);
    log(newCommitDate, buildBeforeDate, isFromAmed);
    if (!isFromAmed) {
@@ -80,7 +80,7 @@ exec('git rev-list --format=format:\'%cI\' -- --max-count=1 `git rev-parse HEAD`
       return;
    }
    const gitInformation = stdout.split('\n');
-   const date = moment(gitInformation[1]);
+   const date = dateFormatter(gitInformation[1]);
    updatePackageBuild(date);
 });
 

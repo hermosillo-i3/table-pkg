@@ -1,4 +1,4 @@
-import moment from "moment";
+import dateFormatter from "./dateFormatter";
 import {Decimal} from "decimal.js";
 import each from "lodash/each";
 import cloneDeep from "lodash/cloneDeep";
@@ -28,18 +28,18 @@ export const sortByDate = (property, desc = false) => {
          else
             switch (alternative) {
                case 'after':
-                  return moment(a[property]).isAfter(b[property])
+                  return dateFormatter(a[property]).isAfter(b[property])
                case 'before':
-                  return moment(a[property]).isBefore(b[property])
+                  return dateFormatter(a[property]).isBefore(b[property])
 
                default:
                   break;
             }
       }
 
-      const isSame = moment(a[property]).isSame(b[property])
-      const isAfter = isSame ? compareId('after') : moment(a[property]).isAfter(b[property])
-      const isBefore = isSame ? compareId('before') : moment(a[property]).isBefore(b[property])
+      const isSame = dateFormatter(a[property]).isSame(b[property])
+      const isAfter = isSame ? compareId('after') : dateFormatter(a[property]).isAfter(b[property])
+      const isBefore = isSame ? compareId('before') : dateFormatter(a[property]).isBefore(b[property])
 
       if (desc ? isAfter : isBefore) {
          return -1
@@ -301,7 +301,7 @@ export const formatColumn = (format, value) => {
          if (!value) {
             return '';
          }
-         return moment(value).format('DD MMMM YYYY');
+         return dateFormatter(value).format('DD MMMM YYYY');
       default:
          return value
    }

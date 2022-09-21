@@ -1,4 +1,4 @@
-import moment from "moment";
+import dateFormatter from "../utils/dateFormatter";
 import { sortByCode } from "./index";
 import _uniqBy from "lodash/uniqBy";
 
@@ -222,7 +222,7 @@ export const formatColumn = (format, value) => {
          if (!value) {
             return '';
          }
-         return moment(value).format(format.dateFormat != null ? format.dateFormat : 'DD MMMM YYYY');
+         return dateFormatter(value).format(format.dateFormat != null ? format.dateFormat : 'DD MMMM YYYY');
       case 'boolean':
          return value ? '✔️' : ''
       default:
