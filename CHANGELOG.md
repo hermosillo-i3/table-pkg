@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.17
+Date: Sep 21, 2022
+* [UPDATE]
+  * Removed moment library
+
 ## V 0.2.16
 Date: Aug 25, 2022
 * [UPDATE]
