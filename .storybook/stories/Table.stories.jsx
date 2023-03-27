@@ -96,6 +96,130 @@ OnlyItemsView.args = {
     isCollapseRowsButtonActive: false,
 };
 
+export const OrderCode = Template.bind({});
+OrderCode.args = {
+    rows: {
+        1: {
+            id: 1,
+            parent_id: null,
+            code: '03',
+            description: 'Ventana',
+            amount: 50,
+            is_item: true,
+        },
+        2: {
+            id: 2,
+            code: '05',
+            parent_id: null,
+            description: 'Ladrillo',
+            amount: 20,
+            is_item: true,
+        },
+        3: {
+            id: 3,
+            parent_id: null,
+            code: '02',
+            description: 'Cemento',
+            amount: 50,
+            is_item: true,
+        },
+        4: {
+            id: 4,
+            parent_id: null,
+            code: '04',
+            description: 'Saco',
+            amount: 50,
+            is_item: true,
+        },
+        5: {
+            id: 5,
+            parent_id: null,
+            code: '01',
+            description: 'Comida',
+            amount: 20,
+            is_item: true,
+        },
+    },
+    columns: [{
+            Header: 'Código',
+            assesor: 'code',
+            help_info: 'Las filas se ordenan por este campo',
+        }, {
+            Header: 'Descripcion',
+            assesor: 'description',
+        }, {
+            Header: 'Monto',
+            assesor: 'amount',
+            format: 'currency',
+        }
+    ],
+    isExpandRowsButtonActive: false,
+    isCollapseRowsButtonActive: false,
+    orderByCode: true,
+};
+
+export const OrderAlphanumericCode = Template.bind({});
+OrderAlphanumericCode.args = {
+    rows: {
+        1: {
+            id: 1,
+            parent_id: null,
+            code: 'CO-03',
+            description: 'Ventana',
+            amount: 50,
+            is_item: true,
+        },
+        2: {
+            id: 2,
+            code: 'CO-05',
+            parent_id: null,
+            description: 'Ladrillo',
+            amount: 20,
+            is_item: true,
+        },
+        3: {
+            id: 3,
+            parent_id: null,
+            code: 'CO-02',
+            description: 'Cemento',
+            amount: 50,
+            is_item: true,
+        },
+        4: {
+            id: 4,
+            parent_id: null,
+            code: 'CO-04',
+            description: 'Saco',
+            amount: 50,
+            is_item: true,
+        },
+        5: {
+            id: 5,
+            parent_id: null,
+            code: 'CO-01',
+            description: 'Comida',
+            amount: 20,
+            is_item: true,
+        },
+    },
+    columns: [{
+            Header: 'Código',
+            assesor: 'code',
+            help_info: 'Las filas se ordenan por este campo',
+        }, {
+            Header: 'Descripcion',
+            assesor: 'description',
+        }, {
+            Header: 'Monto',
+            assesor: 'amount',
+            format: 'currency',
+        }
+    ],
+    isExpandRowsButtonActive: false,
+    isCollapseRowsButtonActive: false,
+    orderByAlphanumericCode: true,
+};
+
 export const ParentChildrenView = Template.bind({});
 ParentChildrenView.args = {
     rows: {
@@ -205,6 +329,62 @@ FilterAndSelect.args = {
     isExpandRowsButtonActive: false,
     isCollapseRowsButtonActive: false,
     enableSelectAll: true,
+};
+
+
+export const SelectIcon = SelectTemplate.bind({});
+SelectIcon.args = {
+    rows: {
+        1: {
+            id: 1,
+            parent_id: null,
+            description: 'Ventana',
+            amount: 50,
+            is_item: true,
+        },
+        2: {
+            id: 2,
+            parent_id: null,
+            description: 'Ladrillo',
+            amount: 20,
+            is_item: true,
+        },
+        3: {
+            id: 3,
+            parent_id: null,
+            description: 'Cemento',
+            amount: 50,
+            is_item: true,
+        },
+        4: {
+            id: 4,
+            parent_id: null,
+            description: 'Saco',
+            amount: 50,
+            is_item: true,
+        },
+        5: {
+            id: 5,
+            parent_id: null,
+            description: 'Comida',
+            amount: 20,
+            is_item: true,
+        },
+    },
+    columns: [
+        {
+            Header: 'Descripcion',
+            assesor: 'description',
+            help_info: 'Es posible realizar la busqueda en celdas',
+        }, {
+            Header: 'Monto',
+            assesor: 'amount',
+            format: 'currency',
+        }
+    ],
+    isExpandRowsButtonActive: false,
+    isCollapseRowsButtonActive: false,
+    shouldShowSelectIcon: true,
 };
 
 export const FormattedColumns = Template.bind({});
