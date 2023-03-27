@@ -303,7 +303,9 @@ class Row extends React.Component {
          ignoreItemStyle,
          expandCollapseColumnIndex,
          isDragColumnVisible,
-         styleTheme
+         shouldShowSelectIcon,
+         styleTheme,
+         is_selected,
       } = this.props;
 
 
@@ -381,9 +383,14 @@ class Row extends React.Component {
                   }}
                >
                   <div className="middle-align-flex">
-                     <span className="drag-drop-icon">
+                  {canDrag && <span className="drag-drop-icon">
                         <FontAwesomeIcon icon={faGripVertical} size="1x"/>
-                     </span>
+                     </span>}
+                     {(!canDrag && shouldShowSelectIcon) && <>
+                           {is_selected ? 
+                           <Icon color = 'black' name={'check square outline'}/> : 
+                           <Icon color = {row.is_item ? 'black' : 'white'} name={'square outline'}/>}
+                        </>}
                   </div>
                </td>
             )}
