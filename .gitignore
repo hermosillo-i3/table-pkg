@@ -6,3 +6,4 @@ public
 .npmrc
 package-lock.json
 .vscode
+yarn.lock
