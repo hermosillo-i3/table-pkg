@@ -4,6 +4,12 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.18
+Date: Mar 27, 2023
+* [NEW]
+  * Sort of alphanumeric code and prop
+  * Select icon for table rows
+
 ## V 0.2.17
 Date: Sep 21, 2022
 * [UPDATE]
