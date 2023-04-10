@@ -7,7 +7,6 @@ import Select from "react-select";
 import Cleave from 'cleave.js/react';
 
 //Components
-import TodoList from "./TodoList";
 import CheckboxList from "./CheckboxList";
 import ColorList from "./ColorList";
 
@@ -195,22 +194,6 @@ export default ({
                            })
                         }
                      </Form.Group>
-                  </div>
-               );
-            case 'todo-list':
-               return (
-                  <div>
-                     <TodoList
-                        {...field}
-                        {...props}
-                        list={field.value}
-                        onChange={list => {
-                           const { onChange } = props;
-                           if (onChange)
-                              onChange(list);
-                           setFieldValue(field.name, list);
-                        }}
-                     />
                   </div>
                );
             case 'color-list':
