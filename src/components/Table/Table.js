@@ -605,19 +605,23 @@ class Table extends React.Component {
       }
 
       const sortMethod = (a, b) => {
+         if (this.state.sortMethod)
+            return this.state.sortMethod(a, b);
+
          if (this.props.orderByCode){
             const t1 = cleanCode(a.code);
             const t2 = cleanCode(b.code);
             const x = parseInt(t1);
             const y = parseInt(t2);
             return x - y;
-         } else if (this.props.orderByAlphanumericCode) {
+         } 
+         
+         if (this.props.orderByAlphanumericCode) {
             const keyValueStringA = `${a.code}`;
             const keyValueStringB = `${b.code}`;
             return keyValueStringA.localeCompare(keyValueStringB, undefined, {numeric: true})
-         } else if (this.state.sortMethod)
-            return this.state.sortMethod(a, b);
-         else
+         }
+
             return a.order_position - b.order_position
 
 

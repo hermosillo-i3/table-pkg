@@ -3,6 +3,12 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+
+## V 0.2.20
+Date: Apr 19, 2023
+* [FIX]
+  * Bug when trying to sort columns, kept sorting by the table default sort method
+
 ## V 0.2.19
 Date: Apr 10, 2023
 * [UPDATE]
