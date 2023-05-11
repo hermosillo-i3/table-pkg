@@ -119,20 +119,28 @@ class InputField extends React.Component {
    }
 
    onChangeDate(e) {
-      newDate = dateFormatter(e.target.value).toDate()
-      actualDate = dateFormatter(this.state.currentValue).toDate()
-      previousDate = dateFormatter(this.state.pastValue).toDate()
-      if(newDate.getMonth() == previousDate.getMonth()){
+      const currentDate = dateFormatter(new Date()).format('YYYY-MM-DD')
+      if(e.target.value == ''){
          this.setState((prevState) => ({
-            pastValue: previousDate,
-            currentValue: newDate,
+            pastValue: currentDate,
+            currentValue: new Date(e.target.value),
          }))
       }else{
-         this.setState((prevState) => ({
-            pastValue: newDate,
-         }))
+         newDate = dateFormatter(e.target.value).toDate()
+         console.log(newDate)
+         actualDate = dateFormatter(this.state.currentValue).toDate()
+         previousDate = dateFormatter(this.state.pastValue).toDate()
+         if(newDate.getMonth() == previousDate.getMonth()){
+            this.setState((prevState) => ({
+               pastValue: previousDate,
+               currentValue: newDate,
+            }))
+         }else{
+            this.setState((prevState) => ({
+               pastValue: newDate,
+            }))
+         }
       }
-
    }
 
    onBlur(e) {
