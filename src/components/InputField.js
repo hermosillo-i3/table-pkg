@@ -21,6 +21,7 @@ class InputField extends React.Component {
       this.state = {
          currentValue,
          previousValue: this.props.value,
+         pastValue: this.props.value,
          caretPos: 0,
          isTextAreaMultiLineActive: false,
       };
@@ -118,17 +119,27 @@ class InputField extends React.Component {
    }
 
    onChangeDate(e) {
-      let date = e.target.value;
-      if (date) {
-         //  Remove Hours to fix bug with PT,CT
-         date = dateFormatter(date).format('YYYY-MM-DD')
-      }
-      this.setState((prevState) => ({
-         currentValue: date
-      }))
-
-      if (this.props.onUpdate) {
-         this.props.onUpdate(date, this.resetValue)
+      const currentDate = dateFormatter(new Date()).format('YYYY-MM-DD')
+      if(e.target.value == ''){
+         this.setState((prevState) => ({
+            pastValue: currentDate,
+            currentValue: new Date(e.target.value),
+         }))
+      }else{
+         newDate = dateFormatter(e.target.value).toDate()
+         console.log(newDate)
+         actualDate = dateFormatter(this.state.currentValue).toDate()
+         previousDate = dateFormatter(this.state.pastValue).toDate()
+         if(newDate.getMonth() == previousDate.getMonth()){
+            this.setState((prevState) => ({
+               pastValue: previousDate,
+               currentValue: newDate,
+            }))
+         }else{
+            this.setState((prevState) => ({
+               pastValue: newDate,
+            }))
+         }
       }
    }
 

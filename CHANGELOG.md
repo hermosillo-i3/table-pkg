@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.21
+Date: May 9, 2023
+* [FIX]
+  * Bug in input for date. Date now changes only when the user clicks a date, not with arrows
+
 ## V 0.2.20
 Date: Apr 19, 2023
 * [FIX]
