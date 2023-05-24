@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.22
+Date: May 24, 2023
+* [FIX]
+  * Bug in freezed columns, row background color changes to transparent 
+
 ## V 0.2.21
 Date: May 9, 2023
 * [FIX]
