@@ -2,10 +2,14 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 node hooks/main_requirements.js
-mainBranch=`git rev-parse --abbrev-ref HEAD`
-if [ "$mainBranch" = "main" ]; then
+currentBranch=`git rev-parse --abbrev-ref HEAD` 
+if [ "$currentBranch" = "husky-test" ]; 
+then
     git checkout gitlab-pages
-    git merge main
-    git push origin gitlab-pages
-    git checkout main
+    git merge husky-test
+    # git push origin gitlab-pages
+    git checkout husky-test
+    echo "Merge into gitlab-pages complete"
+else
+    echo "Current branch is not \'main\'"
 fi
