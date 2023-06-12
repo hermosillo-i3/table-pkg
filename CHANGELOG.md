@@ -4,7 +4,7 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
   ## V 0.x.1
-Date: Jun 9, 2023
+Date: Jun 12, 2023
 * [FIX]
   * Testing husky pre push
 
