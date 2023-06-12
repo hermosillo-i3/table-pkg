@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
-
+echo "Pre push is working"
 node hooks/main_requirements.js
 currentBranch=`git rev-parse --abbrev-ref HEAD` 
 if [ "$currentBranch" = "husky-test" ]; 
