@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-echo "Pre push is working"
+echo "Pre push is working 2"
 . "$(dirname -- "$0")/_/husky.sh"
 node hooks/main_requirements.js
 currentBranch=`git rev-parse --abbrev-ref HEAD` 
