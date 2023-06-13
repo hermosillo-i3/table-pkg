@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+"$(dirname -- "$0")/_/husky.sh"
 node hooks/main_requirements.js
 currentBranch=`git rev-parse --abbrev-ref HEAD` 
 if [ "$currentBranch" = "husky-test" ]; 
