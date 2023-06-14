@@ -16,8 +16,8 @@ const execute = async (command) => {
 
 const main = async () => {
    const branch = await execute('git rev-parse --abbrev-ref HEAD');
-
-   const branchName = 'main';
+// jiji hello
+   const branchName = 'husky-test';
    if (branch.trim() === branchName) {
       // Only works on master branch
       const originRaw = await execute(`git show origin/${branchName}:package.json`);
