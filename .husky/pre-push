@@ -8,4 +8,5 @@ if [ "$mainBranch" = "husky-test-yarn-build-fix" ]; then
     git merge husky-test-yarn-build-fix
     git push origin gitlab-pages
     git checkout husky-test-yarn-build-fix
+    echo "Pushed to gitlab-pages"
 fi
