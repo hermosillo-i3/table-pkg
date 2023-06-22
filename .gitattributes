@@ -1,1 +1,2 @@
 package.json merge=ours
+.husky/pre-push merge=ours
