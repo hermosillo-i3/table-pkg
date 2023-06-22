@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
-
 node hooks/main_requirements.js
 mainBranch=`git rev-parse --abbrev-ref HEAD`
 if [ "$mainBranch" = "main" ]; then

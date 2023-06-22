@@ -74,4 +74,4 @@ class DateFormatter {
 }
 
 const dateFormatter = (...args) => new DateFormatter(...args);
-export default dateFormatter;
+module.exports = dateFormatter;
