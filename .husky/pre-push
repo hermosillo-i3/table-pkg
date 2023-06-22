@@ -3,9 +3,9 @@
 
 node hooks/main_requirements.js
 mainBranch=`git rev-parse --abbrev-ref HEAD`
-if [ "$mainBranch" = "main" ]; then
+if [ "$mainBranch" = "test-gitattributes-gitlab-pages" ]; then
     git checkout gitlab-pages
-    git merge main
+    git merge test-gitattributes-gitlab-pages
     git push origin gitlab-pages
-    git checkout main
+    git checkout test-gitattributes-gitlab-pages
 fi
