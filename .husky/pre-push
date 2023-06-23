@@ -2,9 +2,9 @@
 . "$(dirname -- "$0")/_/husky.sh"
 node hooks/main_requirements.js
 mainBranch=`git rev-parse --abbrev-ref HEAD`
-if [ "$mainBranch" = "husky-test-yarn-build-fix" ]; then
+if [ "$mainBranch" = "main" ]; then
     git checkout gitlab-pages
-    git merge husky-test-yarn-build-fix
+    git merge main
     git push origin gitlab-pages
-    git checkout husky-test-yarn-build-fix
+    git checkout main
 fi
