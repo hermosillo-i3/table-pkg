@@ -10,7 +10,7 @@ cache: &global_cache
 
 before_script:  
   - apt-get update
-  - apt -y install python2
+  - apt -y install python-is-python3
 
 stages:
   - install
@@ -19,7 +19,7 @@ stages:
 
 before_script:  
   - apt-get update
-  - apt -y install python2
+  - apt -y install python-is-python3
 
 install:
   stage: install
