@@ -3,15 +3,6 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
-  
-  ## V 0.2.24
-Date: Jun 12, 2023
-* [FIX]
-  * Yarn install now install peer dependencies
-  ## V 0.2.23
-Date: Jun 12, 2023
-* [FIX]
-  * Testing husky pre push
 
 ## V 0.2.22
 Date: May 24, 2023
