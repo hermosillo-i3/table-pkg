@@ -27,7 +27,7 @@ install:
     # inherit all global cache settings
     <<: *global_cache
   script:
-    - npm install --no-progress  --legacy-peer-deps
+    - npm install --no-progress  --legacy-peer-deps --omit=dev
   only:
     - main
     - gitlab-pages

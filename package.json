@@ -1,6 +1,6 @@
 {
   "name": "@hermosilloi3/fivebim-table",
-  "version": "0.2.23",
+  "version": "0.2.24",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,8 @@
     "compile": "babel src --out-dir dist --copy-files",
     "storybook": "start-storybook -p 6006 -s .storybook",
     "build-storybook": "build-storybook -o public",
-    "build-gitlab": "npm run compile && npm run copy"
+    "build-gitlab": "npm run compile && npm run copy",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -71,6 +72,7 @@
     "babel-plugin-macros": "^3.1.0",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^8.0.3",
+    "install-peers-cli": "^2.2.0",
     "sass-loader": "^6.0.6"
   },
   "peerDependencies": {
