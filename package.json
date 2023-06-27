@@ -1,6 +1,6 @@
 {
   "name": "@hermosilloi3/fivebim-table",
-  "version": "0.2.23",
+  "version": "0.2.24",
   "description": "",
   "main": "src/index.js",
   "scripts": {
@@ -15,8 +15,7 @@
     "storybook": "start-storybook -p 6006 -s .storybook",
     "build-storybook": "build-storybook -o public",
     "build-gitlab": "npm run compile && npm run copy",
-    "prepare": "husky install",
-    "postinstall": "install-peers"
+    "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; husky install && install-peers"
   },
   "repository": {
     "type": "git",
@@ -32,9 +31,14 @@
   },
   "homepage": "https://gitlab.com/hermosilloi3/custom-table#readme",
   "dependencies": {
+    "@babel/cli": "^7.17.10",
+    "@babel/core": "^7.18.2",
+    "@babel/preset-env": "^7.17.12",
+    "@babel/preset-react": "^7.17.12",
     "@fortawesome/fontawesome-svg-core": "^1.2.15",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/react-fontawesome": "^0.1.4",
+    "babel-plugin-macros": "^3.1.0",
     "cleave.js": "^1.6.0",
     "date-fns": "^2.28.0",
     "dayjs": "^1.11.3",
@@ -55,10 +59,6 @@
     "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "@babel/cli": "^7.17.10",
-    "@babel/core": "^7.18.2",
-    "@babel/preset-env": "^7.17.12",
-    "@babel/preset-react": "^7.17.12",
     "@storybook/addon-actions": "^6.5.5",
     "@storybook/addon-essentials": "^6.5.5",
     "@storybook/addon-interactions": "^6.5.5",
@@ -70,7 +70,6 @@
     "@storybook/react": "^6.5.5",
     "@storybook/testing-library": "0.0.11",
     "@storybook/theming": "^6.5.6",
-    "babel-plugin-macros": "^3.1.0",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^8.0.3",
     "install-peers-cli": "^2.2.0",
