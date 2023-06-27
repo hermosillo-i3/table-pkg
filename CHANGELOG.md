@@ -7,6 +7,7 @@ This file is used to explain in detail changes made to the Table.
 ## V 0.2.24
 Date: Jun 27, 2023
 * [FIX]
+  * Omit dev dependencies on pipeline
   * Ignore scripts when installing
 
 ## V 0.2.23

@@ -13,7 +13,8 @@ before_script:
   - apt -y install python-is-python3
 
 stages:
-  - install
+  - install-main
+  - install-pages
   - pages
   - deploy
 
@@ -21,15 +22,24 @@ before_script:
   - apt-get update
   - apt -y install python-is-python3
 
-install:
-  stage: install
+install-main:
+  stage: install-main
+  cache:
+    # inherit all global cache settings
+    <<: *global_cache
+  script:
+    - npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripts
+  only:
+    - main
+
+install-pages:
+  stage: install-pages
   cache:
     # inherit all global cache settings
     <<: *global_cache
   script:
     - npm install --no-progress  --legacy-peer-deps --ignore-scripts
   only:
-    - main
     - gitlab-pages
 
 pages:
