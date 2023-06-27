@@ -15,7 +15,6 @@
     "storybook": "start-storybook -p 6006 -s .storybook",
     "build-storybook": "build-storybook -o public",
     "build-gitlab": "npm run compile && npm run copy"
-    // "prepare": "husky install"
   },
   "repository": {
     "type": "git",
