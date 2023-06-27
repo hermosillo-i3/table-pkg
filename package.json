@@ -15,7 +15,7 @@
     "storybook": "start-storybook -p 6006 -s .storybook",
     "build-storybook": "build-storybook -o public",
     "build-gitlab": "npm run compile && npm run copy",
-    "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; husky install && install-peers"
+    "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; husky install"
   },
   "repository": {
     "type": "git",
@@ -72,7 +72,8 @@
     "@storybook/theming": "^6.5.6",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^8.0.3",
-    "install-peers-cli": "^2.2.0",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
     "sass-loader": "^6.0.6"
   },
   "peerDependencies": {
