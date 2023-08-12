@@ -3,6 +3,10 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+## V 0.2.25
+Date: Jun 27, 2023
+* [FIX]
+  * Fix paste event in table
 
 ## V 0.2.24
 Date: Jun 27, 2023
