@@ -116,6 +116,8 @@ class Table extends React.Component {
 
    };
 
+   componentDid
+
    onKeyDown = (...args) => {
       if (this.props.onKeyDown) {
          this.props.onKeyDown(...args);
@@ -475,9 +477,10 @@ class Table extends React.Component {
    };
 
    componentWillUnmount = () => {
-      document.removeEventListener('keydown', this.handleCtrlKeyDown);
-      document.removeEventListener('keyup', this.handleCtrlKeyUp);
-      document.removeEventListener('click', this.onClickOnDocument);
+      window.removeEventListener('keydown', this.handleCtrlKeyDown);
+      window.removeEventListener('keyup', this.handleCtrlKeyUp);
+      window.removeEventListener('click', this.onClickOnDocument);
+      window.removeEventListener('paste', this.onPaste);
    }
 
    setRenderedRows = () => {
