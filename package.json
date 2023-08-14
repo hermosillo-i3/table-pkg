@@ -19,17 +19,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/hermosilloi3/custom-table.git"
+    "url": "git+ssh://git@github.com/hermosilloi3/table-pkg.git"
   },
   "publishConfig": {
-    "@hermosilloi3:registry": "https://gitlab.com/api/v4/projects/36223189/packages/npm/"
+    "@hermosilloi3:registry": "https://npm.pkg.github.com"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://gitlab.com/hermosilloi3/custom-table/issues"
+    "url": "https://github.com/hermosillo-i3/table-pkg/issues"
   },
-  "homepage": "https://gitlab.com/hermosilloi3/custom-table#readme",
+  "homepage": "https://github.com/hermosillo-i3/table-pkg#readme",
   "dependencies": {
     "@babel/cli": "^7.17.10",
     "@babel/core": "^7.18.2",
