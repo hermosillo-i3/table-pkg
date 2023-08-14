@@ -1,86 +1,51 @@
-name: Publish package to GitHub Packages
+name: CI/CD
+
 on:
   push:
-    branches: 
-    - main
+    branches:
+      - main
+      # - pages
 jobs:
-  deploy:
+  setup:
     runs-on: ubuntu-latest
+    steps:
+      - name: Set up python
+        id: start
+        run: 
+          sudo apt-get update ; sudo apt -y install python-is-python3
+
+  deploy-pkg:
+    if: ${{ github.ref_name == 'main' }}
     permissions:
       contents: read
       packages: write
-    steps:
-      - name: Setup checkout
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout code
         uses: actions/checkout@v3
-
+      
       - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org/'
+          scope: '@hermosillo-i3'
 
-      - name: node modules install
-        run: npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripts
+      - name: Install modules
+        run: 
+          npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripts
 
-      - name: clean install
-        run: npm ci
+      - name: Deploy to Server
+        run: 
+          yarn build-gitlab
       
-      - name: build
-        run: npm build-gitlab
-
-      - name: publishing to npm
-        run: cd dist && npm publish
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-
-# name: CI/CD
-
-# on:
-#   push:
-#     branches:
-#       - main
-#       # - pages
-# jobs:
-#   setup:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Set up python
-#         id: start
-#         run: 
-#           sudo apt-get update ; sudo apt -y install python-is-python3
-
-#   deploy-pkg:
-#     if: ${{ github.ref_name == 'main' }}
-#     permissions:
-#       contents: read
-#       packages: write
-#     runs-on: ubuntu-latest
-#     steps: 
-#       - name: Checkout code
-#         uses: actions/checkout@v3
-      
-#       - name: Setup node
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: '16.x'
-#           registry-url: 'https://registry.npmjs.org/'
-
-#       - name: Install modules
-#         run: 
-#           npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripts
-
-#       - name: Deploy to Server
-#         run: 
-#           yarn build-gitlab
-      
-#       - name: Publish to NPM
-#         run:
-#           cd dist ; npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripts ; npm publish
+      - name: Publish to NPM
+        run:
+          cd dist ; npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripdts ; npm publish
         
-#     env:
-#       NODE_ENV: "production"
-#       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    env:
+      NODE_ENV: "production"
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     # if: ${{contains(github.ref_name, 'devserver') }}
     # runs-on: ubuntu-latest
