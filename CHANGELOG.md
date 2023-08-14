@@ -12,7 +12,7 @@ Date: Aug 11, 2023
 Date: Jun 27, 2023
 * [FIX]
   * Omit dev dependencies on pipeline.
-  * Ignore scripts when installing
+  * Ignore scripts when installing.
 
 ## V 0.2.23
 Date: Jun 26, 2023
