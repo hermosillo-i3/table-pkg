@@ -1,5 +1,5 @@
 {
-  "name": "@hermosillo-i3/table-pkg",
+  "name": "table-pkg",
   "version": "0.2.25",
   "description": "",
   "main": "index.js",
@@ -22,7 +22,7 @@
     "url": "git+ssh://git@github.com/hermosilloi3/table-pkg.git"
   },
   "publishConfig": {
-    "@hermosilloi3:registry": "https://npm.pkg.github.com/@hermosillo-i3"
+    "@hermosilloi3:registry": "https://npm.pkg.github.com/"
   },
   "author": "",
   "license": "ISC",
