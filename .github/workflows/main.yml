@@ -35,9 +35,10 @@ jobs:
       - name: Deploy to Server
         run: 
           yarn build-gitlab
-          cd dist
-          npm ci
-          npm publish
+      
+      - name: Publish to NPM
+        run:
+          cd dist && npm ci && npm publish
         
     env:
       NODE_ENV: "production"
