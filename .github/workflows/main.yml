@@ -37,7 +37,7 @@ jobs:
       
       - name: Publish to NPM
         run:
-          cd dist ; npm ci ; npm publish
+          cd dist ; npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripts ; npm publish
         
     env:
       NODE_ENV: "production"
