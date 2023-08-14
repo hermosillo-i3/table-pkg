@@ -19,6 +19,9 @@ jobs:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org/'
 
+      - name: node modules install
+        run: npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripts
+
       - name: clean install
         run: npm ci
       
