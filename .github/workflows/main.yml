@@ -12,8 +12,7 @@ jobs:
       - name: Set up python
         id: start
         run: 
-          sudo apt-get update
-          sudo apt -y install python-is-python3
+          sudo apt-get update ; sudo apt -y install python-is-python3
 
   deploy-pkg:
     if: ${{ github.ref_name == 'main' }}
@@ -38,7 +37,7 @@ jobs:
       
       - name: Publish to NPM
         run:
-          cd dist && npm ci && npm publish
+          cd dist ; npm ci ; npm publish
         
     env:
       NODE_ENV: "production"
