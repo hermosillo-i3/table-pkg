@@ -4,27 +4,32 @@ on:
     branches: 
     - main
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
-      - name: Setup checkout and node
+      - name: Setup checkout
       - uses: actions/checkout@v3
+
+      - name: Setup node
       - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
           registry-url: 'https://npm.pkg.github.com'
-          # scope: '@hermosillo-i3'
+          scope: '@hermosillo-i3'
+
       - name: clean install
       - run: npm ci
+      
       - name: build
       - run: npm build-gitlab
+
       - name: publishing to npm
       - run: cd dist && npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 
 # name: CI/CD
