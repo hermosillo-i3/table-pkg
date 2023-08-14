@@ -39,8 +39,19 @@ jobs:
           yarn build-gitlab
       
       - name: Publish to NPM
-        run:
-          cd dist ; npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripdts ; npm publish --public
+        run: cd dist
+      
+      - name: Checkout code V2
+        uses: actions/checkout@v3
+      
+      - name: Setup node V2
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://npm.pkg.github.com/'  
+
+      - name: Publish to NPM
+        run: npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripdts ; npm publish --public
         
     env:
       NODE_ENV: "production"
