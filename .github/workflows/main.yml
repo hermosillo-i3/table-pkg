@@ -41,7 +41,7 @@ jobs:
       
       - name: Publish to NPM
         run:
-          cd dist ; npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripdts ; npm publish
+          cd dist ; npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripdts ; npm publish --public
         
     env:
       NODE_ENV: "production"
