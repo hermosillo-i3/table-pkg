@@ -1,6 +1,6 @@
 {
-  "name": "@hermosilloi3/table-pkg",
-  "version": "0.2.24",
+  "name": "@hermosilloi3/fivebim-table",
+  "version": "0.2.25",
   "description": "",
   "main": "index.js",
   "scripts": {
