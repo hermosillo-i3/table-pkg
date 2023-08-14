@@ -9,9 +9,8 @@ jobs:
   publish-pkg:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
-        uses: actions/checkout@v3
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
