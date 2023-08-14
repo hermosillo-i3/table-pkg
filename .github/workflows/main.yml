@@ -12,10 +12,10 @@ jobs:
       - name: Setup
         uses: actions/checkout@v3
         uses: actions/setup-node@v3
-          with:
-            node-version: 16
-            registry-url: https://npm.pkg.github.com/
-            scope: '@hermosillo-i3'
+        with:
+          node-version: 16
+          registry-url: https://npm.pkg.github.com/
+          scope: '@hermosillo-i3'
 
       - name: Install dependecies 
         run: npm install
