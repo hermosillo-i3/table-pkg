@@ -6,20 +6,20 @@ on:
       - main
       # - pages
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up python
-        id: start
-        run: 
-          sudo apt-get update ; sudo apt -y install python-is-python3
+  # setup:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Set up python
+  #       id: start
+  #       run: 
+  #         sudo apt-get update ; sudo apt -y install python-is-python3
 
   deploy-pkg:
     if: ${{ github.ref_name == 'main' }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    runs-on: ubuntu-latest
     steps: 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org/'
+          registry-url: 'https://npm.pkg.github.com/'
           scope: '@hermosillo-i3'
 
       - name: Install modules

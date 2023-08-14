@@ -22,7 +22,7 @@
     "url": "git+ssh://git@github.com/hermosilloi3/table-pkg.git"
   },
   "publishConfig": {
-    "@hermosilloi3:registry": "https://registry.npmjs.org/"
+    "@hermosilloi3:registry": "https://npm.pkg.github.com/@hermosillo-i3"
   },
   "author": "",
   "license": "ISC",
