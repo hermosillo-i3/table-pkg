@@ -25,4 +25,5 @@ jobs:
       - name: Publish
         run: cd dist && npm publish
     env:
+      NODE_ENV: 'production'
       NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
