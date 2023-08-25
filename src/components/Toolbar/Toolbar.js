@@ -90,6 +90,7 @@ export default class Toolbar extends React.Component {
       } = state;
       const {
          shouldRenderDefaultActions,
+         pasteModalActive = false,
          enableProfileConfiguration = false,
          profiles = [],
          profileSelected,
@@ -245,6 +246,20 @@ export default class Toolbar extends React.Component {
             }
          }
       }
+      const renderPasteModalButton = () => {
+         if (!props.collapseElements.isRowSelected){
+            return (
+               <Popup
+                  trigger={
+                     <Button style={button_style} size={icon_size} icon='table' basic
+                        onClick={props.pasteModalAction} type="button" />
+                  }
+                  content='Pegar elementos desde excel'
+                  inverted
+               />
+            )
+         }
+      }
 
       const excelHeaders = this.props.columns?.reduce((acum, col) => {
          if (col.columns) {
@@ -277,6 +292,7 @@ export default class Toolbar extends React.Component {
 
                   <Button.Group style={{ height: '100%' }}>
                      {left_actions.map((item, index) => renderButton(item, index))}
+                     {pasteModalActive && renderPasteModalButton()}
                      {shouldRenderDefaultActions && renderExpandRowsButton()}
                      {shouldRenderDefaultActions && renderCollapseRowsButton()}
                   </Button.Group>

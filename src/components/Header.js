@@ -25,6 +25,8 @@ const TableHeader = ({
                         columns,
                         allowToDownloadCVS,
                         rows_extended,
+                        pasteModalActive = false,
+                        pasteModalAction
                      }) => {
 
    const toolBarStyle = {
@@ -89,6 +91,8 @@ const TableHeader = ({
             columns={columns}
             allowToDownloadCVS={allowToDownloadCVS}
             rows_extended={rows_extended}
+            pasteModalActive={pasteModalActive}
+            pasteModalAction={pasteModalAction}
          />}
       </div>
    )

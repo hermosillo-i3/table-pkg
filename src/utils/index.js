@@ -1,5 +1,5 @@
 import dateFormatter from "./dateFormatter";
-import {Decimal} from "decimal.js";
+import { Decimal } from "decimal.js";
 import each from "lodash/each";
 import cloneDeep from "lodash/cloneDeep";
 import isArray from "lodash/isArray";
@@ -104,14 +104,14 @@ export const convertArrayToObjectV2 = (array, keyProperty = 'id', options = {
    if (array === null || array === undefined || typeof array !== 'object')
       return {};
    return array.reduce((accum, item) => {
-      const {value, allowMultiple, groupBy, createCustomProperties} = options;
+      const { value, allowMultiple, groupBy, createCustomProperties } = options;
       const key = isFunction(keyProperty) ? keyProperty(item) : item[keyProperty];
       const isValueFunction = isFunction(value);
       let objectMapped = {
          [key]: value ? isValueFunction ? value(item) : value : {
             ...item,
             ...(options.nestedObjects ? options.nestedObjects.reduce((accum, key) => {
-               return {...accum, ...item[key]}
+               return { ...accum, ...item[key] }
             }, {}) : {})
          },
       };
@@ -315,10 +315,10 @@ export const mergeDeep = (target, source) => {
    if (isObject(target) && isObject(source)) {
       for (const key in source) {
          if (isObject(source[key])) {
-            if (!target[key]) Object.assign(target, {[key]: {}});
+            if (!target[key]) Object.assign(target, { [key]: {} });
             mergeDeep(target[key], source[key]);
          } else {
-            Object.assign(target, {[key]: source[key]});
+            Object.assign(target, { [key]: source[key] });
          }
       }
    }
@@ -499,18 +499,18 @@ export const getRawText = (text) => {
 
 export const stripVowelAccent = (str) => {
    const regexToRemove = [
-      {re: /[\xC0-\xC6]/g, ch: 'A'},
-      {re: /[\xE0-\xE6]/g, ch: 'a'},
-      {re: /[\xC8-\xCB]/g, ch: 'E'},
-      {re: /[\xE8-\xEB]/g, ch: 'e'},
-      {re: /[\xCC-\xCF]/g, ch: 'I'},
-      {re: /[\xEC-\xEF]/g, ch: 'i'},
-      {re: /[\xD2-\xD6]/g, ch: 'O'},
-      {re: /[\xF2-\xF6]/g, ch: 'o'},
-      {re: /[\xD9-\xDC]/g, ch: 'U'},
-      {re: /[\xF9-\xFC]/g, ch: 'u'},
-      {re: /[\xD1]/g, ch: 'N'},
-      {re: /[\xF1]/g, ch: 'n'}];
+      { re: /[\xC0-\xC6]/g, ch: 'A' },
+      { re: /[\xE0-\xE6]/g, ch: 'a' },
+      { re: /[\xC8-\xCB]/g, ch: 'E' },
+      { re: /[\xE8-\xEB]/g, ch: 'e' },
+      { re: /[\xCC-\xCF]/g, ch: 'I' },
+      { re: /[\xEC-\xEF]/g, ch: 'i' },
+      { re: /[\xD2-\xD6]/g, ch: 'O' },
+      { re: /[\xF2-\xF6]/g, ch: 'o' },
+      { re: /[\xD9-\xDC]/g, ch: 'U' },
+      { re: /[\xF9-\xFC]/g, ch: 'u' },
+      { re: /[\xD1]/g, ch: 'N' },
+      { re: /[\xF1]/g, ch: 'n' }];
    for (const regex of regexToRemove)
       str = str.replace(regex.re, regex.ch);
    return str;
@@ -663,7 +663,7 @@ export const dataURLToBlob = (dataURL) => {
       uInt8Array[i] = raw.charCodeAt(i);
    }
 
-   return new Blob([uInt8Array], {type: contentType});
+   return new Blob([uInt8Array], { type: contentType });
 };
 
 export const hasOwnProperty = (object, key) => {
@@ -713,7 +713,7 @@ export const getUserPrimaryRole = (user) => {
 };
 
 export const groupUsersByRoles = (users) => {
-   const groupedByRole = convertArrayToObjectV2(users, (e) => e.role.tag, {allowMultiple: true});
+   const groupedByRole = convertArrayToObjectV2(users, (e) => e.role.tag, { allowMultiple: true });
    return Object.keys(groupedByRole).map((e) => ({
       tag: e,
       name: groupedByRole[e][0].role.name,
@@ -738,12 +738,12 @@ export const convertUomToSynonymousFormat = (uom) => {
    return uomFormated;
 }
 
- /** It returns a synonym of input UOM if there's an existing one
- * @param {Object} measurement_units Object that contains all measurement units and their synonyms
- * @param {String} value Value that represents UOM that will be checked
- * @return {String} UOM synonym
- */
-  export const getUOMSynonym = (measurement_units, value) => {
+/** It returns a synonym of input UOM if there's an existing one
+* @param {Object} measurement_units Object that contains all measurement units and their synonyms
+* @param {String} value Value that represents UOM that will be checked
+* @return {String} UOM synonym
+*/
+export const getUOMSynonym = (measurement_units, value) => {
    const measurementUnitsArray = convertObjectToArray(measurement_units);
    const uomSynonymsListObject = measurementUnitsArray.reduce((accum, uom) => {
       return {
@@ -766,7 +766,7 @@ export const convertUomToSynonymousFormat = (uom) => {
  * @returns {Boolean} cleaned uom value
  */
 export const userHaveRole = (user, roles) => {
-   if (user.project_role != null && user.project_role?.length>0) {
+   if (user.project_role != null && user.project_role?.length > 0) {
       return (user.project_role.find((e) => roles.includes(e.tag)) !== undefined);
    }
 
@@ -783,7 +783,7 @@ export const userHaveRole = (user, roles) => {
 export const sortByLocalCompare = (key) => (a, b) => {
    const keyValueStringA = `${a[key]}`;
    const keyValueStringB = `${b[key]}`;
-   return keyValueStringA.localeCompare(keyValueStringB, undefined, {numeric: true})
+   return keyValueStringA.localeCompare(keyValueStringB, undefined, { numeric: true })
 }
 
 /** Validates that a text does not contain any non allowed words
@@ -837,11 +837,11 @@ export const injectIntoArray = (targetArray, injectArray, index) => {
    const endIndex = index ?? arrayLength;
    const startSlice = targetArray.slice(startIndex, endIndex);
    const endSlice = targetArray.slice(endIndex, arrayLength);
-   return startSlice.concat(injectArray).concat(endSlice); 
+   return startSlice.concat(injectArray).concat(endSlice);
 };
 
 export const calculateGranTotal = (rows, fields) => {
-   const initialObj = fields.reduce((acum, f) => ({...acum, [f]: new Decimal(0)}), {})
+   const initialObj = fields.reduce((acum, f) => ({ ...acum, [f]: new Decimal(0) }), {})
    return Object.keys(rows).reduce((acum, key) => {
       const row = rows[key]
 
@@ -855,4 +855,222 @@ export const calculateGranTotal = (rows, fields) => {
          return acum
 
    }, initialObj)
+}
+
+/**
+ * This method add parent id to each element based on the code.
+ * @Example
+ * const items = [{code: '02', description: 'Limpieza'}, {code: '02.01', description: 'Cocina'}, {code: '02.01.01', description: 'Fabuloso'}]
+ * output = [{code: '02', description: 'Limpieza', parent_id: null},
+ *           {code: '02.01', description: 'Cocina', parent_id: '02'},
+ *           {code: '02.01.01', description: 'Fabuloso', parent_id: '02.01'}]
+ * @param {Array<Object>} rows
+ * @param {Integer} index
+ * @param {Integer} qty
+ * @param {String} code
+ * @param {String} parent_id
+ * @returns
+ */
+export const addParentsIdUsingCode = (rows, index, qty, code, parent_id) => {
+   const actualRow = rows[index]
+   if (code != null && actualRow != null) {
+      const codeLength = code.length
+      const codeToCompare = actualRow.code.substring(0, codeLength)
+      if (codeToCompare === code) {
+         rows[index]['parent_id'] = parent_id
+         addParentsIdUsingCode(rows, index + 1, qty, code, parent_id)
+      }
+      // if (code.length - actualRow.code.length > 2) return
+   }
+   if (index < qty) {
+      addParentsIdUsingCode(rows, index + 1, qty, rows[index].code, rows[index].id)
+   } else return
+}
+
+export const addIsItemToObjectArray = (objectArr) => {
+   const rowsObject = objectArr.reduce((acc, item) => {
+      return {
+         ...acc,
+         [item.id]: item
+      }
+   }, {})
+   const deepObject = objectArr.reduce((acc, item) => {
+      const parentItem = rowsObject[item.parent_id] ? rowsObject[item.parent_id] : null
+      let newItem = { ...item }
+      let i = 0
+      if (parentItem != null) {
+         while (i < parentItem._children.length) {
+            if (rowsObject[parentItem._children[i]]._children != null) {
+               newItem['is_item'] = false
+               // newItem['_children'] = []
+            } else {
+               newItem['is_item'] = true
+            }
+            i++
+         }
+      }
+      return [...acc, { ...newItem }]
+   }, [])
+   return deepObject
+}
+
+export const verifyIntegrityOfCode = (rows, index, qty, code, parent_id) => {
+   let i = 0; const rowsLength = rows.length
+   while (i < rowsLength) {
+      const splittedCode = rows[i]?.code?.split('.')
+      if (splittedCode?.length >= 1) {
+         let j = 0; const splittedCodeLength = splittedCode.length
+         while (j < splittedCodeLength) {
+            const codeToCompare = splittedCode[j]
+            if (!Number(codeToCompare)) {
+               console.log('El codigo no es valido')
+               return false
+            }
+            j++
+         }
+      } else {
+         console.log('No se ha reconocido el codigo')
+      }
+      i++
+   }
+   addParentsIdUsingCode(rows, index, qty, code, parent_id)
+   return true
+}
+
+export const createObjectUsingFirstRow = (objectArray) => {
+}
+
+export const updateCode = (rows, lastCode) => {
+   const lastCodeSplitted = lastCode.split('.')
+   const lastCodeNumber = Number(lastCodeSplitted[0])
+
+   const justHeaders = Object.keys(rows).filter((key) => !rows[key].is_item && rows[key].parent_id == null)
+   let index = 1
+   const justHeadersUpdatedObject = justHeaders.reduce((acc, key) => {
+      const updatedKey = lastCodeNumber + index
+      index++
+      return {
+         ...acc,
+         [rows[key].code]: `${updatedKey >= 10 ? updatedKey : '0' + updatedKey}`
+      }
+   }, {})
+
+   const updatedItems = Object.keys(rows).reduce((acc, key) => {
+      const splittedCode = rows[key].code.split('.')
+      const firstElementCode = splittedCode[0]
+      const newCode = justHeadersUpdatedObject[firstElementCode] ? justHeadersUpdatedObject[firstElementCode] : rows[key].code
+      const secondPart = rows[key].code.substring(firstElementCode.length + 1, rows[key].code.length)
+      const newFormattedCode = `${newCode}${secondPart ? '.' + secondPart : ''}`
+      const newItem = {
+         ...rows[key],
+         code: newFormattedCode
+      }
+      return {
+         ...acc,
+         [key]: { ...newItem }
+      }
+   }, {})
+   return updatedItems
+
+}
+
+
+export const fixCodesAsNumbers = (rows, addZero = false) => {
+   const objectRows = rows.reduce((acc, item) => { return { ...acc, [item[0]]: [...item] } }, {})
+   const allCodes = rows.reduce((acc, item) => {
+      return {
+         ...acc,
+         [item[0]]: item[0]
+      }
+   }, {})
+
+   const formattedCodes = Object.keys(allCodes).reduce((acc, key) => {
+      const spplitCode = key.split('.')
+      const completeString = spplitCode.reduce((acc, item) => {
+         return `${acc}${!addZero ? Number(item) : Number(item) > 10 ? Number(item) : '0' + Number(item)}.`
+      }, '')
+      const formattedString = completeString.substring(0, completeString.length - 1)
+      return {
+         ...acc,
+         [key]: formattedString
+      }
+   }, {})
+   const updatedItems = Object.keys(objectRows).map((key) => {
+      const trimmedArray = objectRows[key].slice(1, objectRows[key].length)
+      trimmedArray.unshift(formattedCodes[key])
+      return [...trimmedArray]
+   })
+   return updatedItems
+}
+export const getLastId = (rows, getCode = false) => {
+   const rowsKeys = Object.keys(rows)
+   const lastElement = rows[rowsKeys[rowsKeys.length - 1]]
+   return !getCode? lastElement.id : lastElement.code
+}
+
+export const onPasteRows = (selected_rows, newRows) => {
+   if (selectedRows.length <= 0) {
+      const lastElement = Object.keys(rows).length > 0 ? rows[Object.keys(rows).pop()] : null
+      const lastIndex = (lastElement ? lastElement.id : 0) + 1
+
+      const correctCodeRows = fixCodesAsNumbers(newRows, true)
+      const orderedRows = correctCodeRows.sort()
+
+      const rowsArray = orderedRows.map((row, index) => {
+         return { code: row[0], description: row[1], id: index + lastIndex, is_item: false }
+      })
+      const isOk = verifyIntegrityOfCode(rowsArray, 0, rowsArray.length - 1, null, null)
+      if (isOk) {
+         const objectOfRows = rowsArray.reduce((acc, row) => {
+            acc[row.id] = { ...row }
+            return acc
+         }, {})
+
+         let rowsWithChildren = addChildrenToItems(objectOfRows)
+         const finalArray = Object.keys(rowsWithChildren).map((key) => rowsWithChildren[key])
+         const finalRows = addIsItemToObjectArray(finalArray)
+         let finalObjectRows = finalRows.reduce((acc, row) => {
+            acc[row.id] = { ...row }
+            return acc
+         }, {})
+         if (Object.keys(rows).length > 0) {
+            const arrayIds = Object.keys(rows);
+            const onlyHeaders = arrayIds.filter(id => (!rows[id].is_item && rows[id].parent_id == null));
+            const lastItem = rows[onlyHeaders[onlyHeaders.length - 1]];
+            finalObjectRows = updateCode(finalObjectRows, lastItem.code)
+         }
+         setRows({ ...rows, ...finalObjectRows })
+      }
+   } else {
+      if (selectedRows.length > 0) {
+         const rowId = selectedRows[0];
+         let item_selected = rows[rowId];
+         const newPackages = [];
+         for (let i = 0; i < newRows.length; i++) {
+            const row = newRows[i];
+            const defaultValues = {
+               is_item: 1,
+               parent_id: rowId,
+               id: rowId + i + 1,
+               code: `${item_selected.code}.0${i + 1}`
+            };
+            if (row.length > 0) {
+               defaultValues.description = row[0];
+            }
+            // if (row.length > 1) {
+            //     defaultValues.onsite_date = cdate(row[1]).format('YYYY-MM-DD');
+            // }
+            if (row.length > 2) {
+               defaultValues.deliver_time = row[2];
+            }
+            newPackages.push(defaultValues)
+         }
+         for (const packageModel of newPackages) {
+            setRows({
+               ...rows,
+               [packageModel.id]: packageModel
+            })
+         }
+      }
+   }
 }
