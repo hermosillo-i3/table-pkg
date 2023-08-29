@@ -664,7 +664,9 @@ input.InputField {
     background-color: white;
   }
 }
-
+.paste-modal-table {
+  overflow: scroll;
+}
 .the-table, .the-table-header {
   td.freeze_horizontal {
     z-index: 999;

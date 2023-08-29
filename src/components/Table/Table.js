@@ -12,7 +12,7 @@ import DropZone from "../DropZone";
 import FilterColumn from "../FilterColumn";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import { isEqual, pad, isNumber, removeSpecialCharacters, getAllChildren, getAllParents } from "../../utils/Utils";
-import { getClipboardTextFromExcel, hasOwnProperty, replaceAll, KEY_CODES, calculateGranTotal } from "../../utils/index";
+import { getClipboardTextFromExcel, hasOwnProperty, replaceAll, KEY_CODES, calculateGranTotal, formatPastingRows } from "../../utils/index";
 import {
    flatColumns,
    generateGroupColumns,
@@ -20,6 +20,7 @@ import {
    mergeColumnsWithProperties,
    generateExtraColumnProperties
 } from "../../utils/column";
+import { generateCode } from '../../utils/Utils';
 
 import "./Table.scss";
 import { addFreezeColumns } from "../../utils/table-utils";
@@ -335,7 +336,6 @@ class Table extends React.Component {
       document.addEventListener('keydown', this.handleCtrlKeyDown);
       document.addEventListener('keyup', this.handleCtrlKeyUp);
       document.addEventListener('click', this.onClickOnDocument);
-
       if (this.props.isExpandByDefault) {
          this.expandRows()
       }
@@ -611,21 +611,21 @@ class Table extends React.Component {
          if (this.state.sortMethod)
             return this.state.sortMethod(a, b);
 
-         if (this.props.orderByCode){
+         if (this.props.orderByCode) {
             const t1 = cleanCode(a.code);
             const t2 = cleanCode(b.code);
             const x = parseInt(t1);
             const y = parseInt(t2);
             return x - y;
-         } 
-         
+         }
+
          if (this.props.orderByAlphanumericCode) {
             const keyValueStringA = `${a.code}`;
             const keyValueStringB = `${b.code}`;
-            return keyValueStringA.localeCompare(keyValueStringB, undefined, {numeric: true})
+            return keyValueStringA.localeCompare(keyValueStringB, undefined, { numeric: true })
          }
 
-            return a.order_position - b.order_position
+         return a.order_position - b.order_position
 
 
       };
@@ -677,7 +677,7 @@ class Table extends React.Component {
 
 
       const generateTree = (elements, depth) => {
-         const {filterOptions} = this.props;
+         const { filterOptions } = this.props;
          const includeChildren = filterOptions.includeChildren ?? true;
          const sortElements = elements.reduce((acum, element_id, index) => {
             const element = rows[element_id];
@@ -794,7 +794,20 @@ class Table extends React.Component {
       if (this.props.onPasteRows) {
          const rows = getClipboardTextFromExcel(e);
          const selected_rows = this.props.selected_rows ? this.props.selected_rows : [];
-         this.props.onPasteRows(selected_rows, rows);
+         const selectedRowObject = {...this.props.rows[selected_rows[0]]};
+         // const codeOfSelectedRow = this.props.rows[selected_rows[0]].code;
+         const selectedRowChildren = this.props.rows[selected_rows[0]]._children ? [...this.props.rows[selected_rows[0]]._children] : [];
+         const childrenObjectArray = selectedRowChildren.map((child) => this.props.rows[child])
+         selectedRowObject._children = childrenObjectArray;
+
+         const rowsArray = Object.keys(this.props.rows).map((key) => this.props.rows[key])
+         const lastIndex = rowsArray[rowsArray.length - 1].id;
+         // const isHeader = (selectedRowChildren != null) ?  (selectedRowChildren.length> 0 ? !this.props.rows[selectedRowChildren[0]].is_item : true) : true
+         // const newCode = generateCode(selectedRowChildren);
+         console.time('formatPastingRows')
+         const formattedRows = formatPastingRows(selectedRowObject, rows, true, lastIndex, null, false)
+         console.timeEnd('formatPastingRows')
+         this.props.onPasteRows(selected_rows, formattedRows);
       }
    };
 
@@ -1390,6 +1403,7 @@ class Table extends React.Component {
          paddingBodyTable,
          isTableHeaderHidden,
          tableWrapperStyle,
+
       } = this.props;
 
       const isEmpty = Object.keys(rows).length === 0 && !isLoading;
@@ -1548,7 +1562,7 @@ class Table extends React.Component {
                   }
                }
             />}
-   
+
             {/* ------------ TABLE ------------*/}
             <table className={`the-table-header ${this.state.name}`} ref={this.tableHeader} style={{
                display: 'flex',
@@ -1560,7 +1574,7 @@ class Table extends React.Component {
                         {isDragColumnVisible &&
                            <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`}
                               style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-   
+
                         {renderColumns(groupColumns)}
                      </tr>
                   </thead>
@@ -1605,25 +1619,25 @@ class Table extends React.Component {
                   />}
                </thead>
             </table>
-   
+
             <table
                className={`table-drag-n-drop the-table ${this.props.className} scrolly_table scrolling_table_2 ${this.state.name}`}
                style={tableStyle}
                ref={(current) => {
                   this.container = {
-                      current
+                     current
                   };
                   if (this.props.setRef) {
-                      this.props.setRef(current);
+                     this.props.setRef(current);
                   }
-              }}
+               }}
             >
                {groupColumns && groupColumns.length > 0 && (
                   <thead>
                      <tr className="Table-Row-Header">
                         {isDragColumnVisible &&
                            <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-   
+
                         {renderColumns(groupColumns)}
                      </tr>
                   </thead>
@@ -1632,13 +1646,13 @@ class Table extends React.Component {
                   <tr className="Table-Row-Header">
                      {isDragColumnVisible &&
                         <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-   
+
                      {renderColumns(columns)
                      }
                   </tr>
                </thead>
                <tbody
-   
+
                   style={{
                      display: 'table',
                      padding: paddingBodyTable ? paddingBodyTable : 'none'
@@ -1664,13 +1678,13 @@ class Table extends React.Component {
                            this.initGenerateRows()
                         ])
                   }
-   
+
                </tbody>
             </table>
-   
-   
+
+
             {/* ------------ EXTRA ------------*/}
-   
+
             {
                isLoading &&
                <Dimmer active={isLoading} inverted>
@@ -1678,7 +1692,7 @@ class Table extends React.Component {
                </Dimmer>
             }
             {bottomToolbar != null && bottomToolbar}
-   
+
             <Settings
                profile={profileSelected}
                isOpen={this.state.is_setting_open}
@@ -1689,7 +1703,7 @@ class Table extends React.Component {
                onConfirmDelete={this.handleDeleteProfile}
                isColumnVisible={this.isColumnVisible}>
             </Settings>
-   
+
             {this.state.contextMenu.visible && <ContextMenu
                onClose={() => {
                   this.setState({
@@ -1704,7 +1718,7 @@ class Table extends React.Component {
             />
             }
          </div>
-   
+
       </HotKeys>);
    }
 }
