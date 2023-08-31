@@ -885,7 +885,7 @@ export const addParentsIdUsingCode = (rows, index, qty, code, parent_id) => {
    }
    if (index < qty) {
       addParentsIdUsingCode(rows, index + 1, qty, rows[index].code, rows[index].id)
-   } else return
+   } else return rows
 }
 
 export const addIsItemToObjectArray = (objectArr, lastWillBeItem) => {
@@ -914,88 +914,75 @@ export const addIsItemToObjectArray = (objectArr, lastWillBeItem) => {
    return deepObject
 }
 
-export const createTree = (rows, index, qty, code, parent_id, selectedRow, itemsArray) => {
-   if (selectedRow._children[0]?.is_item) {
-      let allChildrens = selectedRow._children
-      rows.forEach((item) => {
-         const newCode = generateCode(allChildrens)
-         const newItem = {
-            ...item,
-            id: null,
-            is_item: true,
-            code: `${selectedRow.code}.${newCode}`,
-            parent_id: selectedRow.id
-         }
-         allChildrens.push(newItem)
-         itemsArray.push(newItem)
-      })
-      return false
-   }
-   else {
-      let i = 0; const rowsLength = rows.length
-      while (i < rowsLength) {
-         const splittedCode = rows[i]?.code?.split('.')
-         if (splittedCode?.length >= 1) {
-            let j = 0; const splittedCodeLength = splittedCode.length
-            while (j < splittedCodeLength) {
-               const codeToCompare = splittedCode[j]
-               if (!Number(codeToCompare)) {
-                  console.log('El codigo no es valido')
-                  return false
-               }
-               j++
-            }
-         } else {
-            console.log('No se ha reconocido el codigo')
-         }
-         i++
+export const formatElementsAsItems = (rows, parent_id, lastWillBeItem) => {
+
+   const newRows = rows.map(element => {
+      return {
+         ...element,
+         parent_id,
+         is_item: lastWillBeItem != null ? lastWillBeItem : true
       }
-      addParentsIdUsingCode(rows, index, qty, code, parent_id)
-      return true
+   })
+   return newRows
+}
+
+export const checkStructure = (rows) => {
+   const objectRows = rows.reduce((acc, item) => {
+      return {
+         ...acc,
+         [item.id]: { ...item }
+      }
+   }, {})
+   let isStructured = false
+   rows.forEach(item => {
+      if (objectRows[item.parent_id] != null) {
+         isStructured = true
+      }
+   })
+   return isStructured
+}
+
+export const createTree = (rows, index, qty, code, parent_id, selectedRow, itemsArray, lastWillBeItem) => {
+   let i = 0; const rowsLength = rows.length
+   while (i < rowsLength) {
+      const splittedCode = rows[i]?.code?.split('.')
+      if (splittedCode?.length >= 1) {
+         let j = 0; const splittedCodeLength = splittedCode.length
+         while (j < splittedCodeLength) {
+            const codeToCompare = splittedCode[j]
+            if (!Number(codeToCompare)) {
+               console.log('El codigo no es valido')
+               return false
+            }
+            j++
+         }
+      } else {
+         console.log('No se ha reconocido el codigo')
+      }
+      i++
    }
+   addParentsIdUsingCode(rows, index, qty, code, parent_id)
+   const isStructured = checkStructure(rows)
+   const childOfSelectedRow = selectedRow._children[0]
+   if (childOfSelectedRow != null) {
+      if (childOfSelectedRow.is_item) {
+         rows = formatElementsAsItems(rows, selectedRow.id)
+      }else if(!isStructured){
+         
+         rows = formatElementsAsItems(rows, selectedRow.id, false)
+      }
+   } else {
+      if (!isStructured) {
+         rows = formatElementsAsItems(rows, selectedRow.id, lastWillBeItem)
+      }
+   }
+
+   return rows
 }
 
 
 export const createObjectUsingFirstRow = (objectArray) => {
 }
-
-export const updateCode = (rows, lastCode, willBeASon = false) => {
-   if (willBeASon) {
-
-   } else {
-      // const lastCodeSplitted = lastCode.split('.')
-      // const lastCodeNumber = Number(lastCodeSplitted[0])
-
-      // const justHeaders = Object.keys(rows).filter((key) => !rows[key].is_item && rows[key].parent_id == null)
-      // let index = 1
-      // const justHeadersUpdatedObject = justHeaders.reduce((acc, key) => {
-      //    const updatedKey = lastCodeNumber + index
-      //    index++
-      //    return {
-      //       ...acc,
-      //       [rows[key].code]: `${updatedKey >= 10 ? updatedKey : '0' + updatedKey}`
-      //    }
-      // }, {})
-
-      // const updatedItems = Object.keys(rows).reduce((acc, key) => {
-      //    const splittedCode = rows[key].code.split('.')
-      //    const firstElementCode = splittedCode[0]
-      //    const newCode = justHeadersUpdatedObject[firstElementCode] ? justHeadersUpdatedObject[firstElementCode] : rows[key].code
-      //    const secondPart = rows[key].code.substring(firstElementCode.length + 1, rows[key].code.length)
-      //    const newFormattedCode = `${newCode}${secondPart ? '.' + secondPart : ''}`
-      //    const newItem = {
-      //       ...rows[key],
-      //       code: newFormattedCode
-      //    }
-      //    return {
-      //       ...acc,
-      //       [key]: { ...newItem }
-      //    }
-      // }, {})
-      // return updatedItems
-   }
-}
-
 
 export const fixCodesAsNumbers = (rows, addZero = false) => {
    const objectRows = rows.reduce((acc, item) => { return { ...acc, [item[0]]: [...item] } }, {})
@@ -1028,13 +1015,13 @@ export const fixCodesAsNumbers = (rows, addZero = false) => {
 
 export const recursiveFunction = (rows, actualRow, parentRow, childrenObject) => {
    const parentCode = parentRow.code
-   if(childrenObject[parentCode] == null){
+   if (childrenObject[parentCode] == null) {
       childrenObject[parentCode] = []
    }
    const newCode = generateCode(childrenObject[parentCode])
    rows[actualRow.id].code = `${parentCode}.${newCode}`
    childrenObject[parentCode].push(rows[actualRow.id])
-   if(rows[actualRow.id]._children != null){
+   if (rows[actualRow.id]._children != null) {
       rows[actualRow.id]._children.forEach((item) => {
          recursiveFunction(rows, rows[item], rows[actualRow.id], childrenObject)
       })
@@ -1042,7 +1029,10 @@ export const recursiveFunction = (rows, actualRow, parentRow, childrenObject) =>
 }
 
 export const formatCodes = (rows, selectedRow) => {
-   const objectRows = rows.reduce((acc, item) => { return { ...acc, [item.id]: { ...item } } }, {})
+   const objectRows = rows.reduce((acc, item) => {
+      return { ...acc, [item.id]: { ...item } }
+   }, {}
+   )
    const justHeaders = rows.reduce((acc, item) => {
       if (item.parent_id == selectedRow.id) {
          return [...acc, item]
@@ -1052,27 +1042,34 @@ export const formatCodes = (rows, selectedRow) => {
 
    justHeaders.forEach((item, index) => {
       const newCode = generateCode(selectedRow._children)
-      justHeaders[index].code = `${selectedRow.code}.${newCode}`
-      objectRows[item.id].code = `${selectedRow.code}.${newCode}`
-      
-      selectedRow._children.push({...item, code: `${selectedRow.code}.${newCode}`})
+      const completeCode = `${selectedRow.code}.${newCode}`
+      justHeaders[index].code = completeCode
+      objectRows[item.id].code = completeCode
+
+      selectedRow._children.push({ ...item, code: completeCode })
    })
+   //At this point, headers are already in the table selected row (root parent)
+
    // Children object is an object with code keys and array of children as values
+   // It will be modified to register each parent children and generate the correct code
    const childrenObject = {}
    justHeaders.forEach((item) => {
-      if(item._children) {
+      if (item._children) {
          item._children.forEach((child) => {
-         recursiveFunction(objectRows, objectRows[child], item, childrenObject)
+            recursiveFunction(objectRows, objectRows[child], item, childrenObject)
          })
       }
    })
    return objectRows
 }
 
-export const formatPastingRows = (selectedRow, newRows, willBeASon, lastIndex, parent_code = null, lastWillBeItem = true) => {
+
+export const formatPastingRows = (selectedRow, newRows, willBeASon, lastIndex, lastWillBeItem = true) => {
    const newIndex = lastIndex + 1
    const correctCodeRows = fixCodesAsNumbers(newRows, true)
    const orderedRows = correctCodeRows.sort()
+
+   // This is an array
    const rowsArray = orderedRows.map((row, index) => {
       const newRow = { code: row[0], description: row[1], id: index + newIndex, is_item: false }
       if (willBeASon) {
@@ -1080,10 +1077,12 @@ export const formatPastingRows = (selectedRow, newRows, willBeASon, lastIndex, p
       }
       return newRow
    })
+
    let objectArray = []
-   const isOk = createTree(rowsArray, 0, rowsArray.length - 1, null, null, selectedRow, objectArray)
-   if (isOk) {
-      const objectOfRows = rowsArray.reduce((acc, row) => {
+   const rowsUpdated = createTree(rowsArray, 0, rowsArray.length - 1, null, null, selectedRow, objectArray, lastWillBeItem)
+
+   if (rowsUpdated != null) {
+      const objectOfRows = rowsUpdated.reduce((acc, row) => {
          acc[row.id] = { ...row }
          return acc
       }, {})
@@ -1098,14 +1097,9 @@ export const formatPastingRows = (selectedRow, newRows, willBeASon, lastIndex, p
       )
       const finalRows = lastWillBeItem ? addIsItemToObjectArray(finalArray) : finalArray
       const newRows = formatCodes(finalRows, selectedRow)
-      // let finalObjectRows = finalRows.reduce((acc, row) => {
-      //    acc[row.id] = { ...row }
-      //    return acc
-      // }, {})
       return newRows
    } else {
       const newRows = formatCodes(objectArray, selectedRow)
-
       return newRows
    }
 }

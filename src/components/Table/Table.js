@@ -795,18 +795,15 @@ class Table extends React.Component {
          const rows = getClipboardTextFromExcel(e);
          const selected_rows = this.props.selected_rows ? this.props.selected_rows : [];
          const selectedRowObject = {...this.props.rows[selected_rows[0]]};
-         // const codeOfSelectedRow = this.props.rows[selected_rows[0]].code;
-         const selectedRowChildren = this.props.rows[selected_rows[0]]._children ? [...this.props.rows[selected_rows[0]]._children] : [];
+
+         const selectedRowChildren = this.props.rows[selected_rows[0]]._children ?? [];
          const childrenObjectArray = selectedRowChildren.map((child) => this.props.rows[child])
          selectedRowObject._children = childrenObjectArray;
 
          const rowsArray = Object.keys(this.props.rows).map((key) => this.props.rows[key])
          const lastIndex = rowsArray[rowsArray.length - 1].id;
-         // const isHeader = (selectedRowChildren != null) ?  (selectedRowChildren.length> 0 ? !this.props.rows[selectedRowChildren[0]].is_item : true) : true
-         // const newCode = generateCode(selectedRowChildren);
-         console.time('formatPastingRows')
-         const formattedRows = formatPastingRows(selectedRowObject, rows, true, lastIndex, null, false)
-         console.timeEnd('formatPastingRows')
+
+         const formattedRows = formatPastingRows(selectedRowObject, rows, true, lastIndex, this.props.onPasteOptions.lastWillBeItem)
          this.props.onPasteRows(selected_rows, formattedRows);
       }
    };
