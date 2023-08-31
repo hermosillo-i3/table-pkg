@@ -808,10 +808,12 @@ class Table extends React.Component {
    };
 
    removePasteEvent = () => {
-      if (window.removeEventListener) {                   // For all major browsers, except IE 8 and earlier
-         window.removeEventListener("paste", this.onPaste);
-      } else if (window.detachEvent) {                    // For IE 8 and earlier versions
-         window.detachEvent("paste", this.onPaste);
+      if (!this.state.pasteModalActive) {
+         if (window.removeEventListener) {                   // For all major browsers, except IE 8 and earlier
+            window.removeEventListener("paste", this.onPaste);
+         } else if (window.detachEvent) {                    // For IE 8 and earlier versions
+            window.detachEvent("paste", this.onPaste);
+         }
       }
    };
 
