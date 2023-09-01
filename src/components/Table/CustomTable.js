@@ -53,7 +53,7 @@ const generateRowsToExpand = (expandRows) => {
    }, {});
 };
 
-class Table extends React.Component {
+class CustomTable extends React.Component {
 
    constructor(props) {
       super(props);
@@ -89,6 +89,7 @@ class Table extends React.Component {
          },
          pasteModalActive: props.pasteModalActive,
          shouldOpenPasteModal: false,
+         aRowWasClicked: false,
       };
 
       this.container = React.createRef();
@@ -328,6 +329,17 @@ class Table extends React.Component {
             }
          })
       }
+      console.log('document clicked')
+      if(this.state.aRowWasClicked){
+         console.log('disabling paste event')
+         this.setState({
+            aRowWasClicked: false
+         })
+         this.removePasteEvent();
+      }else {
+         console.log('add paste event')
+         this.addPasteEvent()
+      }
    }
 
    componentDidMount = () => {
@@ -341,6 +353,7 @@ class Table extends React.Component {
       document.addEventListener('keydown', this.handleCtrlKeyDown);
       document.addEventListener('keyup', this.handleCtrlKeyUp);
       document.addEventListener('click', this.onClickOnDocument);
+      document.addEventListener('paste', this.onPaste);
       if (this.props.isExpandByDefault) {
          this.expandRows()
       }
@@ -413,7 +426,7 @@ class Table extends React.Component {
 
 
       if (JSON.stringify(prevProps.selected_rows) !== JSON.stringify(this.props.selected_rows) && this.props.selected_rows.length === 0) {
-         this.removePasteEvent();
+         //this.removePasteEvent();
       }
 
 
@@ -486,6 +499,10 @@ class Table extends React.Component {
       window.removeEventListener('keyup', this.handleCtrlKeyUp);
       window.removeEventListener('click', this.onClickOnDocument);
       window.removeEventListener('paste', this.onPaste);
+      document.removeEventListener('keydown', this.handleCtrlKeyDown);
+      document.removeEventListener('keyup', this.handleCtrlKeyUp);
+      document.removeEventListener('click', this.onClickOnDocument);
+      document.removeEventListener('paste', this.onPaste);
    }
 
    setRenderedRows = () => {
@@ -770,7 +787,7 @@ class Table extends React.Component {
       let shouldAdd = !selected_rows.includes(row.id);
 
       if (this.props.onRowSelect) {
-         this.removePasteEvent();
+         //this.removePasteEvent();
          this.addPasteEvent();
          if (isCtrlPress) {
             if (shouldAdd) {
@@ -778,7 +795,7 @@ class Table extends React.Component {
             } else {
                const selectedRows = selected_rows.filter((srow => srow !== row.id));
                if (selectedRows.length <= 0) {
-                  this.removePasteEvent();
+                  //this.removePasteEvent();
                }
                this.props.onRowSelect(selectedRows)
             }
@@ -788,7 +805,7 @@ class Table extends React.Component {
                this.props.onRowSelect([row.id])
             } else {
                this.props.onRowSelect([]);
-               this.removePasteEvent();
+               //this.removePasteEvent();
             }
 
          }
@@ -804,16 +821,21 @@ class Table extends React.Component {
    };
 
    addPasteEvent = () => {
+      console.log('paste event function active')
       window.addEventListener('paste', this.onPaste);
+      document.addEventListener('paste', this.onPaste);
    };
 
    removePasteEvent = () => {
-      if (!this.state.pasteModalActive) {
-         if (window.removeEventListener) {                   // For all major browsers, except IE 8 and earlier
-            window.removeEventListener("paste", this.onPaste);
-         } else if (window.detachEvent) {                    // For IE 8 and earlier versions
-            window.detachEvent("paste", this.onPaste);
-         }
+      if (window.removeEventListener) {                   // For all major browsers, except IE 8 and earlier
+         window.removeEventListener("paste", this.onPaste);
+         document.removeEventListener("paste", this.onPaste);
+         
+      console.log('paste event function inactive')
+      } else if (window.detachEvent) {                    // For IE 8 and earlier versions
+         window.detachEvent("paste", this.onPaste);
+         
+      console.log('paste event function inactive')
       }
    };
 
@@ -1315,8 +1337,10 @@ class Table extends React.Component {
             row_id: row.id,
             row: rowIndex,
             cell: colIndex
-         }
+         },
+         aRowWasClicked: true
       });
+      console.log('cell Clicked')
       if (this.props.onCellClick)
          this.props.onCellClick(column, row);
    };
@@ -1397,7 +1421,7 @@ class Table extends React.Component {
          paddingBodyTable,
          isTableHeaderHidden,
          tableWrapperStyle,
-         
+         pasteModalAction
       } = this.props;
 
       const isEmpty = Object.keys(rows).length === 0 && !isLoading;
@@ -1557,6 +1581,7 @@ class Table extends React.Component {
                }
                pasteModalActive={this.state.pasteModalActive}
                pasteModalAction={() => {
+                  console.log('last state - ', this.state.shouldOpenPasteModal)
                   this.setState({ shouldOpenPasteModal: true })
                   console.log('opening modal - ', this.state.shouldOpenPasteModal)
                }}
@@ -1723,8 +1748,10 @@ class Table extends React.Component {
                   rows={this.props.rows}
                   onClose={() => {
                      this.setState({ shouldOpenPasteModal: false })
+                     console.log('closing modal')
                   }}
-                  onConfirm={this.props.pasteModalAction}
+                  onConfirm={pasteModalAction}
+                  showMessage={this.props.showMessage}
                />
             }
          </div>
@@ -1732,7 +1759,7 @@ class Table extends React.Component {
    }
 }
 
-Table.propTypes = {
+CustomTable.propTypes = {
    className: PropTypes.string,
    title: PropTypes.oneOfType([
       PropTypes.string,
@@ -1850,7 +1877,7 @@ Table.propTypes = {
    shouldShowSelectIcon: PropTypes.bool,
 };
 
-Table.defaultProps = {
+CustomTable.defaultProps = {
    className: '',
    tableHeaderOptions: {},
    actions: [],
@@ -1886,4 +1913,4 @@ Table.defaultProps = {
    },
 };
 
-export default DragDropContext(Table);
+export default DragDropContext(CustomTable);
