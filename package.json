@@ -45,7 +45,7 @@
     "decimal.js": "^10.3.1",
     "formik": "^2.2.6",
     "lodash": "^4.17.11",
-    "node-sass": "^7.0.1",
+    "sass": "^1.52.2",
     "prop-types": "^15.7.2",
     "react-csv": "^2.2.2",
     "react-dnd": "^7.0.2",
@@ -73,7 +73,7 @@
     "html-webpack-plugin": "^5.5.0",
     "husky": "^8.0.3",
     "install-peers-cli": "^2.2.0",
-    "sass-loader": "^6.0.6"
+    "sass-loader": "^13.0.0"
   },
   "peerDependencies": {
     "react": "^18.1.0",
