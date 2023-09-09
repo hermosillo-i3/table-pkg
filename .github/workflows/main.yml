@@ -1,0 +1,29 @@
+name: '@hermosillo-i3/table-pkg'
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-pkg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://npm.pkg.github.com/
+          scope: '@hermosillo-i3'
+
+      - name: Install dependecies 
+        run: npm install --no-progress  --legacy-peer-deps --omit=dev --ignore-scripts
+
+      - name: Build
+        run: yarn build-gitlab
+
+      - name: Publish
+        run: cd dist && npm publish
+    env:
+      NODE_ENV: 'production'
+      NODE_AUTH_TOKEN: ${{secrets.FIVEBIM_TOKEN}}

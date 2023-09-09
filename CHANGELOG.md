@@ -3,16 +3,22 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+
+## V 0.2.26
+Date: Sep 06, 2023
+* [UPDATE]
+  * Deprecated node-sass dependency replace for sass
+
 ## V 0.2.25
 Date: Aug 11, 2023
 * [FIX]
-  * Fix paste event in table
+  * Fix paste event in table.
 
 ## V 0.2.24
 Date: Jun 27, 2023
 * [FIX]
-  * Omit dev dependencies on pipeline
-  * Ignore scripts when installing
+  * Omit dev dependencies on pipeline.
+  * Ignore scripts when installing.
 
 ## V 0.2.23
 Date: Jun 26, 2023
