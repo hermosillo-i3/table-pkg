@@ -13,7 +13,7 @@
     "copy-ws": "copy package.json dist",
     "compile": "babel src --out-dir dist --copy-files",
     "storybook": "start-storybook -p 6006 -s .storybook",
-    "build-storybook": "build-storybook -o public",
+    "build-storybook": "build-storybook -o docs-build",
     "build-gitlab": "npm run compile && npm run copy",
     "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; husky install"
   },
