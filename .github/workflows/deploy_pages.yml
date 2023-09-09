@@ -6,7 +6,7 @@ on:
       - pages
 
 jobs:
-  publish-pkg:
+  publish-storybook:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,12 +19,13 @@ jobs:
       - name: Install dependecies 
         run: npm install --no-progress  --legacy-peer-deps --ignore-scripts
 
-      - name: Build
-        run: yarn build-gitlab
+      - name: Build Storybook
+        run: yarn build-storybook
 
-      - name: Deploy
+      - name: Deploy Pages
         uses: JamesIves/github-pages-deploy-action@3.6.2
         with:
+          BRANCH: pages # The branch the action should deploy to.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FOLDER: public # The folder that the build-storybook script generates files.
           CLEAN: true # Automatically remove deleted files from the deploy branch
