@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.27
+Date: Sep 08, 2023
+* [NEW]
+  * Add readme file
+
 ## V 0.2.26
 Date: Sep 06, 2023
 * [UPDATE]
