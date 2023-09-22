@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.29
+Date: Sep 22, 2023
+* [UPDATE]
+  * Removal of svg libraries that are not used
+
 ## V 0.2.28
 Date: Sep 22, 2023
 * [UPDATE]
