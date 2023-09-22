@@ -2,13 +2,18 @@ import React from 'react'
 import InputField from "./InputField"
 import {Icon} from 'semantic-ui-react'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faGripVertical} from "@fortawesome/free-solid-svg-icons";
 import flow from 'lodash/flow'
 import {ItemTypes} from './Constants'
 import {formatColumn, isFunction} from "../utils/Utils";
 
 import {DragSource, DropTarget} from 'react-dnd'
 import {isColumnEditable} from "../utils/column";
+
+const faGripVertical = {
+   prefix: 'fas',
+   iconName: 'grip-vertical',
+   icon: [320, 512, [], "f58e", "M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"]
+};
 
 
 const RowTarget = {
