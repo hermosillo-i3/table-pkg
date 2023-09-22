@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 0.2.28
+Date: Sep 22, 2023
+* [UPDATE]
+  * Update fortawesome dependencies in package json
+
 ## V 0.2.27
 Date: Sep 08, 2023
 * [NEW]
