@@ -128,32 +128,7 @@ const rowFunctionComponent = (props) => {
    useEffect(() => {
       setHasScrolled(false);
    }, [props.scrollTo]);
-
-
-   const className = useMemo(() => {
-      let classname = 'Table-Row';
-      if (props.is_selected) {
-         classname += ` Table-Row-Selected Table-Row--depth-${depth} ${row.is_item ? 'Table-Row-Item' : ''}`
-      } else {
-         if (styleTheme) {
-
-            if (styleTheme === 'striped') {
-               // check if the number is odd
-               if (rowIndex % 2 === 0) {
-                  classname += rowIndex % 2 === 0 ? ` Table-Row--striped` : '';
-               }
-            }
-
-         } else {
-            classname += ` Table-Row--depth-${depth}`;
-            classname += ignoreItemStyle ? ` Table-Row--depth-${depth}` : (`${row.is_item ? ` Table-Row-Item depth-${depth}` : ` Table-Row--depth-${depth}`}`);
-            classname += isOver && canDrop ? ' Table-Row-Over' : '';
-
-         }
-      }
       
-      return classname;
-   }, [props.is_selected, customRowClass, styleTheme]);
 
    // Definimos los hooks useDrag y useDrop
    const [{ isDragging }, connectDragSource] = useDrag({
@@ -184,6 +159,27 @@ const rowFunctionComponent = (props) => {
         return props.canDrop ? props.canDrop(props, monitor) : false;
       },
     });
+
+    let className = 'Table-Row';
+      if (props.is_selected) {
+         className += ` Table-Row-Selected Table-Row--depth-${depth} ${row.is_item ? 'Table-Row-Item' : ''}`
+      } else {
+         if (styleTheme) {
+
+            if (styleTheme === 'striped') {
+               // check if the number is odd
+               if (rowIndex % 2 === 0) {
+                  className += rowIndex % 2 === 0 ? ` Table-Row--striped` : '';
+               }
+            }
+
+         } else {
+            className += ` Table-Row--depth-${depth}`;
+            className += ignoreItemStyle ? ` Table-Row--depth-${depth}` : (`${row.is_item ? ` Table-Row-Item depth-${depth}` : ` Table-Row--depth-${depth}`}`);
+            className += isOver && canDrop ? ' Table-Row-Over' : '';
+
+         }
+      }
 
    const {
       // cDP, 
