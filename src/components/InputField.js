@@ -4,7 +4,7 @@ import Textarea from 'react-textarea-autosize';
 import {Icon, Progress} from "semantic-ui-react";
 import Cleave from 'cleave.js/react';
 import InputConfirm from "./InputConfirm";
-import NumberFormat from 'react-number-format';
+import {default as NumberFormat} from 'react-number-format';
 import dateFormatter from "../utils/dateFormatter";
 
 
