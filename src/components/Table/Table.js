@@ -1508,7 +1508,9 @@ class Table extends React.Component {
       const { profile_selected } = this.state;
       const profileSelected = profiles.find((e) => profile_selected === e.id);
 
-      return (<HotKeys handlers={this.keyBoardHandlers} keyMap={keyMap}
+      return (
+         <DragDropContext>
+            <HotKeys handlers={this.keyBoardHandlers} keyMap={keyMap}
          style={{ outline: 'none', height: '100%', width: '100%', ...tableWrapperStyle }}>
          <div style={droppableStyle}>
             {!isTableHeaderHidden && <TableHeader
@@ -1705,7 +1707,9 @@ class Table extends React.Component {
             }
          </div>
    
-      </HotKeys>);
+      </HotKeys>
+         </DragDropContext>
+      );
    }
 }
 
@@ -1863,4 +1867,4 @@ Table.defaultProps = {
    },
 };
 
-export default DragDropContext(Table);
+export default Table;
