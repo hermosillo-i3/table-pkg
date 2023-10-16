@@ -17,9 +17,9 @@ const FilterColumn = (props) => {
    const [filterStatus, setFilterStatus] = useState({})
 
    const toggleFilter = (filter) => {
-      const newFilterOptions = { ...filterOptions }
+      const newFilterOptions = { ...filterStatus }
       if (newFilterOptions[filter]) {
-         delete newFilterOptions[filter]
+         newFilterOptions[filter] = false
       } else {
          newFilterOptions[filter] = true
       }
@@ -61,7 +61,7 @@ const FilterColumn = (props) => {
             on='click'
             pinned
             content={
-               JSON.stringify(filterOptions) === JSON.stringify({})  ?
+               Object.keys(filterOptions).length == 0  ?
                   (<Input
                      value={text}
                      onChange={(e) => {
@@ -88,7 +88,7 @@ const FilterColumn = (props) => {
                   (<React.Fragment>
                      {Object.keys(filterOptions).map((item) => {
                         return (
-                           <Checkbox checked={filterStatus[item]?.label} onClick={() => {}} label={filterOptions[item]?.label} />
+                           <Checkbox checked={filterStatus[item]} onClick={() => {toggleFilter(item)}} label={filterOptions[item]} />
                         )
                      })}
                   </React.Fragment>)
