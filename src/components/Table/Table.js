@@ -611,21 +611,21 @@ class Table extends React.Component {
          if (this.state.sortMethod)
             return this.state.sortMethod(a, b);
 
-         if (this.props.orderByCode){
+         if (this.props.orderByCode) {
             const t1 = cleanCode(a.code);
             const t2 = cleanCode(b.code);
             const x = parseInt(t1);
             const y = parseInt(t2);
             return x - y;
-         } 
-         
+         }
+
          if (this.props.orderByAlphanumericCode) {
             const keyValueStringA = `${a.code}`;
             const keyValueStringB = `${b.code}`;
-            return keyValueStringA.localeCompare(keyValueStringB, undefined, {numeric: true})
+            return keyValueStringA.localeCompare(keyValueStringB, undefined, { numeric: true })
          }
 
-            return a.order_position - b.order_position
+         return a.order_position - b.order_position
 
 
       };
@@ -677,7 +677,7 @@ class Table extends React.Component {
 
 
       const generateTree = (elements, depth) => {
-         const {filterOptions} = this.props;
+         const { filterOptions } = this.props;
          const includeChildren = filterOptions.includeChildren ?? true;
          const sortElements = elements.reduce((acum, element_id, index) => {
             const element = rows[element_id];
@@ -1495,6 +1495,7 @@ class Table extends React.Component {
                            column_extended={this.state.column_extended[col.assesor]}
                            column={col}
                            onSubmit={this.handleFilterColumn(col)}
+                           filterOptions={col.filterOptions}
                         />
                      </div>}
 
@@ -1548,7 +1549,7 @@ class Table extends React.Component {
                   }
                }
             />}
-   
+
             {/* ------------ TABLE ------------*/}
             <table className={`the-table-header ${this.state.name}`} ref={this.tableHeader} style={{
                display: 'flex',
@@ -1560,7 +1561,7 @@ class Table extends React.Component {
                         {isDragColumnVisible &&
                            <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`}
                               style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-   
+
                         {renderColumns(groupColumns)}
                      </tr>
                   </thead>
@@ -1605,25 +1606,25 @@ class Table extends React.Component {
                   />}
                </thead>
             </table>
-   
+
             <table
                className={`table-drag-n-drop the-table ${this.props.className} scrolly_table scrolling_table_2 ${this.state.name}`}
                style={tableStyle}
                ref={(current) => {
                   this.container = {
-                      current
+                     current
                   };
                   if (this.props.setRef) {
-                      this.props.setRef(current);
+                     this.props.setRef(current);
                   }
-              }}
+               }}
             >
                {groupColumns && groupColumns.length > 0 && (
                   <thead>
                      <tr className="Table-Row-Header">
                         {isDragColumnVisible &&
                            <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-   
+
                         {renderColumns(groupColumns)}
                      </tr>
                   </thead>
@@ -1632,13 +1633,13 @@ class Table extends React.Component {
                   <tr className="Table-Row-Header">
                      {isDragColumnVisible &&
                         <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-   
+
                      {renderColumns(columns)
                      }
                   </tr>
                </thead>
                <tbody
-   
+
                   style={{
                      display: 'table',
                      padding: paddingBodyTable ? paddingBodyTable : 'none'
@@ -1664,13 +1665,13 @@ class Table extends React.Component {
                            this.initGenerateRows()
                         ])
                   }
-   
+
                </tbody>
             </table>
-   
-   
+
+
             {/* ------------ EXTRA ------------*/}
-   
+
             {
                isLoading &&
                <Dimmer active={isLoading} inverted>
@@ -1678,7 +1679,7 @@ class Table extends React.Component {
                </Dimmer>
             }
             {bottomToolbar != null && bottomToolbar}
-   
+
             <Settings
                profile={profileSelected}
                isOpen={this.state.is_setting_open}
@@ -1689,7 +1690,7 @@ class Table extends React.Component {
                onConfirmDelete={this.handleDeleteProfile}
                isColumnVisible={this.isColumnVisible}>
             </Settings>
-   
+
             {this.state.contextMenu.visible && <ContextMenu
                onClose={() => {
                   this.setState({
@@ -1704,7 +1705,7 @@ class Table extends React.Component {
             />
             }
          </div>
-   
+
       </HotKeys>);
    }
 }

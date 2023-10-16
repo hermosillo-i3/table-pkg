@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Input, Popup, Icon, Button, Label } from "semantic-ui-react";
+import { Input, Popup, Icon, Button, Label, Checkbox } from "semantic-ui-react";
 import Cleave from 'cleave.js/react';
 import PropTypes from 'prop-types'
 
 const FilterColumn = (props) => {
-   const { onSubmit, column, column_extended } = props;
+   const { onSubmit, column, column_extended, filterOptions = {} } = props;
 
 
    const { format = 'text' } = column;
@@ -14,6 +14,17 @@ const FilterColumn = (props) => {
       min: null,
       equal: null,
    })
+   const [filterStatus, setFilterStatus] = useState({})
+
+   const toggleFilter = (filter) => {
+      const newFilterOptions = { ...filterOptions }
+      if (newFilterOptions[filter]) {
+         delete newFilterOptions[filter]
+      } else {
+         newFilterOptions[filter] = true
+      }
+      setFilterStatus(newFilterOptions)
+   }
 
    let colFormat = typeof format === 'object' ? format.type : format;
    const column_extended_value = column_extended?.filter_value
@@ -36,7 +47,7 @@ const FilterColumn = (props) => {
    useEffect(() => {
       if (column_extended_value != null) {
          if (colFormat === 'text' || colFormat === 'textarea') {
-         setText(column_extended_value)
+            setText(column_extended_value)
          } else if (colFormat === 'currency') {
             setRange(column_extended_value)
          }
@@ -50,31 +61,41 @@ const FilterColumn = (props) => {
             on='click'
             pinned
             content={
-               <Input
-                  value={text}
-                  onChange={(e) => {
-                     let value = e?.target?.value;
-                     setText(value);
-                     if (value?.length === 0) {
-                        onSubmit('')
-                     }
-                  }}
-                  onKeyDown={(e) => {
-                     if (e.keyCode === 13) {
-                        onSubmit(text)
-                     }
-                  }}
-                  size='mini'
-                  action={{
-                     icon: 'search',
-                     size: 'mini',
-                     onClick: () => {
-                        onSubmit(text)
-                     }
-                  }} />
+               JSON.stringify(filterOptions) === JSON.stringify({})  ?
+                  (<Input
+                     value={text}
+                     onChange={(e) => {
+                        let value = e?.target?.value;
+                        setText(value);
+                        if (value?.length === 0) {
+                           onSubmit('')
+                        }
+                     }}
+                     onKeyDown={(e) => {
+                        if (e.keyCode === 13) {
+                           onSubmit(text)
+                        }
+                     }}
+                     size='mini'
+                     action={{
+                        icon: 'search',
+                        size: 'mini',
+                        onClick: () => {
+                           onSubmit(text)
+                        }
+                     }} />)
+                  :
+                  (<React.Fragment>
+                     {Object.keys(filterOptions).map((item) => {
+                        return (
+                           <Checkbox checked={filterStatus[item]?.label} onClick={() => {}} label={filterOptions[item]?.label} />
+                        )
+                     })}
+                  </React.Fragment>)
+
             }
             trigger={
-               <Button
+               < Button
                   size='mini'
                   icon='filter'
                   style={{
