@@ -4,9 +4,23 @@ import Cleave from 'cleave.js/react';
 import PropTypes from 'prop-types'
 
 const FilterColumn = (props) => {
-   const { onSubmit, column, column_extended, filterOptions = {} } = props;
+   const {
+      onSubmit,
+      column,
+      column_extended,
+   } = props;
 
 
+   const filterOptions = {
+      IDENTIFY: 'Identificada',
+      SENT: 'Enviada',
+      APPROVED: 'Aprobada',
+      REJECTED_REQUISITION: 'Rechazada',
+      REJECTED: 'Rechazada',
+      CONTRACT: 'Contrato',
+      CANCEL: 'Cancelada',
+      EDIT: 'Editada',
+   }
    const { format = 'text' } = column;
    const [text, setText] = useState('')
    const [range, setRange] = useState({
@@ -61,7 +75,7 @@ const FilterColumn = (props) => {
             on='click'
             pinned
             content={
-               Object.keys(filterOptions).length == 0  ?
+               !column.assesor.includes('status') ?
                   (<Input
                      value={text}
                      onChange={(e) => {
@@ -88,10 +102,11 @@ const FilterColumn = (props) => {
                   (<React.Fragment>
                      {Object.keys(filterOptions).map((item) => {
                         return (
-                           <Checkbox checked={filterStatus[item]} onClick={() => {toggleFilter(item)}} label={filterOptions[item]} />
+                           <Checkbox checked={filterStatus[item]} onClick={() => { toggleFilter(item) }} label={filterOptions[item]} />
                         )
                      })}
-                  </React.Fragment>)
+                  </React.Fragment>
+                  )
 
             }
             trigger={

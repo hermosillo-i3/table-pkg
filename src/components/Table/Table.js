@@ -1400,8 +1400,6 @@ class Table extends React.Component {
 
       const shouldRenderTitle = selected_rows ? (selected_rows.length > 0 || title) : title;
 
-
-
       let tableOffset = 0;
       if (this.tableToolbar.current && this.tableHeader.current) {
          const offSetIKnowWhereItComeFrom = 2;
