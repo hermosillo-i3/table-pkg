@@ -646,7 +646,7 @@ class Table extends React.Component {
       }, [])
 
       const applyFilter = (row) => {
-         return column_filters.every(filter => {
+         const a = column_filters.every(filter => {
             const cellValue = row?.[filter.key];
             let filterFormat = typeof filter.format === 'object' ? filter.format.type : filter.format;
 
@@ -666,13 +666,15 @@ class Table extends React.Component {
                   case 'list':
                      return cellValue.find((value) => value.toLowerCase().includes(filter.value.toLowerCase()));
                   default:
-                     return cellValue.trim() !== '' ? cellValue.toLowerCase().includes(filter.value.toLowerCase()) : false;
+                     if(Array.isArray(filter.value)) return cellValue.trim() !== '' ? filter.value.includes(cellValue.trim()) : false;
+                     else return cellValue.trim() !== '' ? cellValue.toLowerCase().includes(filter.value.toLowerCase()) : false;
                }
 
             } else {
                return false;
             }
          })
+         return a
       }
 
 
@@ -1346,28 +1348,29 @@ class Table extends React.Component {
          // Expand searched rows
          this.expandRows();
       }
-      this.setState(prevState => ({
-         column_extended: Object.keys(prevState.column_extended).reduce((acum, key) => {
-            if (key === col.assesor) {
-               return {
-                  ...acum,
-                  [col.assesor]: {
-                     ...prevState.column_extended[col.assesor],
-                     filter_format: col.format,
-                     filter_value: filter_value
+         this.setState(prevState => ({
+            column_extended: Object.keys(prevState.column_extended).reduce((acum, key) => {
+               if (key === col.assesor) {
+                  return {
+                     ...acum,
+                     [col.assesor]: {
+                        ...prevState.column_extended[col.assesor],
+                        filter_format: col.format,
+                        filter_value: filter_value
+                     }
                   }
                }
-            }
-            return {
-               ...acum,
-               [key]: {
-                  ...prevState.column_extended[key],
-                  filter_value: null,
-               }
+               return {
+                  ...acum,
+                  [key]: {
+                     ...prevState.column_extended[key],
+                     filter_value: null,
+                  }
 
-            }
-         }, {})
-      }))
+               }
+            }, {})
+         }))
+      
    };
 
    onSubmitSettings = ({ name, columns }) => {

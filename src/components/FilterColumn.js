@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Input, Popup, Icon, Button, Label, Checkbox } from "semantic-ui-react";
+import { Input, Popup, Icon, Button, Label, Checkbox, Grid } from "semantic-ui-react";
 import Cleave from 'cleave.js/react';
 import PropTypes from 'prop-types'
 
@@ -14,8 +14,7 @@ const FilterColumn = (props) => {
    const filterOptions = {
       IDENTIFY: 'Identificada',
       SENT: 'Enviada',
-      APPROVED: 'Aprobada',
-      REJECTED_REQUISITION: 'Rechazada',
+      APPROVED: 'Asignada',
       REJECTED: 'Rechazada',
       CONTRACT: 'Contrato',
       CANCEL: 'Cancelada',
@@ -38,6 +37,13 @@ const FilterColumn = (props) => {
          newFilterOptions[filter] = true
       }
       setFilterStatus(newFilterOptions)
+      const arrayOfOptions = Object.keys(filterOptions).reduce((acc, item) => {
+         if (newFilterOptions[item]) {
+            acc.push(filterOptions[item])
+         }
+         return acc
+      }, [])
+      onSubmit(arrayOfOptions.length > 0 ? arrayOfOptions : '')
    }
 
    let colFormat = typeof format === 'object' ? format.type : format;
@@ -74,6 +80,7 @@ const FilterColumn = (props) => {
          <Popup
             on='click'
             pinned
+            wide
             content={
                !column.assesor.includes('status') ?
                   (<Input
@@ -99,13 +106,21 @@ const FilterColumn = (props) => {
                         }
                      }} />)
                   :
-                  (<React.Fragment>
-                     {Object.keys(filterOptions).map((item) => {
-                        return (
-                           <Checkbox checked={filterStatus[item]} onClick={() => { toggleFilter(item) }} label={filterOptions[item]} />
-                        )
-                     })}
-                  </React.Fragment>
+                  (
+                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+                        <Grid columns={3}>
+                           {
+                              
+                              Object.keys(filterOptions).map((item, index) => {
+                                 return (
+                                    <Grid.Column className='filter-column'>
+                                       <Checkbox checked={filterStatus[item]} onClick={() => { toggleFilter(item) }} label={filterOptions[item]} />
+                                    </Grid.Column>
+                                 )
+                              })
+                           }
+                        </Grid>
+                     </div>
                   )
 
             }
@@ -249,5 +264,7 @@ const FieldCurrency = ({ label, value, onChange, disabled }) => {
       />
    </div>
 }
+const FilterRow = () => {
 
+}
 export default FilterColumn
