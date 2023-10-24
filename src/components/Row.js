@@ -151,7 +151,7 @@ const rowFunctionComponent = (props) => {
       }
 
       if (customRowClass) {
-         className += ' ' + customRowClass(row)
+         classname += ' ' + customRowClass(row)
       }
 
       setClassName(classname);      
