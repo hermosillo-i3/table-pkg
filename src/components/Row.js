@@ -116,6 +116,7 @@ const rowFunctionComponent = (props) => {
    } = props;
    const [hasScrolled, setHasScrolled] = React.useState(false);
    const [rowRef, setRowRef] = React.useState(null);
+   const [className, setClassName] = React.useState('Table-Row');
    
    useEffect(() => {
       const shouldScroll = props.scrollTo === row.id;
@@ -128,6 +129,29 @@ const rowFunctionComponent = (props) => {
    useEffect(() => {
       setHasScrolled(false);
    }, [props.scrollTo]);
+
+   useEffect(() => {
+      let classname = 'Table-Row';
+      if (props.is_selected) {
+         classname += ` Table-Row-Selected Table-Row--depth-${depth} ${row.is_item ? 'Table-Row-Item' : ''}`
+      } else {
+         if (styleTheme) {
+
+            if (styleTheme === 'striped') {
+               // check if the number is odd
+               if (rowIndex % 2 === 0) {
+                  classname += rowIndex % 2 === 0 ? ` Table-Row--striped` : '';
+               }
+            }
+
+         } else {
+            classname += ` Table-Row--depth-${depth}`;
+            classname += ignoreItemStyle ? ` Table-Row--depth-${depth}` : (`${row.is_item ? ` Table-Row-Item depth-${depth}` : ` Table-Row--depth-${depth}`}`);
+         }
+      }
+
+      setClassName(classname);      
+   }, [props.is_selected, styleTheme, rowIndex, row.is_item, depth]);
       
 
    // Definimos los hooks useDrag y useDrop
@@ -148,38 +172,26 @@ const rowFunctionComponent = (props) => {
       },
     });
 
-    const [{ canDrop, isOver }, connectDropTarget] = useDrop({
+    const [collectedProps, connectDropTarget] = useDrop({
       accept: ItemTypes.ROW,
       drop: (item) => {
         if (props.onDrop) {
           props.onDrop(item, row);
         }
       },
-      canDrop: (monitor) => {
-        return props.canDrop ? props.canDrop(props, monitor) : false;
+      canDrop: (item, monitor) => {
+         const canBeDropped = props.canDrop ? props.canDrop(props, item) : false;
+        return canBeDropped
+      },
+      hover: (item, monitor) => {
+         if (monitor.isOver({ shallow: true })) {
+            if (monitor.canDrop()) setClassName(`${className}${className.indexOf('Table-Row-Over') === -1 ? ' Table-Row-Over' : ''}`)
+         } else {
+            let classname = className.replace(' Table-Row-Over', '')
+            setClassName(classname)
+         }
       },
     });
-
-    let className = 'Table-Row';
-      if (props.is_selected) {
-         className += ` Table-Row-Selected Table-Row--depth-${depth} ${row.is_item ? 'Table-Row-Item' : ''}`
-      } else {
-         if (styleTheme) {
-
-            if (styleTheme === 'striped') {
-               // check if the number is odd
-               if (rowIndex % 2 === 0) {
-                  className += rowIndex % 2 === 0 ? ` Table-Row--striped` : '';
-               }
-            }
-
-         } else {
-            className += ` Table-Row--depth-${depth}`;
-            className += ignoreItemStyle ? ` Table-Row--depth-${depth}` : (`${row.is_item ? ` Table-Row-Item depth-${depth}` : ` Table-Row--depth-${depth}`}`);
-            className += isOver && canDrop ? ' Table-Row-Over' : '';
-
-         }
-      }
 
    const {
       // cDP, 
