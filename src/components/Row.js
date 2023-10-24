@@ -150,8 +150,12 @@ const rowFunctionComponent = (props) => {
          }
       }
 
+      if (customRowClass) {
+         className += ' ' + customRowClass(row)
+      }
+
       setClassName(classname);      
-   }, [props.is_selected, styleTheme, rowIndex, row.is_item, depth]);
+   }, [props.is_selected, styleTheme, rowIndex, row.is_item, depth, customRowClass]);
       
 
    // Definimos los hooks useDrag y useDrop
