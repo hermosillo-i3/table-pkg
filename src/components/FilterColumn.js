@@ -8,18 +8,9 @@ const FilterColumn = (props) => {
       onSubmit,
       column,
       column_extended,
+      filter_options
    } = props;
 
-
-   const filterOptions = {
-      IDENTIFY: 'Identificada',
-      SENT: 'Enviada',
-      APPROVED: 'Asignada',
-      REJECTED: 'Rechazada',
-      CONTRACT: 'Contrato',
-      CANCEL: 'Cancelada',
-      EDIT: 'Editada',
-   }
    const { format = 'text' } = column;
    const [text, setText] = useState('')
    const [range, setRange] = useState({
@@ -37,9 +28,9 @@ const FilterColumn = (props) => {
          newFilterOptions[filter] = true
       }
       setFilterStatus(newFilterOptions)
-      const arrayOfOptions = Object.keys(filterOptions).reduce((acc, item) => {
+      const arrayOfOptions = Object.keys(filter_options).reduce((acc, item) => {
          if (newFilterOptions[item]) {
-            acc.push(filterOptions[item])
+            acc.push(filter_options[item])
          }
          return acc
       }, [])
@@ -82,7 +73,7 @@ const FilterColumn = (props) => {
             pinned
             wide
             content={
-               !column.assesor.includes('status') ?
+               filter_options == null ?
                   (<Input
                      value={text}
                      onChange={(e) => {
@@ -110,11 +101,11 @@ const FilterColumn = (props) => {
                      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
                         <Grid columns={3}>
                            {
-                              
-                              Object.keys(filterOptions).map((item, index) => {
+
+                              Object.keys(filter_options).map((item, index) => {
                                  return (
                                     <Grid.Column className='filter-column'>
-                                       <Checkbox checked={filterStatus[item]} onClick={() => { toggleFilter(item) }} label={filterOptions[item]} />
+                                       <Checkbox checked={filterStatus[item]} onClick={() => { toggleFilter(item) }} label={filter_options[item]} />
                                     </Grid.Column>
                                  )
                               })

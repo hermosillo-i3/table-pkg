@@ -1496,7 +1496,7 @@ class Table extends React.Component {
                            column_extended={this.state.column_extended[col.assesor]}
                            column={col}
                            onSubmit={this.handleFilterColumn(col)}
-                           filterOptions={col.filterOptions}
+                           filter_options={col.filter_options}
                         />
                      </div>}
 
