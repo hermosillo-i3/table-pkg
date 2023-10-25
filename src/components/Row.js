@@ -9,6 +9,7 @@ import {
    useDrag, 
    useDrop, 
    // connectDragPreview
+   useDragDropManager,
 } from 'react-dnd'
 import {isColumnEditable} from "../utils/column";
 
@@ -17,41 +18,6 @@ const faGripVertical = {
    iconName: 'grip-vertical',
    icon: [320, 512, [], "f58e", "M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"]
 };
-
-
-const RowTarget = {
-   drop(props, monitor) {
-
-      // Obtain the dragged item
-      const item = monitor.getItem()
-
-      if (props.onDrop) {
-         props.onDrop(item, props.row)
-      }
-   },
-   canDrop(props, monitor) {
-      if (props.canDrop) {
-         return props.canDrop(props, monitor)
-      }
-      return false
-   }
-};
-
-const RowSource = {
-   canDrag(props, monitor) {
-      if (props.canDrag) {
-         return props.canDrag(props, monitor)
-      }
-      return false
-   },
-
-   beginDrag(props) {
-      return {
-         row: props.row,
-         type: props.type
-      }
-   }
-}
 
 
 const getItemStyle = (isDragging, draggableStyle) => ({
@@ -98,7 +64,6 @@ const getDefaultValue = (format) => {
 
 const rowFunctionComponent = (props) => {
    const {
-      canDrag,
       allowToDragRows = true,
       index: rowIndex,
       row,
@@ -116,6 +81,7 @@ const rowFunctionComponent = (props) => {
    } = props;
    const [hasScrolled, setHasScrolled] = React.useState(false);
    const [rowRef, setRowRef] = React.useState(null);
+   const [className, setClassName] = React.useState('Table-Row');
    
    useEffect(() => {
       const shouldScroll = props.scrollTo === row.id;
@@ -131,7 +97,7 @@ const rowFunctionComponent = (props) => {
       
 
    // Definimos los hooks useDrag y useDrop
-   const [{ isDragging }, connectDragSource] = useDrag({
+   const [{ isDragging, canDrag }, connectDragSource] = useDrag({
       type: ItemTypes.ROW,
       item: {
         row: row,
@@ -146,40 +112,60 @@ const rowFunctionComponent = (props) => {
           type: props.type,
         };
       },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+        canDrag: props.canDrag ? props.canDrag(props, monitor) : false,
+      }),
     });
 
-    const [{ canDrop, isOver }, connectDropTarget] = useDrop({
+    const [{isOver, canDrop}, connectDropTarget] = useDrop({
       accept: ItemTypes.ROW,
       drop: (item) => {
         if (props.onDrop) {
           props.onDrop(item, row);
         }
       },
-      canDrop: (monitor) => {
-        return props.canDrop ? props.canDrop(props, monitor) : false;
+      canDrop: (item, monitor) => {
+         const canBeDropped = props.canDrop ? props.canDrop(props, item) : false;
+        return canBeDropped
       },
+      collect: (monitor) => ({
+        isOver: monitor.isOver({ shallow: true }),
+        canDrop: (props.canDrop && monitor.getItem()) ? props.canDrop(props, monitor.getItem()) : false,
+      }),
     });
 
-    let className = 'Table-Row';
+    useEffect(() => {
+      let classname = 'Table-Row';
       if (props.is_selected) {
-         className += ` Table-Row-Selected Table-Row--depth-${depth} ${row.is_item ? 'Table-Row-Item' : ''}`
+         classname += ` Table-Row-Selected Table-Row--depth-${depth} ${row.is_item ? 'Table-Row-Item' : ''}`
       } else {
          if (styleTheme) {
 
             if (styleTheme === 'striped') {
                // check if the number is odd
                if (rowIndex % 2 === 0) {
-                  className += rowIndex % 2 === 0 ? ` Table-Row--striped` : '';
+                  classname += rowIndex % 2 === 0 ? ` Table-Row--striped` : '';
                }
             }
 
          } else {
-            className += ` Table-Row--depth-${depth}`;
-            className += ignoreItemStyle ? ` Table-Row--depth-${depth}` : (`${row.is_item ? ` Table-Row-Item depth-${depth}` : ` Table-Row--depth-${depth}`}`);
-            className += isOver && canDrop ? ' Table-Row-Over' : '';
+            classname += ` Table-Row--depth-${depth}`;
+            classname += ignoreItemStyle ? ` Table-Row--depth-${depth}` : (`${row.is_item ? ` Table-Row-Item depth-${depth}` : ` Table-Row--depth-${depth}`}`);
+         }
 
+         if (canDrop && isOver) {
+            classname += ' Table-Row-Over'
          }
       }
+
+      if (customRowClass) {
+         classname += ' ' + customRowClass(row)
+      }
+      
+
+      setClassName(classname);      
+   }, [props.is_selected, styleTheme, rowIndex, row.is_item, depth, customRowClass, isOver, canDrop]);
 
    const {
       // cDP, 
