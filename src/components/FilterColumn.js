@@ -8,9 +8,20 @@ const FilterColumn = (props) => {
       onSubmit,
       column,
       column_extended,
-      filter_options
-   } = props;
 
+   } = props;
+   let filter_options;
+   if (column.format?.options != null) {
+      filter_options = Object.keys(column.format.options).reduce((acc, item) => {
+         return {
+            ...acc,
+            [column.format.options[item].id ?? column.format.options[item].key]: {
+               id: column.format.options[item].id ?? column.format.options[item].key,
+               text: column.format.options[item].text ?? column.format.options[item].name,
+            }
+         }
+      }, {})
+   }
    const { format = 'text' } = column;
    const [text, setText] = useState('')
    const [range, setRange] = useState({
@@ -23,14 +34,37 @@ const FilterColumn = (props) => {
    const toggleFilter = (filter) => {
       const newFilterOptions = { ...filterStatus }
       if (newFilterOptions[filter]) {
-         newFilterOptions[filter] = false
+         delete newFilterOptions[filter]
       } else {
          newFilterOptions[filter] = true
       }
+      
       setFilterStatus(newFilterOptions)
-      const arrayOfOptions = Object.keys(filter_options).reduce((acc, item) => {
+      
+      if (JSON.stringify(newFilterOptions) === '{}') {
+         onSubmit('')
+      }
+      /*const arrayOfOptions = Object.keys(filter_options).reduce((acc, item) => {
+         const key = filter_options[item].id ?? filter_options[item].key
+         const text = filter_options[item].text ?? filter_options[item].name
          if (newFilterOptions[item]) {
-            acc.push(filter_options[item])
+            acc.push(column.assesor === 'status_description' ? text : key)
+         }
+         return acc
+      }, [])*/
+      //onSubmit(arrayOfOptions.length > 0 ? arrayOfOptions : '')
+   }
+   const submitFilter = () => {
+      const objectOptions = column.format.options.reduce((acc, item) => {
+         return {
+            ...acc,
+            [item.id ?? item.key]: {...item}
+         }
+      }, {})
+      const arrayOfOptions = Object.keys(filter_options).reduce((acc, item) => {
+         const key = filter_options[item].id ?? filter_options[item].key
+         if (filterStatus[item]) {
+            acc.push(objectOptions[key])
          }
          return acc
       }, [])
@@ -66,12 +100,13 @@ const FilterColumn = (props) => {
 
    }, [column_extended_value, colFormat])
 
-   if (colFormat === 'text' || colFormat === 'textarea' || colFormat === 'list') {
+   if (colFormat === 'text' || colFormat === 'textarea' || colFormat === 'list' || column?.format?.options != null) {
       return (
          <Popup
             on='click'
             pinned
-            wide
+            position='bottom left'
+            wide='very'
             content={
                filter_options == null ?
                   (<Input
@@ -98,19 +133,30 @@ const FilterColumn = (props) => {
                      }} />)
                   :
                   (
-                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-                        <Grid columns={3}>
+                     <div style>
+                        <div class='wrapper'>
                            {
 
                               Object.keys(filter_options).map((item, index) => {
                                  return (
-                                    <Grid.Column className='filter-column'>
-                                       <Checkbox checked={filterStatus[item]} onClick={() => { toggleFilter(item) }} label={filter_options[item]} />
-                                    </Grid.Column>
+                                    <Checkbox checked={filterStatus[item]} onClick={() => { toggleFilter(item); }} label={filter_options[item].text} />
                                  )
                               })
                            }
-                        </Grid>
+                        </div>
+                        <Button
+                           // disabled={range.max == null && range.min == null && range.equal == null}
+                           size="tiny"
+                           icon
+                           labelPosition='left'
+                           fluid
+                           onClick={() => {
+                              submitFilter()
+                           }}
+                        >
+                           <Icon name='search' size='small' />
+                           Buscar
+                        </Button>
                      </div>
                   )
 
@@ -123,7 +169,7 @@ const FilterColumn = (props) => {
                      padding: '0.4rem'
                   }}
                   type={'button'}
-                  {...(text.length > 0 ? { color: 'orange' } : {})}
+                  {...(text.length > 0 || JSON.stringify(filterStatus) != '{}' ? { color: 'orange' } : {})}
                />
             }
          />
