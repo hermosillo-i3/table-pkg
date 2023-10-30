@@ -5,8 +5,8 @@ This file is used to explain in detail changes made to the Table.
   [[TOC]]
 
 
-## V 0.2.30
-Date: Sep 22, 2023
+## V 1.0.0
+Date: Oct 30, 2023
 * [NEW]
   * Update package versions in package json 
   * Add filter for select type column
