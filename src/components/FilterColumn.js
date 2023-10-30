@@ -1,12 +1,27 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Input, Popup, Icon, Button, Label } from "semantic-ui-react";
+import { Input, Popup, Icon, Button, Label, Checkbox, Grid } from "semantic-ui-react";
 import Cleave from 'cleave.js/react';
 import PropTypes from 'prop-types'
 
 const FilterColumn = (props) => {
-   const { onSubmit, column, column_extended } = props;
+   const {
+      onSubmit,
+      column,
+      column_extended,
 
-
+   } = props;
+   let filter_options;
+   if (column.format?.options != null) {
+      filter_options = Object.keys(column.format.options).reduce((acc, item) => {
+         return {
+            ...acc,
+            [column.format.options[item].id ?? column.format.options[item].key]: {
+               id: column.format.options[item].id ?? column.format.options[item].key,
+               text: column.format.options[item].text ?? column.format.options[item].name,
+            }
+         }
+      }, {})
+   }
    const { format = 'text' } = column;
    const [text, setText] = useState('')
    const [range, setRange] = useState({
@@ -14,6 +29,38 @@ const FilterColumn = (props) => {
       min: null,
       equal: null,
    })
+   const [filterStatus, setFilterStatus] = useState({})
+
+   const toggleFilter = (filter) => {
+      const newFilterOptions = { ...filterStatus }
+      if (newFilterOptions[filter]) {
+         delete newFilterOptions[filter]
+      } else {
+         newFilterOptions[filter] = true
+      }
+      
+      setFilterStatus(newFilterOptions)
+      
+      if (JSON.stringify(newFilterOptions) === '{}') {
+         onSubmit('')
+      }
+   }
+   const submitFilter = () => {
+      const objectOptions = column.format.options.reduce((acc, item) => {
+         return {
+            ...acc,
+            [item.id ?? item.key]: {...item}
+         }
+      }, {})
+      const arrayOfOptions = Object.keys(filter_options).reduce((acc, item) => {
+         const key = filter_options[item].id ?? filter_options[item].key
+         if (filterStatus[item]) {
+            acc.push(objectOptions[key])
+         }
+         return acc
+      }, [])
+      onSubmit(arrayOfOptions.length > 0 ? arrayOfOptions : '')
+   }
 
    let colFormat = typeof format === 'object' ? format.type : format;
    const column_extended_value = column_extended?.filter_value
@@ -22,21 +69,10 @@ const FilterColumn = (props) => {
       return (range.max != null || range.min != null || range.equal != null)
    }, [range])
 
-   // useEffect(() => {
-   //    if (
-   //       colFormat === 'currency' &&
-   //       (range.max == null && range.min == null && range.equal == null)
-   //    ){
-
-   //       onSubmit(range)
-   //    }
-   //    // eslint-disable-next-line react-hooks/exhaustive-deps
-   // }, [range])
-
    useEffect(() => {
       if (column_extended_value != null) {
          if (colFormat === 'text' || colFormat === 'textarea') {
-         setText(column_extended_value)
+            setText(column_extended_value)
          } else if (colFormat === 'currency') {
             setRange(column_extended_value)
          }
@@ -44,44 +80,76 @@ const FilterColumn = (props) => {
 
    }, [column_extended_value, colFormat])
 
-   if (colFormat === 'text' || colFormat === 'textarea' || colFormat === 'list') {
+   if (colFormat === 'text' || colFormat === 'textarea' || colFormat === 'list' || column?.format?.options != null) {
       return (
          <Popup
             on='click'
             pinned
+            position='bottom left'
+            wide='very'
             content={
-               <Input
-                  value={text}
-                  onChange={(e) => {
-                     let value = e?.target?.value;
-                     setText(value);
-                     if (value?.length === 0) {
-                        onSubmit('')
-                     }
-                  }}
-                  onKeyDown={(e) => {
-                     if (e.keyCode === 13) {
-                        onSubmit(text)
-                     }
-                  }}
-                  size='mini'
-                  action={{
-                     icon: 'search',
-                     size: 'mini',
-                     onClick: () => {
-                        onSubmit(text)
-                     }
-                  }} />
+               filter_options == null ?
+                  (<Input
+                     value={text}
+                     onChange={(e) => {
+                        let value = e?.target?.value;
+                        setText(value);
+                        if (value?.length === 0) {
+                           onSubmit('')
+                        }
+                     }}
+                     onKeyDown={(e) => {
+                        if (e.keyCode === 13) {
+                           onSubmit(text)
+                        }
+                     }}
+                     size='mini'
+                     action={{
+                        icon: 'search',
+                        size: 'mini',
+                        onClick: () => {
+                           onSubmit(text)
+                        }
+                     }} />)
+                  :
+                  (
+                     <div style>
+                        <div class='wrapper'>
+                           {
+
+                              Object.keys(filter_options).map((item, index) => {
+                                 return (
+                                    <Checkbox checked={filterStatus[item]} onClick={() => { toggleFilter(item); }} label={filter_options[item].text} />
+                                 )
+                              })
+                           }
+                        </div>
+                        <Button
+                           // disabled={range.max == null && range.min == null && range.equal == null}
+                           size="tiny"
+                           icon
+                           labelPosition='left'
+                           fluid
+                           onClick={() => {
+                              submitFilter()
+                           }}
+                        >
+                           <Icon name='search' size='small' />
+                           Buscar
+                        </Button>
+                     </div>
+                  )
+
             }
             trigger={
-               <Button
+               < Button
                   size='mini'
                   icon='filter'
                   style={{
                      padding: '0.4rem'
                   }}
                   type={'button'}
-                  {...(text.length > 0 ? { color: 'orange' } : {})}
+                  {...(text.length > 0 || JSON.stringify(filterStatus) != '{}' ? { color: 'orange' } : {})}
                />
             }
          />
@@ -213,5 +281,7 @@ const FieldCurrency = ({ label, value, onChange, disabled }) => {
       />
    </div>
 }
+const FilterRow = () => {
 
+}
 export default FilterColumn

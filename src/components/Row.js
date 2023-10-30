@@ -3,7 +3,7 @@ import InputField from "./InputField"
 import {Icon} from 'semantic-ui-react'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ItemTypes} from './Constants'
-import {formatColumn as formatColumnUtils, isFunction} from "../utils/Utils";
+import {formatColumn as formatColumnUtils, isFunction, formatForSelect} from "../utils/Utils";
 
 import {
    useDrag, 
