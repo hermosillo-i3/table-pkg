@@ -44,15 +44,6 @@ const FilterColumn = (props) => {
       if (JSON.stringify(newFilterOptions) === '{}') {
          onSubmit('')
       }
-      /*const arrayOfOptions = Object.keys(filter_options).reduce((acc, item) => {
-         const key = filter_options[item].id ?? filter_options[item].key
-         const text = filter_options[item].text ?? filter_options[item].name
-         if (newFilterOptions[item]) {
-            acc.push(column.assesor === 'status_description' ? text : key)
-         }
-         return acc
-      }, [])*/
-      //onSubmit(arrayOfOptions.length > 0 ? arrayOfOptions : '')
    }
    const submitFilter = () => {
       const objectOptions = column.format.options.reduce((acc, item) => {
@@ -77,17 +68,6 @@ const FilterColumn = (props) => {
    const hasCurrencyValue = useMemo(() => {
       return (range.max != null || range.min != null || range.equal != null)
    }, [range])
-
-   // useEffect(() => {
-   //    if (
-   //       colFormat === 'currency' &&
-   //       (range.max == null && range.min == null && range.equal == null)
-   //    ){
-
-   //       onSubmit(range)
-   //    }
-   //    // eslint-disable-next-line react-hooks/exhaustive-deps
-   // }, [range])
 
    useEffect(() => {
       if (column_extended_value != null) {
