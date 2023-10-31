@@ -1,0 +1,3 @@
+try{
+var c=__STORYBOOKADDONS__,{addons:o,types:O,mockChannel:p}=__STORYBOOKADDONS__;var g=__STORYBOOKTHEMING__,{CacheProvider:S,ClassNames:u,Global:x,ThemeProvider:v,background:y,color:B,convert:C,create:a,createCache:N,createGlobal:R,createReset:k,css:D,darken:G,ensure:K,ignoreSsrWarning:Y,isPropValid:P,jsx:A,keyframes:E,lighten:H,styled:I,themes:M,typography:j,useTheme:w,withTheme:F}=__STORYBOOKTHEMING__;var s=a({base:"light",brandTitle:"FiveBim Table",brandTarget:"_self"});o.setConfig({theme:s});
+}catch(e){ console.error("[Storybook] One of your manager-entries failed: " + import.meta.url, e); }
