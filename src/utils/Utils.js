@@ -225,11 +225,16 @@ export const formatColumn = (format, value) => {
          return dateFormatter(value).format(format.dateFormat != null ? format.dateFormat : 'DD MMMM YYYY');
       case 'boolean':
          return value ? '✔️' : ''
+      case 'select':
+         const option = format.options ? ((format.options?.find(option => option.key === value || option.text === value)) ?? value) : value
+         return option ? option.text : value
       default:
          return value
    }
 };
 
+export const formatForSelect = (options, value) => {
+}
 
 export const isFunction = (functionToCheck) => {
    return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
@@ -325,7 +330,7 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
  * @param {String} textWithSpecial Text with especial characters.
  * @return {String} The result text without characters
  */
- export const removeSpecialCharacters = (textWithSpecial) => {
+export const removeSpecialCharacters = (textWithSpecial) => {
    if (textWithSpecial == null) {
       return ''
    }
@@ -334,79 +339,79 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
    return textWithSpecial.replace(regex, '');
 };
 
- /** Re-calculates the code of children items when header's code changes.
- * @param {Object} row_header The entity that contains the code and sub rows
- * @param {String} new_code The property that will be used to group items
- * @param {Array<Object>} rows The full list of taken codes. It is used to repetition can be avoid
- * @return {Array<Object>} The list of new children with updated code
- */
-  export const recalculateChildrenCodes = (row_header, new_code, rows) => {
+/** Re-calculates the code of children items when header's code changes.
+* @param {Object} row_header The entity that contains the code and sub rows
+* @param {String} new_code The property that will be used to group items
+* @param {Array<Object>} rows The full list of taken codes. It is used to repetition can be avoid
+* @return {Array<Object>} The list of new children with updated code
+*/
+export const recalculateChildrenCodes = (row_header, new_code, rows) => {
 
    let itsValidCode = true;
-      // Validate existing code
-      for (const packageID in rows) {
-         if (new_code === rows[packageID].code) {
-            throw new Error('Código inválido: El código que ingresaste ya existe.');
+   // Validate existing code
+   for (const packageID in rows) {
+      if (new_code === rows[packageID].code) {
+         throw new Error('Código inválido: El código que ingresaste ya existe.');
+      }
+   }
+   // Validate the code entered.
+   let previousCode = row_header.code.split(".");
+   let newCode = new_code.split(".");
+   // Remove the first element if the code starts with '.' for validation purposes.
+   if (previousCode[0] === "") {
+      previousCode.shift();
+   }
+   if (newCode[0] === "") {
+      newCode.shift();
+   }
+   if (previousCode.length !== newCode.length) { // Check that the code has the correct number of points.
+      itsValidCode = false;
+   }
+   if (itsValidCode) {
+      for (let x = 0; x < row_header.depth; x++) { // Check that are not modifying the code of a wbs item parent
+         if (previousCode[x] !== newCode[x]) {
+            itsValidCode = false;
          }
       }
-      // Validate the code entered.
-      let previousCode = row_header.code.split(".");
-      let newCode = new_code.split(".");
-      // Remove the first element if the code starts with '.' for validation purposes.
-      if (previousCode[0] === "") {
-         previousCode.shift();
-      }
-      if (newCode[0] === "") {
-         newCode.shift();
-      }
-      if (previousCode.length !== newCode.length) { // Check that the code has the correct number of points.
-         itsValidCode = false;
-      }
-      if (itsValidCode) {
-         for (let x = 0; x < row_header.depth; x++) { // Check that are not modifying the code of a wbs item parent
-            if (previousCode[x] !== newCode[x]) {
-               itsValidCode = false;
-            }
-         }
-      }
-      if (!itsValidCode) {
-         throw new Error('Código inválido: El código que ingresaste no corresponde al nivel de desglose actual.');
-      }
-      // Get all the subrows entities
-      if (row_header.subrows && row_header.subrows.length > 0) {
-         let row_entities = [];
-         let getAllSubrows = function (row) {
-            row_entities.push({
-               id: row.id,
-               code: row.code,
-            })
-            if (row.subrows && row.subrows.length > 0) {
-               row.subrows.forEach((current_row) => {
-                  getAllSubrows(current_row)
-               })
-            }
-         }
-         getAllSubrows(row_header);
-         // Change the code for the new code
-         let dephtPosition = row_header.depth;
-         if (row_entities[0].code.indexOf(".") === 0) {
-            dephtPosition++;
-         }
-         const newValue = new_code.split(".");
-         row_entities.forEach((row) => {
-            row.code = row.code.split(".");
-            row.code[dephtPosition] = newValue[dephtPosition];
-            row.code = row.code.join('.');
+   }
+   if (!itsValidCode) {
+      throw new Error('Código inválido: El código que ingresaste no corresponde al nivel de desglose actual.');
+   }
+   // Get all the subrows entities
+   if (row_header.subrows && row_header.subrows.length > 0) {
+      let row_entities = [];
+      let getAllSubrows = function (row) {
+         row_entities.push({
+            id: row.id,
+            code: row.code,
          })
-
-         return row_entities;
-      }else{
-         // It has no children
-         return [{
-            id: row_header.id,
-            code: new_code,
-         }]
+         if (row.subrows && row.subrows.length > 0) {
+            row.subrows.forEach((current_row) => {
+               getAllSubrows(current_row)
+            })
+         }
       }
+      getAllSubrows(row_header);
+      // Change the code for the new code
+      let dephtPosition = row_header.depth;
+      if (row_entities[0].code.indexOf(".") === 0) {
+         dephtPosition++;
+      }
+      const newValue = new_code.split(".");
+      row_entities.forEach((row) => {
+         row.code = row.code.split(".");
+         row.code[dephtPosition] = newValue[dephtPosition];
+         row.code = row.code.join('.');
+      })
+
+      return row_entities;
+   } else {
+      // It has no children
+      return [{
+         id: row_header.id,
+         code: new_code,
+      }]
+   }
 };
 
 
@@ -425,72 +430,72 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
  * @param {Array<TreeItem>} list_of_items A complete tree of items
  * @returns {Array<Number>} An array with the Ids of the parents
  */
- export const getParentId = (item, list_of_items) => {
+export const getParentId = (item, list_of_items) => {
    const recursiveAux = (item, list_of_items_object) => {
-     if (item?.parent_id == null) {
-       return [];
-     } else {
-       const parent = list_of_items_object[item?.parent_id];
-       return [
-         item?.parent_id,
-         ...recursiveAux(parent, list_of_items_object),
-       ]
-     }
+      if (item?.parent_id == null) {
+         return [];
+      } else {
+         const parent = list_of_items_object[item?.parent_id];
+         return [
+            item?.parent_id,
+            ...recursiveAux(parent, list_of_items_object),
+         ]
+      }
    }
- 
- 
+
+
    const list_of_items_object = list_of_items.reduce((acum, item) => {
-     return {
-       ...acum,
-       [item?.id]: item,
-     }
+      return {
+         ...acum,
+         [item?.id]: item,
+      }
    }, {});
- 
+
    return recursiveAux(item, list_of_items_object)
- }
- 
- /**
- * Converts a tree structure array to a flat array using a target property that will be used as the key. Ut uses recursion
- * @param {Array<TreeItem>} list_of_items A complete tree of items
- * @param {String} child_property The property that will be used as the key to check if the item has children
- * @returns {Array<TreeItem>} A flat array with all the items of the tree stucture
- */
- export const convertTreeStructureToFlatArray = (list_of_items, child_property) => {
+}
+
+/**
+* Converts a tree structure array to a flat array using a target property that will be used as the key. Ut uses recursion
+* @param {Array<TreeItem>} list_of_items A complete tree of items
+* @param {String} child_property The property that will be used as the key to check if the item has children
+* @returns {Array<TreeItem>} A flat array with all the items of the tree stucture
+*/
+export const convertTreeStructureToFlatArray = (list_of_items, child_property) => {
    const rowsToReturn = [];
    for (const row of list_of_items) {
-     rowsToReturn.push(row)
-     if (row[child_property]) {
-       if (!Array.isArray(row[child_property])) {
-         throw new Error('The property ' + child_property + ' must be an array')
-       }
-       rowsToReturn.push(...convertTreeStructureToFlatArray(row[child_property], child_property))
-     }
+      rowsToReturn.push(row)
+      if (row[child_property]) {
+         if (!Array.isArray(row[child_property])) {
+            throw new Error('The property ' + child_property + ' must be an array')
+         }
+         rowsToReturn.push(...convertTreeStructureToFlatArray(row[child_property], child_property))
+      }
    }
    return rowsToReturn;
- }
- 
- /**
-  * Gets all the parent structure from a children item
-  * @param {Object} item The child item 
-  * @param {Object} list_of_items A complete tree of items
-  * @returns {Array<Object>} The array of the parents of the item
-  */
- export  const getAllParents = (item, list_of_items) => {
+}
+
+/**
+ * Gets all the parent structure from a children item
+ * @param {Object} item The child item 
+ * @param {Object} list_of_items A complete tree of items
+ * @returns {Array<Object>} The array of the parents of the item
+ */
+export const getAllParents = (item, list_of_items) => {
    const recursiveAux = (item, list_of_items_object) => {
-     if (item?.parent_id == null) {
-       return [];
-     } else {
-       const parent = list_of_items_object[item?.parent_id];
-       return [
-         parent,
-         ...recursiveAux(parent, list_of_items_object),
-       ]
-     }
+      if (item?.parent_id == null) {
+         return [];
+      } else {
+         const parent = list_of_items_object[item?.parent_id];
+         return [
+            parent,
+            ...recursiveAux(parent, list_of_items_object),
+         ]
+      }
    }
    return recursiveAux(item, list_of_items)
- };
+};
 
- export default {
+export default {
    isEqual,
    pad,
    isNumber,
@@ -509,4 +514,4 @@ export const applyFilter = (items, filterMethod, includeEmptyHeaders = true, par
    getParentId,
    convertTreeStructureToFlatArray,
    getAllParents,
- }
+}

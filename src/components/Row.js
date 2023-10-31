@@ -1,12 +1,16 @@
-import React from 'react'
+import React, { useEffect, useMemo } from 'react'
 import InputField from "./InputField"
 import {Icon} from 'semantic-ui-react'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import flow from 'lodash/flow'
 import {ItemTypes} from './Constants'
-import {formatColumn, isFunction} from "../utils/Utils";
+import {formatColumn as formatColumnUtils, isFunction, formatForSelect} from "../utils/Utils";
 
-import {DragSource, DropTarget} from 'react-dnd'
+import {
+   useDrag, 
+   useDrop, 
+   // connectDragPreview
+   useDragDropManager,
+} from 'react-dnd'
 import {isColumnEditable} from "../utils/column";
 
 const faGripVertical = {
@@ -14,58 +18,6 @@ const faGripVertical = {
    iconName: 'grip-vertical',
    icon: [320, 512, [], "f58e", "M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"]
 };
-
-
-const RowTarget = {
-   drop(props, monitor) {
-
-      // Obtain the dragged item
-      const item = monitor.getItem()
-
-      if (props.onDrop) {
-         props.onDrop(item, props.row)
-      }
-   },
-   canDrop(props, monitor) {
-      if (props.canDrop) {
-         return props.canDrop(props, monitor)
-      }
-      return false
-   }
-};
-
-const RowSource = {
-   canDrag(props, monitor) {
-      if (props.canDrag) {
-         return props.canDrag(props, monitor)
-      }
-      return false
-   },
-
-   beginDrag(props) {
-      return {
-         row: props.row,
-         type: props.type
-      }
-   }
-}
-
-function collectTarget(connect, monitor) {
-   return {
-      connectDropTarget: connect.dropTarget(),
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop()
-   };
-}
-
-function collectSource(connect, monitor) {
-   return {
-      connectDragSource: connect.dragSource(),
-      connectDragPreview: connect.dragPreview(),
-      isDragging: monitor.isDragging(),
-      canDrag: monitor.canDrag()
-   }
-}
 
 
 const getItemStyle = (isDragging, draggableStyle) => ({
@@ -80,89 +32,224 @@ const getItemStyle = (isDragging, draggableStyle) => ({
    ...draggableStyle,
 });
 
-class Row extends React.Component {
+const shouldRenderCell = (column, row) => {
+   let isValueValid = typeof row[column.assesor] === "number" ? true : (column.editable ? true : !!row[column.assesor]);
+   let shouldRender = false;
 
-   constructor(props) {
-      super(props)
-      this.state = {
-         hasScrolled: false,
-      }
+   if (column.onlyItems) {
+      shouldRender = row.is_item;
+   } else if (column.onlyHeaders) {
+      shouldRender = !row.is_item
+   } else {
+      shouldRender = true
    }
 
-   componentDidUpdate = (prevProps, prevState) => {
+   return (!!isValueValid && shouldRender)
+};
 
-      const shouldScroll = this.props.scrollTo === this.props.row.id;
-
-      if (this.rowRef && shouldScroll && !this.state.hasScrolled) {
-         this.rowRef.scrollIntoView()
-         this.setState((prevState) => ({
-            hasScrolled: true
-         }))
-      }
-
-      if (prevProps.scrollTo !== this.props.scrollTo) {
-         this.setState((prevState) => ({
-            hasScrolled: false
-         }))
-      }
-   }
-
-   formatColumn = (format, value) => {
-      return formatColumn(format, value)
-   };
-
-   onRowClick = row => {
-      return e => {
-         e.preventDefault();
-         this.props.onRowClick(row)
+const getDefaultValue = (format) => {
+      switch (format) {
+         case 'text':
+            return '';
+         case 'number':
+            return 0;
+         case 'currency':
+            return 0;
+         case 'textarea':
+            return ''
+         default:
+            return '';
       }
    };
 
-   onRowExpand = row => {
-      if (this.props.onRowExpand) {
-         return e => {
-            this.props.onRowExpand(row)
+const rowFunctionComponent = (props) => {
+   const {
+      allowToDragRows = true,
+      index: rowIndex,
+      row,
+      is_open,
+      columns,
+      depth,
+      cellActive,
+      customRowClass,
+      ignoreItemStyle,
+      expandCollapseColumnIndex,
+      isDragColumnVisible,
+      shouldShowSelectIcon,
+      styleTheme,
+      is_selected,
+   } = props;
+   const [hasScrolled, setHasScrolled] = React.useState(false);
+   const [rowRef, setRowRef] = React.useState(null);
+   const [className, setClassName] = React.useState('Table-Row');
+   
+   useEffect(() => {
+      const shouldScroll = props.scrollTo === row.id;
+      if (rowRef && shouldScroll && !hasScrolled) {
+         rowRef.scrollIntoView({behavior: 'smooth'});
+         setHasScrolled(true);
+      }
+   }, [row, props.scrollTo]);
+
+   useEffect(() => {
+      setHasScrolled(false);
+   }, [props.scrollTo]);
+      
+
+   // Definimos los hooks useDrag y useDrop
+   const [{ isDragging, canDrag }, connectDragSource] = useDrag({
+      type: ItemTypes.ROW,
+      item: {
+        row: row,
+        type: props.type,
+      },
+      canDrag: (monitor) => {
+        return props.canDrag ? props.canDrag(props, monitor) : false;
+      },
+      item: () => {
+        return {
+          row: row,
+          type: props.type,
+        };
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+        canDrag: props.canDrag ? props.canDrag(props, monitor) : false,
+      }),
+    });
+
+    const [{isOver, canDrop}, connectDropTarget] = useDrop({
+      accept: ItemTypes.ROW,
+      drop: (item) => {
+        if (props.onDrop) {
+          props.onDrop(item, row);
+        }
+      },
+      canDrop: (item, monitor) => {
+         const canBeDropped = props.canDrop ? props.canDrop(props, item) : false;
+        return canBeDropped
+      },
+      collect: (monitor) => ({
+        isOver: monitor.isOver({ shallow: true }),
+        canDrop: (props.canDrop && monitor.getItem()) ? props.canDrop(props, monitor.getItem()) : false,
+      }),
+    });
+
+    useEffect(() => {
+      let classname = 'Table-Row';
+      if (props.is_selected) {
+         classname += ` Table-Row-Selected Table-Row--depth-${depth} ${row.is_item ? 'Table-Row-Item' : ''}`
+      } else {
+         if (styleTheme) {
+
+            if (styleTheme === 'striped') {
+               // check if the number is odd
+               if (rowIndex % 2 === 0) {
+                  classname += rowIndex % 2 === 0 ? ` Table-Row--striped` : '';
+               }
+            }
+
+         } else {
+            classname += ` Table-Row--depth-${depth}`;
+            classname += ignoreItemStyle ? ` Table-Row--depth-${depth}` : (`${row.is_item ? ` Table-Row-Item depth-${depth}` : ` Table-Row--depth-${depth}`}`);
+         }
+
+         if (canDrop && isOver) {
+            classname += ' Table-Row-Over'
          }
       }
 
-   };
+      if (customRowClass) {
+         classname += ' ' + customRowClass(row)
+      }
+      
 
-   onRowSelect = row => {
-      if (this.props.onRowSelect) {
-         return e => {
-            this.props.onRowSelect(row, e.ctrlKey || e.metaKey)
+      setClassName(classname);      
+   }, [props.is_selected, styleTheme, rowIndex, row.is_item, depth, customRowClass, isOver, canDrop]);
+
+   const {
+      // cDP, 
+      cDS, 
+      cDT
+   } = useMemo(() => {
+      // let cDP;
+      let cDS, cDT;
+ 
+       if (!allowToDragRows) {
+         //  cDP = item => item
+          cDS = item => item
+          cDT = item => item
+ 
+       } else {
+         //  cDP = connectDragPreview
+          cDS = connectDragSource
+          cDT = connectDropTarget
+       }
+
+      return {
+         // cDP,
+         cDS,
+         cDT
+      }
+   }, [allowToDragRows]);
+
+   const formatColumn = (format, value) => {
+      return formatColumnUtils(format, value);
+   }
+
+   const onRowClick = (row) => {
+      return (e) => {
+         if (props.onRowClick) {
+            e.preventDefault();
+            props.onRowClick(row, e)
          }
       }
-   };
+   }
 
-   onCellClick = (column, row, colIndex, rowIndex, e) => {
+   const onRowExpand = (row) => {
+      if (props.onRowExpand) {
+         return (e) => {
+            props.onRowExpand(row, e)
+         }
+      }
+   }
+
+   const onRowSelect = (row) => {
+      if (props.onRowSelect) {
+         return (e) => {
+            props.onRowSelect(row, e.ctrlKey || e.metaKey)
+         }
+      }
+   }
+
+   const onCellClick = (column, row, colIndex, rowIndex, e) => {
       e.target.addEventListener('copy', (event) => {
          const selection = document.getSelection();
          let value = selection.toString() !== "" ? selection.toString() : row[column.assesor];
          event.clipboardData.setData('text/plain', value);
          event.preventDefault();
       });
-      if (this.props.onCellClick) {
-         this.props.onCellClick(column, row, colIndex, rowIndex)
+      if (props.onCellClick) {
+         props.onCellClick(column, row, colIndex, rowIndex)
       }
    };
 
-   onCellDoubleClick = (column, row, colIndex, rowIndex, e) => {
-      if (this.props.onCellDoubleClick) {
-         this.props.onCellDoubleClick(column, row, colIndex, rowIndex)
+   const onCellDoubleClick = (column, row, colIndex, rowIndex, e) => {
+      if (props.onCellDoubleClick) {
+         props.onCellDoubleClick(column, row, colIndex, rowIndex)
       }
    };
 
-   onCellContextMenu = (column, row, colIndex, rowIndex, e) => {
-      if (this.props.onContextMenu) {
+   const onCellContextMenu = (column, row, colIndex, rowIndex, e) => {
+      if (props.onContextMenu) {
          if (column.filter) {
             e.preventDefault()
-            this.props.onContextMenu(e.pageX, e.pageY, [{
+            props.onContextMenu(e.pageX, e.pageY, [{
                name: 'Aplicar filtro con este valor',
                icon: 'filter',
                action: () => {
 
-                  const filterFunc = this.props.handleFilterColumn(column)
+                  const filterFunc = props.handleFilterColumn(column)
                   const colFormat = column.format ?? 'text'
                   if (colFormat === 'text' || colFormat === 'textarea') {
 
@@ -181,71 +268,44 @@ class Row extends React.Component {
       }
    }
 
-   shouldRenderCell = (column, row) => {
-      let isValueValid = typeof row[column.assesor] === "number" ? true : (column.editable ? true : !!row[column.assesor]);
-      let shouldRender = false;
 
-      if (column.onlyItems) {
-         shouldRender = row.is_item;
-      } else if (column.onlyHeaders) {
-         shouldRender = !row.is_item
-      } else {
-         shouldRender = true
-      }
-
-      return (!!isValueValid && shouldRender)
+   const hasChildren = row.hasOwnProperty('_children') && row._children.length > 0
+   const onFocus = (colIndex) => {
+      if (props.onFocus)
+         props.onFocus(props.index, colIndex);
    };
 
-   getDefaultValue = (format) => {
-      switch (format) {
-         case 'text':
-            return '';
-         case 'number':
-            return 0;
-         case 'currency':
-            return 0;
-         case 'textarea':
-            return ''
-         default:
-            return '';
-      }
-   };
-   onFocus = (colIndex) => {
-      if (this.props.onFocus)
-         this.props.onFocus(this.props.index, colIndex);
-   };
-
-   renderCell = (column, row, isCellActive, colIndex) => {
-
-      if (this.shouldRenderCell(column, row)) {
+   const renderCell = (column, row, isCellActive, colIndex) => {
+ 
+      if (shouldRenderCell(column, row)) {
          let value = row[column.assesor];
          const {editable} = column;
          const format = isFunction(column.format) ? column.format(row) : column.format;
          if (editable) {
             if (value == null) {
-               value = this.getDefaultValue(format)
+               value = getDefaultValue(format)
             }
             const is_editable = isColumnEditable(column, row);
             if (is_editable) {
                return (
                   <InputField
-                     onFocus={() => this.onFocus(colIndex)}
+                     onFocus={() => onFocus(colIndex)}
                      isFocused={isCellActive}
                      format={format}
                      value={value}
                      limit={column.limit}
                      onKeyDown={(e, {value, resetValue}) => {
-                        if (this.props.onKeyDown) {
-                           this.props.onKeyDown(e, {column, row, value, resetValue})
+                        if (props.onKeyDown) {
+                           props.onKeyDown(e, {column, row, value, resetValue})
                         }
                      }}
-                     onKeyDownHotKeys={this.props.onKeyDownHotKeys}
-                     onUpdate={this.props.onUpdateRow ? (value, resetValue) => {
-                        this.props.onUpdateRow(column, row, value, resetValue)
+                     onKeyDownHotKeys={props.onKeyDownHotKeys}
+                     onUpdate={props.onUpdateRow ? (value, resetValue) => {
+                        props.onUpdateRow(column, row, value, resetValue)
                      } : undefined}
                      onPaste={(e) => {
-                        if (this.props.onPaste) {
-                           this.props.onPaste(e, column, row);
+                        if (props.onPaste) {
+                           props.onPaste(e, column, row);
                         }
                      }}
                      customProps={column.customProps}
@@ -261,7 +321,7 @@ class Row extends React.Component {
                         name={'checkmark'}
                      />
                   }
-                  value = this.formatColumn(format, value)
+                  value = formatColumn(format, value)
                }
 
                return <div className={`left-align-flex value ${column.customColumnClass}`}>
@@ -278,7 +338,7 @@ class Row extends React.Component {
                      name={'checkmark'}
                   />
                }
-               value = this.formatColumn(format, value)
+               value = formatColumn(format, value)
             }
 
             return <div className={`left-align-flex value ${column.customColumnClass} expanded-column`}>
@@ -288,210 +348,136 @@ class Row extends React.Component {
 
    };
 
-   render() {
-      const {
-         connectDragPreview,
-         connectDragSource,
-         connectDropTarget,
-         isOver,
-         isDragging,
-         canDrag,
-         canDrop,
-
-         allowToDragRows = true,
-         index: rowIndex,
-         row,
-         is_open,
-         columns,
-         depth,
-         cellActive,
-         customRowClass,
-         ignoreItemStyle,
-         expandCollapseColumnIndex,
-         isDragColumnVisible,
-         shouldShowSelectIcon,
-         styleTheme,
-         is_selected,
-      } = this.props;
-
-
-      const hasChildren = row.hasOwnProperty('_children') && row._children.length > 0
-
-      //  Styles
-
-      let className = `Table-Row`;
-
-      if (this.props.is_selected) {
-         className += ` Table-Row-Selected Table-Row--depth-${depth} ${row.is_item ? 'Table-Row-Item' : ''}`
-      } else {
-         if (styleTheme) {
-
-            if (styleTheme === 'striped') {
-               // check if the number is odd
-               if (rowIndex % 2 === 0) {
-                  className += rowIndex % 2 === 0 ? ` Table-Row--striped` : '';
-               }
-            }
-
-         } else {
-            className += ` Table-Row--depth-${depth}`;
-            className += ignoreItemStyle ? ` Table-Row--depth-${depth}` : (`${row.is_item ? ` Table-Row-Item depth-${depth}` : ` Table-Row--depth-${depth}`}`);
-            className += isOver && canDrop ? ' Table-Row-Over' : '';
-
-         }
-      }
-
-      if (customRowClass) {
-         className += ' ' + customRowClass(row)
-      }
-
-      let cDP, cDS, cDT;
-
-      if (!allowToDragRows) {
-         cDP = item => item
-         cDS = item => item
-         cDT = item => item
-
-      } else {
-         cDP = connectDragPreview
-         cDS = connectDragSource
-         cDT = connectDropTarget
-      }
-
-      const scrollTo = (ref) => {
-         this.rowRef = ref;
-      }
-
-
-      return cDT(cDP(
-         <tr
-            ref={scrollTo}
-            className={className + ' tr_shaded'}
-            onClick={this.props.onRowClick ? this.onRowClick(row) : undefined}
-            key={rowIndex}
-            style={getItemStyle(
-               isDragging,
-               null
-            )}
-         >
-            {isDragColumnVisible && cDS(
-               <td
-                  className={`
-                  ${canDrag ? ' drag-drop-td on-dragging-available' : 'not-drag-drop-row'}
-                  ${columns && columns[0]?.freeze ? 'freeze_horizontal' : ''}
-                  `}
-                  onClick={this.onRowSelect(row)}
-                  style={{
-                     width: 25,
-                     flex: `25 0 auto`,
-                     maxWidth: 25,
-                     cursor: canDrag ? 'grab' : 'default',
-                  }}
-               >
-                  <div className="middle-align-flex">
-                  {canDrag && <span className="drag-drop-icon">
-                        <FontAwesomeIcon icon={faGripVertical} size="1x"/>
-                     </span>}
-                     {(!canDrag && shouldShowSelectIcon) && <>
-                           {is_selected ? 
-                           <Icon color = 'black' name={'check square outline'}/> : 
-                           <Icon color = {row.is_item ? 'black' : 'white'} name={'square outline'}/>}
-                        </>}
-                  </div>
-               </td>
-            )}
-
-            {columns.map((col, colIndex) => {
-               let is_editable = col.editable
-               if (is_editable) {
-                  is_editable = isColumnEditable(col, row);
-               }
-               const readOnlyClass = !is_editable ? 'cell-read-only' : '';
-               const columnClass = col.columnClass ? isFunction(col.columnClass) ? col.columnClass(col, row) : col.columnClass : '';
-               return (col.Cell ? (
-                     <td
-                        onClick={(e) => this.onCellClick(col, row, colIndex, rowIndex, e)}
-                        onDoubleClick={(e) => this.onCellDoubleClick(col, row, colIndex, rowIndex, e)}
-                        onContextMenu={(e) => this.onCellContextMenu(col, row, colIndex, rowIndex, e)}
-                        key={colIndex}
-                        style={{
-                           width: col.width,
-                           flex: `${col.width} 0 auto`,
-                           maxWidth: col.width,
-                           overflow: col.overflow ? col.overflow : 'inherit'
-                        }}
-                        className={`cell ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''}`}
-                     >
-                        <div
-                           className={`flex ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""} ${readOnlyClass}`}>
-                           {!row.is_item && colIndex === expandCollapseColumnIndex &&
-                              <div className={`Table-Column-${is_open ? 'Expanded' : 'Contracted'}`}
-                                   onClick={this.onRowExpand(row)}>
-                                 {hasChildren && (
-                                    is_open ? (
-                                       <Icon className="icon-collapse" disabled
-                                             name='minus square outline'/>
-                                    ) : (
-                                       <Icon className="icon-expand" disabled
-                                             name='plus square outline'/>
-                                    )
-                                 )}
-
-
-                              </div>
-                           }
-                           {<React.Fragment>{col.Cell(row)}</React.Fragment>}
-                        </div>
-                     </td>
-
-                  ) : (
-                     <td
-                        onClick={(e) => this.onCellClick(col, row, colIndex, rowIndex, e)}
-                        onDoubleClick={(e) => this.onCellDoubleClick(col, row, colIndex, rowIndex, e)}
-                        onContextMenu={(e) => this.onCellContextMenu(col, row, colIndex, rowIndex, e)}
-                        key={colIndex}
-                        style={{
-                           width: col.width,
-                           flex: `${col.width} 0 auto`,
-                           maxWidth: col.width,
-                           overflow: col.overflow ? col.overflow : 'inherit'
-                        }}
-                        className={`cell ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''}`}
-                     >
-                        <div
-                           className={`flex ${readOnlyClass} ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""}`}>
-
-                           {!row.is_item && colIndex === expandCollapseColumnIndex &&
-                              <div className={`Table-Column-${is_open ? 'Expanded' : 'Contracted'}`}
-                                   onClick={this.onRowExpand(row)}>
-                                 {hasChildren && (
-                                    is_open ? (
-                                       <Icon className="icon-collapse" disabled
-                                             name='minus square outline'/>
-                                    ) : (
-                                       <Icon className="icon-expand" disabled
-                                             name='plus square outline'/>
-                                    )
-                                 )}
-
-
-                              </div>
-                           }
-                           {this.renderCell(col, row, cellActive === colIndex, colIndex)}
-                        </div>
-
-                     </td>
-                  )
-
-               )
-            })}
-         </tr>
-      ))
+    const scrollTo = (ref) => {
+      setRowRef(ref);
    }
+
+    return cDT(
+      // cDP(
+      <tr
+         ref={scrollTo}
+         className={className + ' tr_shaded'}
+         onClick={props.onRowClick ? onRowClick(row) : undefined}
+         key={rowIndex}
+         style={getItemStyle(
+            isDragging,
+            null
+         )}
+      >
+         {isDragColumnVisible && cDS(
+            <td
+               className={`
+               ${canDrag ? ' drag-drop-td on-dragging-available' : 'not-drag-drop-row'}
+               ${columns && columns[0]?.freeze ? 'freeze_horizontal' : ''}
+               `}
+               onClick={onRowSelect(row)}
+               style={{
+                  width: 25,
+                  flex: `25 0 auto`,
+                  maxWidth: 25,
+                  cursor: canDrag ? 'grab' : 'default',
+               }}
+            >
+               <div className="middle-align-flex">
+               {canDrag && <span className="drag-drop-icon">
+                     <FontAwesomeIcon icon={faGripVertical} size="1x"/>
+                  </span>}
+                  {(!canDrag && shouldShowSelectIcon) && <>
+                        {is_selected ? 
+                        <Icon color = 'black' name={'check square outline'}/> : 
+                        <Icon color = {row.is_item ? 'black' : 'white'} name={'square outline'}/>}
+                     </>}
+               </div>
+            </td>
+         )}
+
+         {columns.map((col, colIndex) => {
+            let is_editable = col.editable
+            if (is_editable) {
+               is_editable = isColumnEditable(col, row);
+            }
+            const readOnlyClass = !is_editable ? 'cell-read-only' : '';
+            const columnClass = col.columnClass ? isFunction(col.columnClass) ? col.columnClass(col, row) : col.columnClass : '';
+            return (col.Cell ? (
+                  <td
+                     onClick={(e) => onCellClick(col, row, colIndex, rowIndex, e)}
+                     onDoubleClick={(e) => onCellDoubleClick(col, row, colIndex, rowIndex, e)}
+                     onContextMenu={(e) => onCellContextMenu(col, row, colIndex, rowIndex, e)}
+                     key={colIndex}
+                     style={{
+                        width: col.width,
+                        flex: `${col.width} 0 auto`,
+                        maxWidth: col.width,
+                        overflow: col.overflow ? col.overflow : 'inherit'
+                     }}
+                     className={`cell ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''}`}
+                  >
+                     <div
+                        className={`flex ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""} ${readOnlyClass}`}>
+                        {!row.is_item && colIndex === expandCollapseColumnIndex &&
+                           <div className={`Table-Column-${is_open ? 'Expanded' : 'Contracted'}`}
+                                onClick={onRowExpand(row)}>
+                              {hasChildren && (
+                                 is_open ? (
+                                    <Icon className="icon-collapse" disabled
+                                          name='minus square outline'/>
+                                 ) : (
+                                    <Icon className="icon-expand" disabled
+                                          name='plus square outline'/>
+                                 )
+                              )}
+
+
+                           </div>
+                        }
+                        {<React.Fragment>{col.Cell(row)}</React.Fragment>}
+                     </div>
+                  </td>
+
+               ) : (
+                  <td
+                     onClick={(e) => onCellClick(col, row, colIndex, rowIndex, e)}
+                     onDoubleClick={(e) => onCellDoubleClick(col, row, colIndex, rowIndex, e)}
+                     onContextMenu={(e) => onCellContextMenu(col, row, colIndex, rowIndex, e)}
+                     key={colIndex}
+                     style={{
+                        width: col.width,
+                        flex: `${col.width} 0 auto`,
+                        maxWidth: col.width,
+                        overflow: col.overflow ? col.overflow : 'inherit'
+                     }}
+                     className={`cell ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''}`}
+                  >
+                     <div
+                        className={`flex ${readOnlyClass} ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""}`}>
+
+                        {!row.is_item && colIndex === expandCollapseColumnIndex &&
+                           <div className={`Table-Column-${is_open ? 'Expanded' : 'Contracted'}`}
+                                onClick={onRowExpand(row)}>
+                              {hasChildren && (
+                                 is_open ? (
+                                    <Icon className="icon-collapse" disabled
+                                          name='minus square outline'/>
+                                 ) : (
+                                    <Icon className="icon-expand" disabled
+                                          name='plus square outline'/>
+                                 )
+                              )}
+
+
+                           </div>
+                        }
+                        {renderCell(col, row, cellActive === colIndex, colIndex)}
+                     </div>
+
+                  </td>
+               )
+
+            )
+         })}
+      </tr>
+   // )
+   )
 }
 
-const component = flow(
-   DragSource(ItemTypes.ROW, RowSource, collectSource),
-   DropTarget(ItemTypes.ROW, RowTarget, collectTarget)
-)(Row)
-export default component;
+export default rowFunctionComponent;
