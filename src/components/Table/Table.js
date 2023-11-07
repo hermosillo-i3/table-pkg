@@ -116,7 +116,6 @@ class Table extends React.Component {
 
    };
 
-   componentDid
 
    onKeyDown = (...args) => {
       if (this.props.onKeyDown) {

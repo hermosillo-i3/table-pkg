@@ -3,11 +3,8 @@ import { useDrop } from 'react-dnd';
 import { ItemTypes } from './Constants';
 import EmptyStateCard from "./EmptyStateCard/EmptyStateCard";
 
-const NoRowsCard = (
-  {
-    noRowsMessage,
-    isCtrlPressed,
-  }) => {
+const NoRowsCard = (props) => {
+  const { noRowsMessage, isCtrlPressed } = props;
 
   const title = noRowsMessage ? noRowsMessage.title : 'Empty table';
   const subtitle = noRowsMessage ? noRowsMessage.subtitle : '';
@@ -28,6 +25,10 @@ const NoRowsCard = (
       }
       return false;
     },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: (props.canDrop && monitor.getItem()) ? props.canDrop(props, monitor.getItem()) : false,
+    }),
   });
 
   return (
