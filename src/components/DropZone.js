@@ -5,7 +5,7 @@ import { useDrop } from 'react-dnd';
 
 const DropZone = (props) => {
   // Reemplaza DropTarget con useDrop
-  const [{ isOver, canDrop }, dropRef] = useDrop({
+  const [{canDrop}, dropRef] = useDrop({
     accept: ItemTypes.ROW,
     drop: (item) => {
       if (props.onDrop) {
@@ -18,6 +18,9 @@ const DropZone = (props) => {
       }
       return false;
     },
+    collect: (monitor) => ({
+      canDrop: (props.canDrop && monitor.getItem()) ? props.canDrop(props, monitor.getItem()) : false,
+    }),
   });
 
   //  Styles
@@ -46,7 +49,7 @@ const DropZone = (props) => {
   }
 
   return (
-    <th style={thStyle} className='Table-Row'>
+    <th style={thStyle} ref={dropRef} className='Table-Row'>
       <td style={tdStyle}>
         <Header as='h4' style={pStyle}>
           Arrastra y suelta aquí los elementos
