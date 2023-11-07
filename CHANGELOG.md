@@ -5,9 +5,10 @@ This file is used to explain in detail changes made to the Table.
   [[TOC]]
 
 ## V 1.0.1
-Date: Nov 6, 2023
+Date: Nov 7, 2023
 * [FIX]
-  * Fix Drag n Drop in noRowsCard
+  * Drag n Drop in noRowsCard
+  * Missing style when hovering no rows card
 
 ## V 1.0.0
 Date: Oct 30, 2023
