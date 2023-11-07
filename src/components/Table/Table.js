@@ -116,7 +116,6 @@ class Table extends React.Component {
 
    };
 
-   componentDid
 
    onKeyDown = (...args) => {
       if (this.props.onKeyDown) {
@@ -353,6 +352,7 @@ class Table extends React.Component {
    };
 
    componentDidUpdate = (prevProps, prevState) => {
+      console.log('Did update Table', this.props.type);
       // if (this.container.current.offsetWidth !== this.state.tableWidth) {
       //    // console.log(`There is a diference ${this.container.current.offsetWidth} - ${this.state.tableWidth}`)
       //    // this.updateColumnsWidth()
