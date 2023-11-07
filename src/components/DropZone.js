@@ -5,8 +5,7 @@ import { useDrop } from 'react-dnd';
 
 const DropZone = (props) => {
   // Reemplaza DropTarget con useDrop
-  const [{ isOver, canDrop }, dropRef] = useDrop({
-    accept: ItemTypes.ROW,
+  const [{canDrop}, dropRef] = useDrop({
     drop: (item) => {
       if (props.onDrop) {
         props.onDrop(item, props.row, props.isCtrlPressed);
@@ -18,6 +17,9 @@ const DropZone = (props) => {
       }
       return false;
     },
+    collect: (monitor) => ({
+      canDrop: (props.canDrop && monitor.getItem()) ? props.canDrop(props, monitor.getItem()) : false,
+    }),
   });
 
   //  Styles

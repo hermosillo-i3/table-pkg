@@ -25,6 +25,10 @@ const NoRowsCard = (props) => {
       }
       return false;
     },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: (props.canDrop && monitor.getItem()) ? props.canDrop(props, monitor.getItem()) : false,
+    }),
   });
 
   return (
