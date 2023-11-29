@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {Header} from "semantic-ui-react";
+import {Button, Header} from "semantic-ui-react";
 import './EmptyStateCard.scss';
 
 const EmptyStateCard = (props) => {
-  const {isOver, canDrop, title, subtitle, icon, iconRotation, isMultiple = false, size="medium"} = props
+  const {isOver, canDrop, title, subtitle, icon, iconRotation, isMultiple = false, size="medium", buttonProps} = props
 
   let iconSize;
 
@@ -38,6 +38,7 @@ return (
     <Header as={size === 'medium' ? 'h4' : 'h5'}>{title}
       {subtitle && <Header.Subheader>{subtitle}</Header.Subheader>}
     </Header>
+    {buttonProps && <Button {...buttonProps} />}
   </div>
 )
 }
@@ -45,7 +46,8 @@ return (
 EmptyStateCard.propTypes = {
   isOver: PropTypes.bool,
   canDrop: PropTypes.bool,
-  icon: PropTypes.string.isRequired
+  icon: PropTypes.string.isRequired,
+  buttonProps: PropTypes.object,
 }
 
 export default EmptyStateCard
