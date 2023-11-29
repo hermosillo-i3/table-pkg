@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.0.2
+Date: Nov 28, 2023
+* [UPDATE]
+  * Empty state card to manage a button action
+
 ## V 1.0.1
 Date: Nov 7, 2023
 * [FIX]
