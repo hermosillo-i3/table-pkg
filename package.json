@@ -14,8 +14,7 @@
     "compile": "babel src --out-dir dist --copy-files",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o docs-build",
-    "build-gitlab": "npm run compile && npm run copy",
-    "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; husky install"
+    "build-gitlab": "npm run compile && npm run copy"
   },
   "repository": {
     "type": "git",

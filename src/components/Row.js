@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import InputField from "./InputField"
-import {Icon} from 'semantic-ui-react'
+import {Icon, Popup} from 'semantic-ui-react'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ItemTypes} from './Constants'
 import {formatColumn as formatColumnUtils, isFunction, formatForSelect} from "../utils/Utils";
@@ -397,7 +397,7 @@ const rowFunctionComponent = (props) => {
             }
             const readOnlyClass = !is_editable ? 'cell-read-only' : '';
             const columnClass = col.columnClass ? isFunction(col.columnClass) ? col.columnClass(col, row) : col.columnClass : '';
-            return (col.Cell ? (
+            let cellToRender = (col.Cell ? (
                   <td
                      onClick={(e) => onCellClick(col, row, colIndex, rowIndex, e)}
                      onDoubleClick={(e) => onCellDoubleClick(col, row, colIndex, rowIndex, e)}
@@ -473,6 +473,23 @@ const rowFunctionComponent = (props) => {
                )
 
             )
+
+            if ('popupInCell' in col) {
+               // Parameters: Content (it can be a function that returns a component or a String), Position, Inverted
+               let content = '';
+               let position = 'position' in col.popupInCell ? col.popupInCell.position :'top center';
+               let inverted = 'inverted' in col.popupInCell ? col.popupInCell.inverted : false;
+
+               if ('content' in col.popupInCell && typeof col.popupInCell.content === 'function') {
+                  content = col.popupInCell.content(row)
+               } else {
+                  content = col.popupInCell.content;
+               }
+
+               cellToRender = <Popup content={content} position={position} inverted={inverted} trigger={cellToRender} />
+            }
+            
+            return cellToRender;
          })}
       </tr>
    // )

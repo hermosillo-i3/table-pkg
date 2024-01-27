@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.X.X
+Date: Jan X, 2024
+* [NEW]
+  * Add property to Column to add popups in their cells
+
 ## V 1.0.2
 Date: Nov 28, 2023
 * [UPDATE]
