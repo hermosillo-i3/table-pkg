@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.1.1
+Date: Jan 29, 2024
+* [UPDATE]
+  * Remove Husky from repository
+
 ## V 1.1.0
 Date: Jan 26, 2024
 * [NEW]
