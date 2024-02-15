@@ -1765,6 +1765,7 @@ Table.propTypes = {
       width: PropTypes.number,
       is_visible: PropTypes.bool,
       Cell: PropTypes.func,
+      popupInCell: PropTypes.func, // Parameters: Content (it can be a function that returns a component or a String), Position, Inverted
       format: PropTypes.oneOfType([PropTypes.string, PropTypes.object, PropTypes.func]),
       filter: PropTypes.bool,
       sortable: PropTypes.bool,
