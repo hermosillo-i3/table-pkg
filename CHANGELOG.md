@@ -4,6 +4,13 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.1.3
+Date: Feb 16, 2024
+* [UPDATE]
+  * Change color on boolean cells when row is item
+* [FIX]
+  * Render false boolean cells
+
 ## V 1.1.2
 Date: Feb 16, 2024
 * [UPDATE]
