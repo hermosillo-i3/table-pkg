@@ -570,7 +570,7 @@ class InputField extends React.Component {
                            }}
                         >
                            {format.trueIcon ? format.trueIcon({isItem}) : <Icon
-                              style={{margin: 'auto', color: isItem ? 'blue' : 'red'}}
+                              style={{margin: 'auto', color: isItem ? 'black' : 'white'}}
                               name={'checkmark'}
                            />}
                         </div>

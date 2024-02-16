@@ -358,13 +358,12 @@ const rowFunctionComponent = (props) => {
                   } else {
                      return format.falseIcon ? format.falseIcon({isItem: row.is_item}) : ''
                   }
-               } else {
-                  value = formatColumn(format, value)
                }
+               value = formatColumn(format, value)
             }
 
-            return <div className={`left-align-flex value ${column.customColumnClass}`}>
-               <span>{value}</span></div>;
+            return <div className={`left-align-flex value ${column.customColumnClass} expanded-column`}>
+               <span className={`${column.compressLongText ? 'compress-row' : ''}`}>{value}</span></div>;
          }
       }
 
