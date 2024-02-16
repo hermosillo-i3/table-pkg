@@ -7,3 +7,4 @@ public
 package-lock.json
 .vscode
 yarn.lock
+docs-build/

@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.1.2
+Date: Feb 16, 2024
+* [UPDATE]
+  * Added format boolean icon props
+
 ## V 1.1.1
 Date: Jan 29, 2024
 * [UPDATE]
