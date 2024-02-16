@@ -569,15 +569,16 @@ class InputField extends React.Component {
                               this.props.onUpdate(!this.state.currentValue, this.resetValue)
                            }}
                         >
-                           <Icon
+                           {format.trueIcon ? format.trueIcon() : <Icon
                               style={{margin: 'auto'}}
                               name={'checkmark'}
-                           />
+                           />}
                         </div>
                         :
                         <div className={`InputField-Boolean ${customColumnClass}`} onClick={() => {
                            this.props.onUpdate(!this.state.currentValue, this.resetValue)
                         }}>
+                           {format.falseIcon ? format.falseIcon() : ''}
                         </div>
                   }
                </React.Fragment>
