@@ -32,8 +32,19 @@ const getItemStyle = (isDragging, draggableStyle) => ({
    ...draggableStyle,
 });
 
+const validateValue = (value, editable) => {
+   const valueType = typeof value;
+   switch (valueType) {
+      case "number":
+         return true;
+      case "boolean": 
+         return true;
+      default:
+         return editable ?? !!value;
+   }
+}
+
 const shouldRenderCell = (column, row) => {
-   let isValueValid = typeof row[column.assesor] === "number" ? true : (column.editable ? true : !!row[column.assesor]);
    let shouldRender = false;
 
    if (column.onlyItems) {
@@ -44,7 +55,7 @@ const shouldRenderCell = (column, row) => {
       shouldRender = true
    }
 
-   return (!!isValueValid && shouldRender)
+   return (validateValue(row[column.assesor], column.editable) && shouldRender)
 };
 
 const getDefaultValue = (format) => {
@@ -289,6 +300,7 @@ const rowFunctionComponent = (props) => {
             if (is_editable) {
                return (
                   <InputField
+                     isItem={row.is_item}
                      onFocus={() => onFocus(colIndex)}
                      isFocused={isCellActive}
                      format={format}
@@ -315,11 +327,16 @@ const rowFunctionComponent = (props) => {
                )
             } else {
                if (column.hasOwnProperty('format')) {
-                  if (format === 'boolean' && value) {
-                     return <Icon
-                        style={{margin: 'auto'}}
+                  const type = typeof format === 'string' ? format : format.type;
+                  if (type === 'boolean') {
+                     if (value) {
+                        return format.trueIcon ? format.trueIcon({isItem: row.is_item}) : <Icon
+                        style={{margin: 'auto', color: row.is_item ? 'black' : 'white'}}
                         name={'checkmark'}
                      />
+                     } else {
+                        return format.falseIcon ? format.falseIcon({isItem: row.is_item}) : ''
+                     }
                   }
                   value = formatColumn(format, value)
                }
@@ -331,11 +348,16 @@ const rowFunctionComponent = (props) => {
 
          } else {
             if (column.hasOwnProperty('format')) {
-               if (format === 'boolean' && value) {
-                  return <Icon
-                     style={{margin: 'auto'}}
+               const type = typeof format === 'string' ? format : format.type;
+               if (type === 'boolean') {
+                  if (value) {
+                     return format.trueIcon ? format.trueIcon({isItem: row.is_item}) : <Icon
+                     style={{margin: 'auto', color: row.is_item ? 'black' : 'white'}}
                      name={'checkmark'}
                   />
+                  } else {
+                     return format.falseIcon ? format.falseIcon({isItem: row.is_item}) : ''
+                  }
                }
                value = formatColumn(format, value)
             }
