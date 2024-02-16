@@ -208,7 +208,7 @@ class InputField extends React.Component {
 
    render() {
 
-      const {isFocused, format, limit, customProps = {}, onPaste, maxValue, customColumnClass, compressLongText} = this.props;
+      const {isFocused, format, limit, customProps = {}, onPaste, maxValue, customColumnClass, compressLongText, isItem} = this.props;
       const {currentValue, isTextAreaMultiLineActive} = this.state;
       const type = typeof format === 'string' ? format : format.type;
       const decimals = typeof format === 'string' ? 2 : format.decimals;
@@ -569,8 +569,8 @@ class InputField extends React.Component {
                               this.props.onUpdate(!this.state.currentValue, this.resetValue)
                            }}
                         >
-                           {format.trueIcon ? format.trueIcon() : <Icon
-                              style={{margin: 'auto'}}
+                           {format.trueIcon ? format.trueIcon({isItem}) : <Icon
+                              style={{margin: 'auto', color: isItem ? 'black' : 'white'}}
                               name={'checkmark'}
                            />}
                         </div>
@@ -578,7 +578,7 @@ class InputField extends React.Component {
                         <div className={`InputField-Boolean ${customColumnClass}`} onClick={() => {
                            this.props.onUpdate(!this.state.currentValue, this.resetValue)
                         }}>
-                           {format.falseIcon ? format.falseIcon() : ''}
+                           {format.falseIcon ? format.falseIcon({isItem}) : ''}
                         </div>
                   }
                </React.Fragment>
