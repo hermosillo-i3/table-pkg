@@ -32,19 +32,18 @@ const getItemStyle = (isDragging, draggableStyle) => ({
    ...draggableStyle,
 });
 
-const validateValue = (value, editable) => {
-   const valueType = typeof value;
-   switch (valueType) {
-      case "number":
-         return true;
-      case "boolean": 
-         return true;
-      default:
-         return editable ?? !!value;
-   }
-}
-
 const shouldRenderCell = (column, row) => {
+   let isValueValid = false;
+   switch(typeof row[column.assesor]) {
+      case 'number':
+         isValueValid = true;
+         break;
+      case 'boolean':
+         isValueValid = true;
+         break;
+      default:
+         isValueValid = column.editable ? true : !!row[column.assesor]
+   }
    let shouldRender = false;
 
    if (column.onlyItems) {
@@ -55,7 +54,7 @@ const shouldRenderCell = (column, row) => {
       shouldRender = true
    }
 
-   return (validateValue(row[column.assesor], column.editable) && shouldRender)
+   return (!!isValueValid && shouldRender)
 };
 
 const getDefaultValue = (format) => {
