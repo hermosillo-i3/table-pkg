@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.1.4
+Date: Feb 16, 2024
+* [FIX]
+  * Fix total row in shouldRenderCell function
+
 ## V 1.1.3
 Date: Feb 16, 2024
 * [UPDATE]
