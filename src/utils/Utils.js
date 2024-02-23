@@ -495,6 +495,61 @@ export const getAllParents = (item, list_of_items) => {
    return recursiveAux(item, list_of_items)
 };
 
+
+/**
+ * Filter object values by its types
+ * @param {Object} row Row's object 
+ * @returns {Object} Object without function and object values
+ */
+export const filterRowValues = (row) => {
+   return Object.entries(row).reduce((accum, [key, value]) => {
+      switch (typeof value) {
+         case 'object':
+            if (Array.isArray(value)) {
+               return {
+                  ...accum,
+                  [key]: filterArrayObjectValuesRecursively(value).filter((n) => n != null && n != undefined),
+               }
+            } else {
+               return accum;
+            }
+         case 'function':
+            return accum;
+         case 'symbol':
+            return accum;
+         default:
+            return {
+               ...accum,
+               [key]: value,
+            }
+      }
+   }, {});
+}
+
+/**
+ * Filter array elements by its type recursively
+ * @param {Array} arr Array to filer 
+ * @returns {Array} Array filtered (without null and undefined values)
+ */
+const filterArrayObjectValuesRecursively = (arr) => {
+   return arr.map((value) => {
+      switch (typeof value) {
+         case 'object':
+            if (Array.isArray(value)) {
+               return filterArrayObjectValuesRecursively(value).filter((n) => n != null && n != undefined);
+            } else {
+               return null;
+            }
+         case 'function':
+            return null;
+         case 'symbol':
+            return null;
+         default:
+            return value;
+      }
+   });
+};
+
 export default {
    isEqual,
    pad,
@@ -514,4 +569,5 @@ export default {
    getParentId,
    convertTreeStructureToFlatArray,
    getAllParents,
+   filterRowValues,
 }

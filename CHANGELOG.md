@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.1.5
+Date: Feb 23, 2024
+* [UPDATE]
+  * Filter object values when generating CSV file
+
 ## V 1.1.4
 Date: Feb 16, 2024
 * [FIX]
