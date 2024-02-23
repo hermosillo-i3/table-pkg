@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import ModalForm from "../ModalForm";
 import { CSVLink } from "react-csv";
-import { convertTreeStructureToFlatArray } from "../../utils/Utils";
+import { convertTreeStructureToFlatArray, filterRowValues } from "../../utils/Utils";
 import './Toolbar.scss';
 
 
@@ -79,8 +79,9 @@ export default class Toolbar extends React.Component {
    };
 
    getExcelRows = () => {
-
-      return convertTreeStructureToFlatArray(this.props.rows ?? [], 'subrows');
+      const {rows = []} = this.props;
+      const filteredRows = rows.map((row) => filterRowValues(row));
+      return convertTreeStructureToFlatArray(filteredRows, 'subrows');
    }
 
    render() {
