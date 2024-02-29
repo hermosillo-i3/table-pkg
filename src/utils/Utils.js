@@ -506,7 +506,7 @@ export const filterRowValues = (row) => {
       if (key === 'subrows') {
          return {
             ...accum,
-            [key]: value,
+            [key]: value.map((r) => filterRowValues(r)),
          }
       }
       switch (typeof value) {
