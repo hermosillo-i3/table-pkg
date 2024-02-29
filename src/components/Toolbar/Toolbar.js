@@ -80,7 +80,6 @@ export default class Toolbar extends React.Component {
 
    getExcelRows = () => {
       const {rows = []} = this.props;
-      console.log(rows)
       const filteredRows = rows.map((row) => filterRowValues(row));
       return convertTreeStructureToFlatArray(filteredRows, 'subrows');
    }
