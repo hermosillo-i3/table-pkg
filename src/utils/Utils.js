@@ -503,6 +503,12 @@ export const getAllParents = (item, list_of_items) => {
  */
 export const filterRowValues = (row) => {
    return Object.entries(row).reduce((accum, [key, value]) => {
+      if (key === 'subrows') {
+         return {
+            ...accum,
+            [key]: value,
+         }
+      }
       switch (typeof value) {
          case 'object':
             if (Array.isArray(value)) {
