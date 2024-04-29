@@ -431,9 +431,17 @@ $header_lv_5: #efefef;
   /* border-bottom: 1px solid red; */
 }
 
-.Table-Row-Selected,
 .Table-Row-Selected td {
   background-color: rgba(156, 219, 235, 1) !important;
+}
+.Table-Row-Selected:hover td {
+  background-color: #d2d2d2 !important;
+  .value,
+  td.drag-drop-td.on-dragging-available,
+  .flex.expand-column,
+  td.not-drag-drop-row {
+    background: #d2d2d2;
+  }
 }
 
 .Table-Row td {
