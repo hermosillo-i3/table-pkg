@@ -305,10 +305,9 @@ const rowFunctionComponent = (props) => {
                      format={format}
                      value={value}
                      limit={column.limit}
-                     onKeyDown={(e, {value, resetValue}) => {
-                        if (props.onKeyDown) {
-                           props.onKeyDown(e, {column, row, value, resetValue})
-                        }
+                     onKeyDown={(e, options) => {
+                        const {value, resetValue} = options;
+                        props.onKeyDown(e, {column, row, value, resetValue})
                      }}
                      onKeyDownHotKeys={props.onKeyDownHotKeys}
                      onUpdate={props.onUpdateRow ? (value, resetValue) => {
