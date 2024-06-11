@@ -107,7 +107,6 @@ const InputFieldSearch = (props) => {
                 props.onKeyDownHotKeys(e);
             }
         }
-        console.log("e.key", e.key);
         e.stopPropagation();
     };
 
