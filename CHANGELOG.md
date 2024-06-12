@@ -4,6 +4,17 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.2.X
+Date: Jun 11, 2024
+* [NEW]
+  * InputFieldSearch, component to search in a catalog of items. 
+
+## V 1.2.0
+Date: Apr 29, 2024
+* [FIX]
+  * Fix bug with style when hover a selected row. 
+  * Fix bug with style when a row is deselected.
+
 ## V 1.1.6
 Date: Feb 29, 2024
 * [FIX]
