@@ -678,6 +678,15 @@ input.InputField {
   padding: 0.5rem !important;
 }
 
+.InputField.search{
+  .input{
+    width: 260px;
+  }
+  .results{
+    width: 260px !important;
+  }
+}
+
 .Table-Settings-Header-Row td {
   padding: 5px;
   font-weight: bold;

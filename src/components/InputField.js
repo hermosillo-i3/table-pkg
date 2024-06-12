@@ -1,12 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Textarea from 'react-textarea-autosize';
-import {Icon, Progress} from "semantic-ui-react";
+import { Icon, Progress } from "semantic-ui-react";
 import Cleave from 'cleave.js/react';
-import InputConfirm from "./InputConfirm";
 import {NumericFormat} from 'react-number-format';
 import dateFormatter from "../utils/dateFormatter";
 
+import InputConfirm from "./InputConfirm";
+import InputFieldSearch from "./InputFieldSearch";
 
 import { KEY_CODES } from "../utils/index";
 
@@ -214,379 +215,449 @@ class InputField extends React.Component {
       const decimals = typeof format === 'string' ? 2 : format.decimals;
 
       switch (type) {
-         case "textarea":
-            {
-               if (isFocused) {
-                  return (
-                     <Textarea
-                        className={`InputField ${customColumnClass}`} 
-                        style={{
-                           resize: 'none',
-                           padding: 0
-                        }}
-                        inputRef={(input) => {
-                           this.input = input
-                        }}
-
-                        onKeyDown={(e) => {
-                           this.onKeyDown(e);
-                           if (this.props.onKeyDownHotKeys) {
-                              this.props.onKeyDownHotKeys(e);
-                              if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
-                                 this.setState((prevState) => ({
-                                    isTextAreaMultiLineActive: true,
-                                 }))
-                              } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
-                                 (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
-                                 this.onBlur(e);
-                              }
-                           };
-                        }}
-                        minRows={1}
-                        type='text'
-                        value={this.state.currentValue}
-                        onChange={this.onChange}
-                        onBlur={this.onBlur}
-                        maxLength={limit}
-                        onFocus={this.onFocus}
-                     />
-                  )
-               } else {
-                  return(
-                     <p className={`Text ${customColumnClass} ${compressLongText ? 'compress-row' : ''}`} onClick={(e) => this.onCreateTextArea(e)}>
-                        {this.state.currentValue}
-                     </p>
-                  )
-               }
-            }
-
-         case "number": {
+        case "textarea": {
+          if (isFocused) {
             return (
-               <input
-                  ref={(input) => {
-                     this.input = input
-                  }}
-                  className={`InputField ${customColumnClass}`} 
-                  type='text'
-                  value={this.state.currentValue}
-                  onChange={this.onChange}
-                  onBlur={this.onBlur}
-                  onKeyDown={(e) => {
-                     this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) {
-                        this.props.onKeyDownHotKeys(e);
-                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
-                           this.setState((prevState) => ({
-                              isTextAreaMultiLineActive: true,
-                           }))
-                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
-                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
-                           this.onBlur(e);
-                        }
-                     };
-                  }}
-                  onPaste={(e) => {
-                     if (onPaste) {
-                        onPaste(e);
-                     }
-                  }}
-                  onFocus={this.onFocus}
-               />
-            )
-         }
-
-         case "progress-bar": {
-            return (
-               <InputConfirm
-                  value={this.state.currentValue} hide={!isFocused}
-                  onAccept={(value) => {
-                     this.onChange({target: {value}});
-                     if (this.props.onUpdate) {
-                        this.props.onUpdate(value, this.resetValue)
-                     }
-                  }}
-                  onKeyUp={(e) => {
-                     if (this.props.onKeyUp) this.props.onKeyUp(e);
-                  }}
-                  onKeyDown={(e) => {
-                     this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) {
-                        this.props.onKeyDownHotKeys(e);
-                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
-                           this.setState((prevState) => ({
-                              isTextAreaMultiLineActive: true,
-                           }))
-                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
-                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
-                           this.onBlur(e);
-                        }
-                     };
-                  }}
-                  trigger={
-                     <Progress progress
-                               color='blue'
-                               percent={this.state.currentValue}
-                               className={`InputField ${customColumnClass}`}/>
+              <Textarea
+                className={`InputField ${customColumnClass}`}
+                style={{
+                  resize: "none",
+                  padding: 0,
+                }}
+                inputRef={(input) => {
+                  this.input = input;
+                }}
+                onKeyDown={(e) => {
+                  this.onKeyDown(e);
+                  if (this.props.onKeyDownHotKeys) {
+                    this.props.onKeyDownHotKeys(e);
+                    if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                      this.setState((prevState) => ({
+                        isTextAreaMultiLineActive: true,
+                      }));
+                    } else if (
+                      (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
+                      (!isTextAreaMultiLineActive &&
+                        (e.keyCode === KEY_CODES.ARROW_UP ||
+                          e.keyCode === KEY_CODES.ARROW_DOWN))
+                    ) {
+                      this.onBlur(e);
+                    }
                   }
-                  appearOnClick={true}
-               />
-
-            )
-         }
-         case "number-with-negative": {
+                }}
+                minRows={1}
+                type="text"
+                value={this.state.currentValue}
+                onChange={this.onChange}
+                onBlur={this.onBlur}
+                maxLength={limit}
+                onFocus={this.onFocus}
+              />
+            );
+          } else {
             return (
-               <input
-                  ref={(input) => {
-                     this.input = input
-                  }}
-                  className={`InputField ${customColumnClass}`} 
-                  type='text'
-                  value={this.state.currentValue}
-                  onChange={this.onChange}
-                  onBlur={this.onBlur}
-                  onFocus={this.onFocus}
-                  onKeyDown={(e) => {
-                     this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) {
-                        this.props.onKeyDownHotKeys(e);
-                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
-                           this.setState((prevState) => ({
-                              isTextAreaMultiLineActive: true,
-                           }))
-                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
-                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
-                           this.onBlur(e);
-                        }
-                     };
-                  }}
-               />
-            )
-         }
+              <p
+                className={`Text ${customColumnClass} ${
+                  compressLongText ? "compress-row" : ""
+                }`}
+                onClick={(e) => this.onCreateTextArea(e)}
+              >
+                {this.state.currentValue}
+              </p>
+            );
+          }
+        }
 
-         case "currency": {
-            return (
-               <Cleave
-                  className={`InputField ${customColumnClass}`} 
-                  value={this.state.currentValue}
-                  htmlRef={(input) => {
-                     this.input = input
-                  }}
-                  onChange={e => {
-                     const value = e.target.rawValue
-                     let isValid = true;
-                     if (maxValue != null) {
-                        const floatValue = parseFloat(value);
-                        isValid = floatValue <= maxValue
-                     }
-
-                     if (isValid) {
-                        this.setState((prevState) => ({
-                           currentValue: value
-                        }))
-                     }
-
-                  }}
-                  onPaste={(e) => {
-                     if (onPaste) {
-                        onPaste(e);
-                     }
-                  }}
-                  onKeyDown={(e) => {
-                     this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) {
-                        this.props.onKeyDownHotKeys(e);
-                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
-                           this.setState((prevState) => ({
-                              isTextAreaMultiLineActive: true,
-                           }))
-                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
-                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
-                           this.onBlur(e);
-                        }
-                     };
-                  }}
-                  onBlur={this.onBlur}
-                  onFocus={this.onFocus}
-                  options={{
-                     numeral: true,
-                     rawValueTrimPrefix: true,
-                     numeralDecimalScale: decimals,
-                     prefix: '$'
+        case "number": {
+          return (
+            <input
+              ref={(input) => {
+                this.input = input;
+              }}
+              className={`InputField ${customColumnClass}`}
+              type="text"
+              value={this.state.currentValue}
+              onChange={this.onChange}
+              onBlur={this.onBlur}
+              onKeyDown={(e) => {
+                this.onKeyDown(e);
+                if (this.props.onKeyDownHotKeys) {
+                  this.props.onKeyDownHotKeys(e);
+                  if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                    this.setState((prevState) => ({
+                      isTextAreaMultiLineActive: true,
+                    }));
+                  } else if (
+                    (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
+                    (!isTextAreaMultiLineActive &&
+                      (e.keyCode === KEY_CODES.ARROW_UP ||
+                        e.keyCode === KEY_CODES.ARROW_DOWN))
+                  ) {
+                    this.onBlur(e);
                   }
+                }
+              }}
+              onPaste={(e) => {
+                if (onPaste) {
+                  onPaste(e);
+                }
+              }}
+              onFocus={this.onFocus}
+            />
+          );
+        }
+
+        case "progress-bar": {
+          return (
+            <InputConfirm
+              value={this.state.currentValue}
+              hide={!isFocused}
+              onAccept={(value) => {
+                this.onChange({ target: { value } });
+                if (this.props.onUpdate) {
+                  this.props.onUpdate(value, this.resetValue);
+                }
+              }}
+              onKeyUp={(e) => {
+                if (this.props.onKeyUp) this.props.onKeyUp(e);
+              }}
+              onKeyDown={(e) => {
+                this.onKeyDown(e);
+                if (this.props.onKeyDownHotKeys) {
+                  this.props.onKeyDownHotKeys(e);
+                  if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                    this.setState((prevState) => ({
+                      isTextAreaMultiLineActive: true,
+                    }));
+                  } else if (
+                    (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
+                    (!isTextAreaMultiLineActive &&
+                      (e.keyCode === KEY_CODES.ARROW_UP ||
+                        e.keyCode === KEY_CODES.ARROW_DOWN))
+                  ) {
+                    this.onBlur(e);
                   }
-               />
-            )
-         }
-
-         case "number-format": {
-            return (
-               <NumericFormat
-                  getInputRef={(input) => {
-                     this.input = input
-                  }}
-                  className={`InputField ${customColumnClass}`} 
-                  value={this.state.currentValue}
-                  onBlur={this.onBlur}
-                  onValueChange={(values) => {
-                     const {value} = values;
-                     // formattedValue = $2,223
-                     // value ie, 2223
-                     this.setState((prevState) => ({
-                        currentValue: value
-                     }))
-                  }}
-                  onFocus={this.onFocus}
-                  thousandSeparator={true}
-                  onKeyDown={(e) => {
-                     this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) {
-                        this.props.onKeyDownHotKeys(e);
-                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
-                           this.setState((prevState) => ({
-                              isTextAreaMultiLineActive: true,
-                           }))
-                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
-                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
-                           this.onBlur(e);
-                        }
-                     };
-                  }}
-                  onPaste={(e) => {
-                     if (onPaste) {
-                        onPaste(e);
-                     }
-                  }}
-                  {...format.options} />
-            )
-         }
-
-         case "text": {
-            return isFocused ? (
-               <input
-                  className={`InputField ${customColumnClass}`} 
-                  ref={(input) => {
-                     this.input = input
-                  }}
-                  type='text'
-                  value={this.state.currentValue}
-                  onChange={this.onChange}
-                  onBlur={this.onBlur}
-                  maxLength={limit}
-                  onPaste={(e) => {
-                     if (onPaste) {
-                        onPaste(e);
-                     }
-                  }}
-                  onFocus={this.onFocus}
-                  onKeyDown={(e) => {
-                     this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) {
-                        this.props.onKeyDownHotKeys(e);
-                        if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
-                           this.setState((prevState) => ({
-                              isTextAreaMultiLineActive: true,
-                           }))
-                        } else if ((!e.shiftKey && e.keyCode === KEY_CODES.ENTER) || 
-                           (!isTextAreaMultiLineActive && (e.keyCode === KEY_CODES.ARROW_UP || e.keyCode === KEY_CODES.ARROW_DOWN))) {
-                           this.onBlur(e);
-                        }
-                     };
-                  }}
-                  {...customProps}
-               />
-            ) : (<div className={`left-align-flex value ${customColumnClass} expanded-column`}>
-            <span className={`${compressLongText ? 'compress-row' : ''}`}>{this.state.currentValue}</span></div>)
-         }
-
-         case "select": {
-            const {options, placeholder, defaultValue} = this.props.format;
-            let value = this.state.currentValue;
-            if (defaultValue != null && defaultValue !== '') {
-               value = this.state.currentValue == null || this.state.currentValue === "" ? defaultValue : this.state.currentValue;
-            }
-            return (
-               <select
-                  defaultValue={defaultValue}
-                  value={value}
-                  className={`InputField ${customColumnClass}`} 
-                  placeholder={placeholder}
-                  onChange={this.onChange}
-                  onBlur={this.onBlur}
-                  onFocus={this.onFocus}
-               >
-                  {options.map(({value, key, text}, index) => (
-                     <option value={value} key={key ? key : index}>
-                        {text}
-                     </option>
-                  ))}
-               </select>
-            )
-         }
-
-         case "date": {
-
-            const toDate = date => {
-               if (!date)
-                  return;
-               let p = date.split('-')
-               p = p.map(i => parseInt(i))
-               return new Date(p[0], p[1] - 1, p[2])
-            }
-
-            let selected = currentValue;
-            if (typeof currentValue == "string") {
-               selected = toDate(selected);
-            } else if (typeof currentValue == "number") {
-               selected = new Date(selected)
-            }
-
-            return (
-               <React.Fragment>
-                  <input 
-                  type='date' 
-                  onFocus={this.onFocus} 
-                  className={`InputField ${customColumnClass}`} 
-                  onChange={this.onChangeDate} 
-                  value={selected ? dateFormatter(selected).format('YYYY-MM-DD') : null}
-                  onKeyDown={(e) => {
-                     this.onKeyDown(e);
-                     if (this.props.onKeyDownHotKeys) this.props.onKeyDownHotKeys(e);
-                  }} 
-                  {...customProps}
-                  />
-               </React.Fragment>
-            )
-         }
-
-         case "boolean": {
-            return (
-               <React.Fragment>
-                  {
-                     this.state.currentValue ?
-                        <div
-                           className={`InputField-Boolean ${customColumnClass}`} 
-                           onClick={() => {
-                              this.props.onUpdate(!this.state.currentValue, this.resetValue)
-                           }}
-                        >
-                           {format.trueIcon ? format.trueIcon({isItem}) : <Icon
-                              style={{margin: 'auto', color: isItem ? 'black' : 'white'}}
-                              name={'checkmark'}
-                           />}
-                        </div>
-                        :
-                        <div className={`InputField-Boolean ${customColumnClass}`} onClick={() => {
-                           this.props.onUpdate(!this.state.currentValue, this.resetValue)
-                        }}>
-                           {format.falseIcon ? format.falseIcon({isItem}) : ''}
-                        </div>
+                }
+              }}
+              trigger={
+                <Progress
+                  progress
+                  color="blue"
+                  percent={this.state.currentValue}
+                  className={`InputField ${customColumnClass}`}
+                />
+              }
+              appearOnClick={true}
+            />
+          );
+        }
+        case "number-with-negative": {
+          return (
+            <input
+              ref={(input) => {
+                this.input = input;
+              }}
+              className={`InputField ${customColumnClass}`}
+              type="text"
+              value={this.state.currentValue}
+              onChange={this.onChange}
+              onBlur={this.onBlur}
+              onFocus={this.onFocus}
+              onKeyDown={(e) => {
+                this.onKeyDown(e);
+                if (this.props.onKeyDownHotKeys) {
+                  this.props.onKeyDownHotKeys(e);
+                  if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                    this.setState((prevState) => ({
+                      isTextAreaMultiLineActive: true,
+                    }));
+                  } else if (
+                    (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
+                    (!isTextAreaMultiLineActive &&
+                      (e.keyCode === KEY_CODES.ARROW_UP ||
+                        e.keyCode === KEY_CODES.ARROW_DOWN))
+                  ) {
+                    this.onBlur(e);
                   }
-               </React.Fragment>
+                }
+              }}
+            />
+          );
+        }
 
-            )
+        case "currency": {
+          return (
+            <Cleave
+              className={`InputField ${customColumnClass}`}
+              value={this.state.currentValue}
+              htmlRef={(input) => {
+                this.input = input;
+              }}
+              onChange={(e) => {
+                const value = e.target.rawValue;
+                let isValid = true;
+                if (maxValue != null) {
+                  const floatValue = parseFloat(value);
+                  isValid = floatValue <= maxValue;
+                }
+
+                if (isValid) {
+                  this.setState((prevState) => ({
+                    currentValue: value,
+                  }));
+                }
+              }}
+              onPaste={(e) => {
+                if (onPaste) {
+                  onPaste(e);
+                }
+              }}
+              onKeyDown={(e) => {
+                this.onKeyDown(e);
+                if (this.props.onKeyDownHotKeys) {
+                  this.props.onKeyDownHotKeys(e);
+                  if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                    this.setState((prevState) => ({
+                      isTextAreaMultiLineActive: true,
+                    }));
+                  } else if (
+                    (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
+                    (!isTextAreaMultiLineActive &&
+                      (e.keyCode === KEY_CODES.ARROW_UP ||
+                        e.keyCode === KEY_CODES.ARROW_DOWN))
+                  ) {
+                    this.onBlur(e);
+                  }
+                }
+              }}
+              onBlur={this.onBlur}
+              onFocus={this.onFocus}
+              options={{
+                numeral: true,
+                rawValueTrimPrefix: true,
+                numeralDecimalScale: decimals,
+                prefix: "$",
+              }}
+            />
+          );
+        }
+
+        case "number-format": {
+          return (
+            <NumericFormat
+              getInputRef={(input) => {
+                this.input = input;
+              }}
+              className={`InputField ${customColumnClass}`}
+              value={this.state.currentValue}
+              onBlur={this.onBlur}
+              onValueChange={(values) => {
+                const { value } = values;
+                // formattedValue = $2,223
+                // value ie, 2223
+                this.setState((prevState) => ({
+                  currentValue: value,
+                }));
+              }}
+              onFocus={this.onFocus}
+              thousandSeparator={true}
+              onKeyDown={(e) => {
+                this.onKeyDown(e);
+                if (this.props.onKeyDownHotKeys) {
+                  this.props.onKeyDownHotKeys(e);
+                  if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                    this.setState((prevState) => ({
+                      isTextAreaMultiLineActive: true,
+                    }));
+                  } else if (
+                    (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
+                    (!isTextAreaMultiLineActive &&
+                      (e.keyCode === KEY_CODES.ARROW_UP ||
+                        e.keyCode === KEY_CODES.ARROW_DOWN))
+                  ) {
+                    this.onBlur(e);
+                  }
+                }
+              }}
+              onPaste={(e) => {
+                if (onPaste) {
+                  onPaste(e);
+                }
+              }}
+              {...format.options}
+            />
+          );
+        }
+
+        case "text": {
+          return isFocused ? (
+            <input
+              className={`InputField ${customColumnClass}`}
+              ref={(input) => {
+                this.input = input;
+              }}
+              type="text"
+              value={this.state.currentValue}
+              onChange={this.onChange}
+              onBlur={this.onBlur}
+              maxLength={limit}
+              onPaste={(e) => {
+                if (onPaste) {
+                  onPaste(e);
+                }
+              }}
+              onFocus={this.onFocus}
+              onKeyDown={(e) => {
+                this.onKeyDown(e);
+                if (this.props.onKeyDownHotKeys) {
+                  this.props.onKeyDownHotKeys(e);
+                  if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                    this.setState((prevState) => ({
+                      isTextAreaMultiLineActive: true,
+                    }));
+                  } else if (
+                    (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
+                    (!isTextAreaMultiLineActive &&
+                      (e.keyCode === KEY_CODES.ARROW_UP ||
+                        e.keyCode === KEY_CODES.ARROW_DOWN))
+                  ) {
+                    this.onBlur(e);
+                  }
+                }
+              }}
+              {...customProps}
+            />
+          ) : (
+            <div
+              className={`left-align-flex value ${customColumnClass} expanded-column`}
+            >
+              <span className={`${compressLongText ? "compress-row" : ""}`}>
+                {this.state.currentValue}
+              </span>
+            </div>
+          );
+        }
+
+        case "select": {
+          const { options, placeholder, defaultValue } = this.props.format;
+          let value = this.state.currentValue;
+          if (defaultValue != null && defaultValue !== "") {
+            value =
+              this.state.currentValue == null || this.state.currentValue === ""
+                ? defaultValue
+                : this.state.currentValue;
+          }
+          return (
+            <select
+              defaultValue={defaultValue}
+              value={value}
+              className={`InputField ${customColumnClass}`}
+              placeholder={placeholder}
+              onChange={this.onChange}
+              onBlur={this.onBlur}
+              onFocus={this.onFocus}
+            >
+              {options.map(({ value, key, text }, index) => (
+                <option value={value} key={key ? key : index}>
+                  {text}
+                </option>
+              ))}
+            </select>
+          );
+        }
+
+        case "date": {
+          const toDate = (date) => {
+            if (!date) return;
+            let p = date.split("-");
+            p = p.map((i) => parseInt(i));
+            return new Date(p[0], p[1] - 1, p[2]);
+          };
+
+          let selected = currentValue;
+          if (typeof currentValue == "string") {
+            selected = toDate(selected);
+          } else if (typeof currentValue == "number") {
+            selected = new Date(selected);
+          }
+
+          return (
+            <React.Fragment>
+              <input
+                type="date"
+                onFocus={this.onFocus}
+                className={`InputField ${customColumnClass}`}
+                onChange={this.onChangeDate}
+                value={
+                  selected ? dateFormatter(selected).format("YYYY-MM-DD") : null
+                }
+                onKeyDown={(e) => {
+                  this.onKeyDown(e);
+                  if (this.props.onKeyDownHotKeys)
+                    this.props.onKeyDownHotKeys(e);
+                }}
+                {...customProps}
+              />
+            </React.Fragment>
+          );
+        }
+
+        case "boolean": {
+          return (
+            <React.Fragment>
+              {this.state.currentValue ? (
+                <div
+                  className={`InputField-Boolean ${customColumnClass}`}
+                  onClick={() => {
+                    this.props.onUpdate(
+                      !this.state.currentValue,
+                      this.resetValue
+                    );
+                  }}
+                >
+                  {format.trueIcon ? (
+                    format.trueIcon({ isItem })
+                  ) : (
+                    <Icon
+                      style={{
+                        margin: "auto",
+                        color: isItem ? "black" : "white",
+                      }}
+                      name={"checkmark"}
+                    />
+                  )}
+                </div>
+              ) : (
+                <div
+                  className={`InputField-Boolean ${customColumnClass}`}
+                  onClick={() => {
+                    this.props.onUpdate(
+                      !this.state.currentValue,
+                      this.resetValue
+                    );
+                  }}
+                >
+                  {format.falseIcon ? format.falseIcon({ isItem }) : ""}
+                </div>
+              )}
+            </React.Fragment>
+          );
+        }
+
+        case "search": {
+
+         return (
+           <InputFieldSearch
+             {...this.props}
+             {...format}
+             resetValue={this.resetValue}
+             value={this.state.currentValue}
+           />
+         );
          }
-         default:
-            break;
+          
+        default:
+          break;
       }
    };
 }
