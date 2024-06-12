@@ -94,11 +94,25 @@ $header_lv_5: #efefef;
   // For parent #e93333d2
   // For child #e91e1ed2
   td {
-
     .value,
     p,
     select {
       color: #000000 !important;
+    }
+  }
+
+  &:hover {
+    cursor: default !important;
+
+    .value,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #ffafafd2 !important;
     }
   }
 }
@@ -124,11 +138,25 @@ $header_lv_5: #efefef;
   // For parent #e93333d2
   // For child #e91e1ed2
   td {
-
     .value,
     p,
     select {
       color: #000000 !important;
+    }
+  }
+
+  &:hover {
+    cursor: default !important;
+
+    .value,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #ffafafd2 !important;
     }
   }
 }
@@ -150,6 +178,21 @@ $header_lv_5: #efefef;
 
 .Table-Row-Warning {
   background-color: #fbbd08 !important;
+
+  &:hover {
+    cursor: default !important;
+
+    .value,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #ffd188 !important;
+    }
+  }
 }
 
 .Table-Row-Close {
@@ -159,10 +202,14 @@ $header_lv_5: #efefef;
     cursor: default !important;
 
     .value,
+    input,
+    textarea,
+    p,
+    select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: initial !important;
+      background-color: rgb(137, 218, 137) !important;
     }
   }
 }
@@ -434,6 +481,7 @@ $header_lv_5: #efefef;
 .Table-Row-Selected td {
   background-color: rgba(156, 219, 235, 1) !important;
 }
+
 .Table-Row-Selected:hover td {
   background-color: #d2d2d2 !important;
   .value,
