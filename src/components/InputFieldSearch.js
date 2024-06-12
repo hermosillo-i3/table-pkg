@@ -90,6 +90,7 @@ const InputFieldSearch = (props) => {
            return (
              <React.Fragment>
                <Search
+                 className={`InputField ${customColumnClass}`}
                  input={{ ref: searchRef }}
                  placeholder={"Escribe para buscar..."}
                  minCharacters={3}
