@@ -468,11 +468,10 @@ $header_lv_5: #efefef;
     background: #fff;
 
     .value,
-    div.flex.cell-read-only,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background: #dbdbdb;
+      background: #e9e9e9;
     }
   }
 }
