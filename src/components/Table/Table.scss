@@ -199,7 +199,7 @@ $header_lv_5: #efefef;
 }
 
 .Table-Row-Close {
-  background-color: rgba(232, 251, 232, 1) !important;
+  background-color: rgb(215, 251, 215) !important;
 
   &:hover {
     cursor: default !important;
@@ -213,7 +213,13 @@ $header_lv_5: #efefef;
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: rgb(167, 238, 167) !important;
+      background-color: rgb(179, 239, 179) !important;
+    }
+    .drag-drop-icon svg {
+      color: #436541;
+    }
+    .drag-drop-td:hover .drag-drop-icon svg {
+      color: #648b62;
     }
   }
 }
@@ -1037,11 +1043,11 @@ input.InputField {
 }
 
 .drag-drop-td:hover .drag-drop-icon svg {
-  color: #848f99;
+  color: #5d6a77;
 }
 
 .drag-drop-icon svg {
-  color: #b7bfc6;
+  color: #95a2ad;
   max-height: 16px;
 }
 
