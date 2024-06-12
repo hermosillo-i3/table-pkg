@@ -3,36 +3,12 @@ import { Search } from "semantic-ui-react";
 import deburr from "lodash/deburr";
 import escapeRegExp from "lodash/escapeRegExp";
 import filter from "lodash/filter";
+import { getObjectProp } from "@hermosillo-i3/utils-pkg/src/object";
 
 const initialState = { isLoading: false, results: [], value: "" };
 
-/**
- * Returns properties of object in the selected stringProp
- * Example: getObjectProp({a: {b: 1}}, 'a.b') returns 1
- * @param {Object} object
- * @param {String} stringProp
- * @returns {Object}
- */
-const getObjectProp = function (object, stringProp) {
-    let s = stringProp
-    let o = object
-    s = s.replace(/\[(\w+)\]/g, '.$1') // convert indexes to properties
-    s = s.replace(/^\./, '') // strip a leading dot
-    const a = s.split('.')
-    for (let i = 0, n = a.length; i < n; ++i) {
-        const k = a[i]
-        if (k in o) {
-            o = o[k]
-        } else {
-            return
-        }
-    }
-    return o
-}
-
 const InputFieldSearch = (props) => {
     const searchRef = React.createRef();
-    const hiddenRef = React.createRef();
 
     const {
       isFocused,
@@ -57,14 +33,10 @@ const InputFieldSearch = (props) => {
     }, [isFocused]);
 
     const handleResultSelect = (_, { result }) => {
-    //   if (props.onChangeSelected) {
-    //     props.onChangeSelected(result);
-    //   }
       const { title } = result;
       setHasUpdated(true);
       setValue(title);
       onUpdate(result, resetValue);
-    //   hiddenRef.current.focus();
     };
 
     const handleSearchChange = (_, { value }) => {
@@ -101,6 +73,10 @@ const InputFieldSearch = (props) => {
           if (results.length === 1) {
             handleResultSelect(null, { result: results[0] });
           }
+          if (!hasUpdated) {
+            // Reset the value in case the user didn't select any result
+            setValue(props.value);
+          }
           props.onKeyDownHotKeys(e);
         } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
             if(results.length === 0){
@@ -113,15 +89,6 @@ const InputFieldSearch = (props) => {
     if (isFocused) {
            return (
              <React.Fragment>
-               <input
-                 ref={hiddenRef}
-                 type="text"
-                 style={{
-                   position: "absolute",
-                   left: "-9999px",
-                //    display: "none",
-                 }}
-               />
                <Search
                  input={{ ref: searchRef }}
                  placeholder={"Escribe para buscar..."}

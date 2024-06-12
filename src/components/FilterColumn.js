@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Input, Popup, Icon, Button, Label, Checkbox, Grid } from "semantic-ui-react";
+import { convertObjectToArray } from "@hermosillo-i3/utils-pkg/src/object";
 import Cleave from 'cleave.js/react';
 import PropTypes from 'prop-types'
 
@@ -8,7 +9,7 @@ const FilterColumn = (props) => {
       onSubmit,
       column,
       column_extended,
-
+      rows,
    } = props;
    let filter_options;
    if (column.format?.options != null) {
@@ -22,7 +23,7 @@ const FilterColumn = (props) => {
          }
       }, {})
    }
-   const { format = 'text' } = column;
+   const { format = "text", assesor } = column;
    const [text, setText] = useState('')
    const [range, setRange] = useState({
       max: null,
@@ -45,7 +46,7 @@ const FilterColumn = (props) => {
          onSubmit('')
       }
    }
-   const submitFilter = () => {
+   const submitFilterForSelect = () => {
       const objectOptions = column.format.options.reduce((acc, item) => {
          return {
             ...acc,
@@ -62,25 +63,47 @@ const FilterColumn = (props) => {
       onSubmit(arrayOfOptions.length > 0 ? arrayOfOptions : '')
    }
 
-   let colFormat = typeof format === 'object' ? format.type : format;
-   const column_extended_value = column_extended?.filter_value
+   const submitFilterForSearch = () => {
+     onSubmit(Object.keys(filterStatus));
+   };
 
+   let colFormat = typeof format === 'object' ? format.type : format;
+   
    const hasCurrencyValue = useMemo(() => {
       return (range.max != null || range.min != null || range.equal != null)
    }, [range])
 
+   // it will only contain the values that exists in the rows not all options available to select.
+   const filterOptionsInRows = useMemo(() => {
+      if(colFormat === 'search'){
+          const _rows = convertObjectToArray(rows);
+          const filter_options_in_rows = _rows
+            ?.map((row) => row[assesor])
+            .filter((value) => value != null);
+         return filter_options_in_rows;
+      
+      }else{
+         return [];
+      }
+   }, [rows])
+
+   const column_extended_value = column_extended?.filter_value;
    useEffect(() => {
       if (column_extended_value != null) {
          if (colFormat === 'text' || colFormat === 'textarea') {
             setText(column_extended_value)
          } else if (colFormat === 'currency') {
             setRange(column_extended_value)
+         } else if(colFormat === 'search' && Array.isArray(column_extended_value) && column_extended_value.length > 0){
+            setFilterStatus({
+              [column_extended_value[0]]: true,
+            });
          }
       }
 
    }, [column_extended_value, colFormat])
 
-   if (colFormat === 'text' || colFormat === 'textarea' || colFormat === 'list' || column?.format?.options != null) {
+   if (colFormat === 'text' || colFormat === 'textarea' || colFormat === 'list' || colFormat === 'select') {
       return (
          <Popup
             on='click'
@@ -131,7 +154,7 @@ const FilterColumn = (props) => {
                            labelPosition='left'
                            fluid
                            onClick={() => {
-                              submitFilter()
+                              submitFilterForSelect();
                            }}
                         >
                            <Icon name='search' size='small' />
@@ -155,6 +178,60 @@ const FilterColumn = (props) => {
          />
 
       )
+   }
+
+   if(colFormat === 'search'){
+
+      return (
+        <Popup
+          on="click"
+          pinned
+          position="bottom left"
+          wide="very"
+          content={
+            <div style>
+              <div class="wrapper">
+                {filterOptionsInRows.map((item, index) => {
+                  return (
+                    <Checkbox
+                      checked={filterStatus[item]}
+                      onClick={() => {
+                        toggleFilter(item);
+                      }}
+                      label={item}
+                    />
+                  );
+                })}
+              </div>
+              <Button
+                size="tiny"
+                icon
+                labelPosition="left"
+                fluid
+                onClick={() => {
+                  submitFilterForSearch();
+                }}
+              >
+                <Icon name="search" size="small" />
+                Buscar
+              </Button>
+            </div>
+          }
+          trigger={
+            <Button
+              size="mini"
+              icon="filter"
+              style={{
+                padding: "0.4rem",
+              }}
+              type={"button"}
+              {...(JSON.stringify(filterStatus) != "{}"
+                ? { color: "orange" }
+                : {})}
+            />
+          }
+        />
+      );
    }
 
    if (colFormat === 'currency') {
@@ -280,8 +357,5 @@ const FieldCurrency = ({ label, value, onChange, disabled }) => {
          }
       />
    </div>
-}
-const FilterRow = () => {
-
 }
 export default FilterColumn
