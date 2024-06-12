@@ -8,6 +8,7 @@ This file is used to explain in detail changes made to the Table.
 Date: Jun 11, 2024
 * [NEW]
   * InputFieldSearch, component to search in a catalog of items. 
+  * Add hover style for colored rows
 
 ## V 1.2.0
 Date: Apr 29, 2024
