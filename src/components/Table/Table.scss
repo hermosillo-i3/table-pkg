@@ -94,11 +94,26 @@ $header_lv_5: #efefef;
   // For parent #e93333d2
   // For child #e91e1ed2
   td {
-
     .value,
     p,
     select {
       color: #000000 !important;
+    }
+  }
+
+  &:hover {
+    cursor: default !important;
+
+    .value,
+    div.flex.cell-read-only,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #ffafafd2 !important;
     }
   }
 }
@@ -124,11 +139,26 @@ $header_lv_5: #efefef;
   // For parent #e93333d2
   // For child #e91e1ed2
   td {
-
     .value,
     p,
     select {
       color: #000000 !important;
+    }
+  }
+
+  &:hover {
+    cursor: default !important;
+
+    .value,
+    div.flex.cell-read-only,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #ffafafd2 !important;
     }
   }
 }
@@ -150,19 +180,46 @@ $header_lv_5: #efefef;
 
 .Table-Row-Warning {
   background-color: #fbbd08 !important;
-}
-
-.Table-Row-Close {
-  background-color: rgba(232, 251, 232, 1) !important;
 
   &:hover {
     cursor: default !important;
 
     .value,
+    div.flex.cell-read-only,
+    input,
+    textarea,
+    p,
+    select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: initial !important;
+      background-color: #ffe0ae !important;
+    }
+  }
+}
+
+.Table-Row-Close {
+  background-color: rgb(215, 251, 215) !important;
+
+  &:hover {
+    cursor: default !important;
+
+    .value,
+    div.flex.cell-read-only,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: rgb(179, 239, 179) !important;
+    }
+    .drag-drop-icon svg {
+      color: #436541;
+    }
+    .drag-drop-td:hover .drag-drop-icon svg {
+      color: #648b62;
     }
   }
 }
@@ -178,10 +235,15 @@ $header_lv_5: #efefef;
     cursor: default !important;
 
     .value,
+    div.flex.cell-read-only,
+    input,
+    textarea,
+    p,
+    select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: initial !important;
+      background-color: #699953 !important;
     }
   }
 }
@@ -417,10 +479,15 @@ $header_lv_5: #efefef;
     background: #fff;
 
     .value,
+    div.flex.cell-read-only,
+    input,
+    textarea,
+    p,
+    select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background: #f9f9f9;
+      background: #dddddd;
     }
   }
 }
@@ -434,13 +501,19 @@ $header_lv_5: #efefef;
 .Table-Row-Selected td {
   background-color: rgba(156, 219, 235, 1) !important;
 }
+
 .Table-Row-Selected:hover td {
   background-color: #d2d2d2 !important;
   .value,
+  div.flex.cell-read-only,
+  input,
+  textarea,
+  p,
+  select,
   td.drag-drop-td.on-dragging-available,
   .flex.expand-column,
   td.not-drag-drop-row {
-    background: #d2d2d2;
+    background: #d2d2d2 !important;
   }
 }
 
@@ -603,6 +676,15 @@ select.InputField {
 input.InputField {
   min-height: 100%;
   padding: 0.5rem !important;
+}
+
+.InputField.search{
+  .input{
+    width: 260px;
+  }
+  .results{
+    width: 260px !important;
+  }
 }
 
 .Table-Settings-Header-Row td {
@@ -970,11 +1052,11 @@ input.InputField {
 }
 
 .drag-drop-td:hover .drag-drop-icon svg {
-  color: #848f99;
+  color: #5d6a77;
 }
 
 .drag-drop-icon svg {
-  color: #b7bfc6;
+  color: #95a2ad;
   max-height: 16px;
 }
 

@@ -252,27 +252,34 @@ const rowFunctionComponent = (props) => {
 
    const onCellContextMenu = (column, row, colIndex, rowIndex, e) => {
       if (props.onContextMenu) {
-         if (column.filter) {
-            e.preventDefault()
-            props.onContextMenu(e.pageX, e.pageY, [{
-               name: 'Aplicar filtro con este valor',
-               icon: 'filter',
+         const colFormat =
+           typeof column.format === "object"
+             ? column.format.type
+             : column.format;
+             const validFormatsToApplyFilter = ["text", "textarea", "currency", "search"];
+         if (column.filter && validFormatsToApplyFilter.includes(colFormat)) {
+           e.preventDefault();
+           props.onContextMenu(e.pageX, e.pageY, [
+             {
+               name: "Aplicar filtro con este valor",
+               icon: "filter",
                action: () => {
+                 const filterFunc = props.handleFilterColumn(column);
 
-                  const filterFunc = props.handleFilterColumn(column)
-                  const colFormat = column.format ?? 'text'
-                  if (colFormat === 'text' || colFormat === 'textarea') {
-
-                     filterFunc(row[column.assesor])
-                  } else if (colFormat === 'currency') {
-                     filterFunc({
-                        max: null,
-                        min: null,
-                        equal: row[column.assesor],
-                     })
-                  }
-               }
-            }])
+                 if (colFormat === "text" || colFormat === "textarea") {
+                   filterFunc(row[column.assesor]);
+                 } else if (colFormat === "currency") {
+                   filterFunc({
+                     max: null,
+                     min: null,
+                     equal: row[column.assesor],
+                   });
+                 } else if (colFormat === "search") {
+                   filterFunc([row[column.assesor]]);
+                 }
+               },
+             },
+           ]);
          }
 
       }
@@ -305,10 +312,9 @@ const rowFunctionComponent = (props) => {
                      format={format}
                      value={value}
                      limit={column.limit}
-                     onKeyDown={(e, {value, resetValue}) => {
-                        if (props.onKeyDown) {
-                           props.onKeyDown(e, {column, row, value, resetValue})
-                        }
+                     onKeyDown={(e, options) => {
+                        const {value, resetValue} = options;
+                        props.onKeyDown(e, {column, row, value, resetValue})
                      }}
                      onKeyDownHotKeys={props.onKeyDownHotKeys}
                      onUpdate={props.onUpdateRow ? (value, resetValue) => {

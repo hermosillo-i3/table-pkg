@@ -656,6 +656,16 @@ class Table extends React.Component {
                      ((filter.value.findIndex(element =>cellValue.toLowerCase() === element.text.toLowerCase())!= -1) || 
                      (filter.value.findIndex(element =>cellValue.toLowerCase() === element.key.toLowerCase())!= -1)) : false;
                      return row.is_item ? final : false
+                  case 'search':
+                     if(cellValue.trim() === ' '){
+                        return false;
+                     }
+                     if(filter.value?.length === 0){
+                        return true;
+                     }
+                     // iterate over filter.value to see if any of the values is in the cellValue
+                     return filter.value.some(value => cellValue.toLowerCase().includes(value.toLowerCase()));
+                       ;
                   case 'text':
                      return cellValue.trim() !== '' ? cellValue.toLowerCase().includes(filter.value.toLowerCase()) : false;
                   case 'currency':
@@ -1508,6 +1518,7 @@ class Table extends React.Component {
                            column_extended={this.state.column_extended[col.assesor]}
                            column={col}
                            onSubmit={this.handleFilterColumn(col)}
+                           rows={this.props.rows}
                         />
                      </div>}
 
