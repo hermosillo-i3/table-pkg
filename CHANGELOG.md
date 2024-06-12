@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.X.X
+Date: XXX XX, 20XX
+* [NEW]
+  * Add hover style for colored rows
+
 ## V 1.1.6
 Date: Feb 29, 2024
 * [FIX]
