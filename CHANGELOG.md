@@ -8,6 +8,7 @@ This file is used to explain in detail changes made to the Table.
 Date: Jun 13, 2024
 * [FIX]
   * Remove duplicate options in FilterColum when type is Search 
+  * Removing all options was not showing all rows
 
 ## V 1.3.0
 Date: Jun 12, 2024

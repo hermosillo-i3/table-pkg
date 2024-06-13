@@ -183,56 +183,59 @@ const FilterColumn = (props) => {
 
    if(colFormat === 'search'){
 
-      return (
-        <Popup
-          on="click"
-          pinned
-          position="bottom left"
-          wide="very"
-          content={
-            <div style>
-              <div class="wrapper">
-                {filterOptionsInRows.map((item, index) => {
-                  return (
-                    <Checkbox
-                      checked={filterStatus[item]}
-                      onClick={() => {
-                        toggleFilter(item);
-                      }}
-                      label={item}
-                    />
-                  );
-                })}
+      if (filterOptionsInRows.length === 0) { 
+            return null;
+      }
+        return (
+          <Popup
+            on="click"
+            pinned
+            position="bottom left"
+            wide="very"
+            content={
+              <div style>
+                <div class="wrapper">
+                  {filterOptionsInRows.map((item, index) => {
+                    return (
+                      <Checkbox
+                        checked={filterStatus[item]}
+                        onClick={() => {
+                          toggleFilter(item);
+                        }}
+                        label={item}
+                      />
+                    );
+                  })}
+                </div>
+                <Button
+                  size="tiny"
+                  icon
+                  labelPosition="left"
+                  fluid
+                  onClick={() => {
+                    submitFilterForSearch();
+                  }}
+                >
+                  <Icon name="search" size="small" />
+                  Buscar
+                </Button>
               </div>
+            }
+            trigger={
               <Button
-                size="tiny"
-                icon
-                labelPosition="left"
-                fluid
-                onClick={() => {
-                  submitFilterForSearch();
+                size="mini"
+                icon="filter"
+                style={{
+                  padding: "0.4rem",
                 }}
-              >
-                <Icon name="search" size="small" />
-                Buscar
-              </Button>
-            </div>
-          }
-          trigger={
-            <Button
-              size="mini"
-              icon="filter"
-              style={{
-                padding: "0.4rem",
-              }}
-              type={"button"}
-              {...(JSON.stringify(filterStatus) != "{}"
-                ? { color: "orange" }
-                : {})}
-            />
-          }
-        />
-      );
+                type={"button"}
+                {...(JSON.stringify(filterStatus) != "{}"
+                  ? { color: "orange" }
+                  : {})}
+              />
+            }
+          />
+        );
    }
 
    if (colFormat === 'currency') {
