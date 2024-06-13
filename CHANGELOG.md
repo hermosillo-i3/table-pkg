@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.3.1
+Date: Jun 13, 2024
+* [FIX]
+  * Remove duplicate options in FilterColum when type is Search 
+
 ## V 1.3.0
 Date: Jun 12, 2024
 * [NEW]

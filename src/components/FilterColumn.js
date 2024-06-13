@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Input, Popup, Icon, Button, Label, Checkbox, Grid } from "semantic-ui-react";
+import { Input, Popup, Icon, Button, Label, Checkbox } from "semantic-ui-react";
+import PropTypes from 'prop-types'
 import { convertObjectToArray } from "@hermosillo-i3/utils-pkg/src/object";
 import Cleave from 'cleave.js/react';
-import PropTypes from 'prop-types'
+import uniq from 'lodash/uniq';
 
 const FilterColumn = (props) => {
    const {
@@ -80,7 +81,7 @@ const FilterColumn = (props) => {
           const filter_options_in_rows = _rows
             ?.map((row) => row[assesor])
             .filter((value) => value != null);
-         return filter_options_in_rows;
+         return uniq(filter_options_in_rows);
       
       }else{
          return [];
