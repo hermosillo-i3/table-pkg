@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Input, Popup, Icon, Button, Label, Checkbox, Grid } from "semantic-ui-react";
+import { Input, Popup, Icon, Button, Label, Checkbox } from "semantic-ui-react";
+import PropTypes from 'prop-types'
 import { convertObjectToArray } from "@hermosillo-i3/utils-pkg/src/object";
 import Cleave from 'cleave.js/react';
-import PropTypes from 'prop-types'
+import uniq from 'lodash/uniq';
 
 const FilterColumn = (props) => {
    const {
@@ -80,7 +81,7 @@ const FilterColumn = (props) => {
           const filter_options_in_rows = _rows
             ?.map((row) => row[assesor])
             .filter((value) => value != null);
-         return filter_options_in_rows;
+         return uniq(filter_options_in_rows);
       
       }else{
          return [];
@@ -182,56 +183,59 @@ const FilterColumn = (props) => {
 
    if(colFormat === 'search'){
 
-      return (
-        <Popup
-          on="click"
-          pinned
-          position="bottom left"
-          wide="very"
-          content={
-            <div style>
-              <div class="wrapper">
-                {filterOptionsInRows.map((item, index) => {
-                  return (
-                    <Checkbox
-                      checked={filterStatus[item]}
-                      onClick={() => {
-                        toggleFilter(item);
-                      }}
-                      label={item}
-                    />
-                  );
-                })}
+      if (filterOptionsInRows.length === 0) { 
+            return null;
+      }
+        return (
+          <Popup
+            on="click"
+            pinned
+            position="bottom left"
+            wide="very"
+            content={
+              <div style>
+                <div class="wrapper">
+                  {filterOptionsInRows.map((item, index) => {
+                    return (
+                      <Checkbox
+                        checked={filterStatus[item]}
+                        onClick={() => {
+                          toggleFilter(item);
+                        }}
+                        label={item}
+                      />
+                    );
+                  })}
+                </div>
+                <Button
+                  size="tiny"
+                  icon
+                  labelPosition="left"
+                  fluid
+                  onClick={() => {
+                    submitFilterForSearch();
+                  }}
+                >
+                  <Icon name="search" size="small" />
+                  Buscar
+                </Button>
               </div>
+            }
+            trigger={
               <Button
-                size="tiny"
-                icon
-                labelPosition="left"
-                fluid
-                onClick={() => {
-                  submitFilterForSearch();
+                size="mini"
+                icon="filter"
+                style={{
+                  padding: "0.4rem",
                 }}
-              >
-                <Icon name="search" size="small" />
-                Buscar
-              </Button>
-            </div>
-          }
-          trigger={
-            <Button
-              size="mini"
-              icon="filter"
-              style={{
-                padding: "0.4rem",
-              }}
-              type={"button"}
-              {...(JSON.stringify(filterStatus) != "{}"
-                ? { color: "orange" }
-                : {})}
-            />
-          }
-        />
-      );
+                type={"button"}
+                {...(JSON.stringify(filterStatus) != "{}"
+                  ? { color: "orange" }
+                  : {})}
+              />
+            }
+          />
+        );
    }
 
    if (colFormat === 'currency') {
