@@ -101,11 +101,25 @@ $header_lv_5: #efefef;
     }
   }
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #ef7470 !important;
+    }
+  }
+
   &:hover {
     cursor: default !important;
 
     .value,
-    div.flex.cell-read-only,
+    div,
     input,
     textarea,
     p,
@@ -146,11 +160,25 @@ $header_lv_5: #efefef;
     }
   }
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #ec3535d2 !important;
+    }
+  }
+
   &:hover {
     cursor: default !important;
 
     .value,
-    div.flex.cell-read-only,
+    div,
     input,
     textarea,
     p,
@@ -181,6 +209,20 @@ $header_lv_5: #efefef;
 .Table-Row-Warning {
   background-color: #fbbd08 !important;
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #fbbd08 !important;
+    }
+  }
+
   &:hover {
     cursor: default !important;
 
@@ -201,11 +243,25 @@ $header_lv_5: #efefef;
 .Table-Row-Close {
   background-color: rgb(215, 251, 215) !important;
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: rgb(215, 251, 215) !important;
+    }
+  }
+
   &:hover {
     cursor: default !important;
 
     .value,
-    div.flex.cell-read-only,
+    div,
     input,
     textarea,
     p,
@@ -231,11 +287,25 @@ $header_lv_5: #efefef;
 .Table-Row-Lib {
   background-color: #93c47d !important;
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #93c47d !important;
+    }
+  }
+
   &:hover {
     cursor: default !important;
 
     .value,
-    div.flex.cell-read-only,
+    div,
     input,
     textarea,
     p,
@@ -255,10 +325,29 @@ $header_lv_5: #efefef;
 .Table-Row-Close-Alt {
   background-color: rgba(177, 185, 255, 0.5) !important;
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: rgba(177, 185, 255, 0.5);
+    }
+  }
+
   &:hover {
     cursor: default !important;
 
     .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
@@ -274,7 +363,7 @@ $header_lv_5: #efefef;
   font-size: 12px;
 
   td {
-    background-color: $row_total;
+    background-color: $row_total !important;
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
     padding: 5px !important;
@@ -286,6 +375,20 @@ $header_lv_5: #efefef;
     p,
     select {
       color: white !important;
+    }
+  }
+
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: $row_total;
     }
   }
 }
@@ -307,9 +410,28 @@ $header_lv_5: #efefef;
     }
   }
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: $header_lv_0;
+    }
+  }
+
   &:hover {
 
     .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
@@ -336,9 +458,28 @@ $header_lv_5: #efefef;
     }
   }
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: $header_lv_1;
+    }
+  }
+
   &:hover {
 
     .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
@@ -365,9 +506,28 @@ $header_lv_5: #efefef;
     }
   }
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: $header_lv_2;
+    }
+  }
+
   &:hover {
 
     .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
@@ -384,9 +544,28 @@ $header_lv_5: #efefef;
     border-right: 1px solid #000000;
   }
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: $header_lv_3;
+    }
+  }
+
   &:hover {
 
     .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
@@ -403,9 +582,28 @@ $header_lv_5: #efefef;
     border-right: 1px solid #000000;
   }
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: $header_lv_4;
+    }
+  }
+
   &:hover {
 
     .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
@@ -422,9 +620,28 @@ $header_lv_5: #efefef;
     border-right: 1px solid #000000;
   }
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: $header_lv_5;
+    }
+  }
+
   &:hover {
 
     .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
@@ -458,7 +675,6 @@ $header_lv_5: #efefef;
     border-top: 1px solid rgba(224, 224, 224, 1);
   }
 
-
   td {
     border-right: 1px solid rgba(224, 224, 224, 1);
     border-bottom: 1px solid rgba(224, 224, 224, 1);
@@ -474,12 +690,26 @@ $header_lv_5: #efefef;
 
   }
 
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: white;
+    }
+  }
+
   &:hover {
     cursor: pointer;
     background: #fff;
 
     .value,
-    div.flex.cell-read-only,
+    div,
     input,
     textarea,
     p,
@@ -499,13 +729,23 @@ $header_lv_5: #efefef;
 }
 
 .Table-Row-Selected td {
-  background-color: rgba(156, 219, 235, 1) !important;
+  .value,
+  div,
+  input,
+  textarea,
+  p,
+  select,
+  td.drag-drop-td.on-dragging-available,
+  .flex.expand-column,
+  td.not-drag-drop-row {
+    background-color: rgba(156, 219, 235, 1) !important;
+  }
 }
 
 .Table-Row-Selected:hover td {
   background-color: #d2d2d2 !important;
   .value,
-  div.flex.cell-read-only,
+  div,
   input,
   textarea,
   p,
