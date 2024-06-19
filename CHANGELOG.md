@@ -4,6 +4,12 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.4.0
+Date: Jun 19, 2024
+* [FIX]
+  * Fix freeze horizontal in table row items 
+  * Fix hover in table row items with depth 1 to 5
+
 ## V 1.3.1
 Date: Jun 13, 2024
 * [FIX]
