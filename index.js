@@ -12,7 +12,6 @@ import {
     Toolbar as ToolbarComponent,
     Utils as UtilsComponent,
     DragDropContext as DragDropContextComponent,
-    RowColorCatalog as RowColorCatalogComponent,
 } from './src/index'
 
 
@@ -29,5 +28,4 @@ export const Settings = SettingsComponent;
 export const Toolbar = ToolbarComponent;
 export const Utils = UtilsComponent;
 export const DragDropContext = DragDropContextComponent;
-export const RowColorCatalog = RowColorCatalogComponent;
 export default Table;
