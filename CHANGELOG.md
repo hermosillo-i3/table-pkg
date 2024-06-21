@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.5.1
+Date: Jun 21, 2024
+* [UPDATE]
+  * Change font color on table headers
+
 ## V 1.5.0
 Date: Jun 21, 2024
 * [NEW]
