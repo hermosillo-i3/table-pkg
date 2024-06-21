@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.5.0
+Date: Jun 21, 2024
+* [NEW]
+  * Add new colors for row levels (6, 7, 8) and their hover colors 
+
 ## V 1.4.0
 Date: Jun 19, 2024
 * [FIX]
