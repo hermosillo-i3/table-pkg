@@ -546,6 +546,15 @@ $header_lv_8: #BFD1E5;
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
+
+    .value,
+    input,
+    i,
+    textarea,
+    p,
+    select {
+      color: white;
+    }
   }
 
   .freeze_horizontal {
@@ -584,6 +593,15 @@ $header_lv_8: #BFD1E5;
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
+
+    .value,
+    input,
+    i,
+    textarea,
+    p,
+    select {
+      color: white;
+    }
   }
 
   .freeze_horizontal {
