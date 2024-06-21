@@ -10,6 +10,7 @@ $header_lv_6: #67c3f8;
 $header_lv_7: #80b8df;
 $header_lv_8: #BFD1E5;
 
+$font-color-header: #ffffff;
 
 .Table {
   width: 100%;
@@ -378,7 +379,7 @@ $header_lv_8: #BFD1E5;
     textarea,
     p,
     select {
-      color: white !important;
+      color: $font-color-header !important;
     }
   }
 
@@ -410,7 +411,7 @@ $header_lv_8: #BFD1E5;
     textarea,
     p,
     select {
-      color: white;
+      color: $font-color-header;
     }
   }
 
@@ -458,7 +459,7 @@ $header_lv_8: #BFD1E5;
     p,
     select,
     i.black.plus.square.outline.icon.icon-expand {
-      color: white;
+      color: $font-color-header;
     }
   }
 
@@ -506,7 +507,7 @@ $header_lv_8: #BFD1E5;
     p,
     select,
     i.black.plus.square.outline.icon.icon-expand {
-      color: white;
+      color: $font-color-header;
     }
   }
 
@@ -553,7 +554,7 @@ $header_lv_8: #BFD1E5;
     textarea,
     p,
     select {
-      color: white;
+      color: $font-color-header;
     }
   }
 
@@ -600,7 +601,7 @@ $header_lv_8: #BFD1E5;
     textarea,
     p,
     select {
-      color: white;
+      color: $font-color-header;
     }
   }
 
