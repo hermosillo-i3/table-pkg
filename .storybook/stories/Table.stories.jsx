@@ -331,7 +331,6 @@ FilterAndSelect.args = {
     enableSelectAll: true,
 };
 
-
 export const SelectIcon = SelectTemplate.bind({});
 SelectIcon.args = {
     rows: {
@@ -998,4 +997,78 @@ CustomColumnClass.args = {
             columnClass: 'custom-column-2'
         }
     ],
+};
+
+export const RowColors = Template.bind({});
+RowColors.args = {
+    rows: {
+        1: {
+            id: 1,
+            description: 'Close Alt',
+            is_item: true,
+            is_close_alt: true,
+        },
+        2: {
+            id: 2,
+            description: 'Close',
+            is_item: true,
+            is_close: true,
+        },
+        3: {
+            id: 3,
+            description: 'Current Modified Child',
+            is_item: true,
+            is_current_modified_child: true,
+        },
+        4: {
+            id: 4,
+            description: 'Current Modified Parent',
+            is_item: true,
+            is_current_modified_parent: true,
+        },
+        5: {
+            id: 5,
+            description: 'Lib',
+            is_item: true,
+            is_lib: true,
+        },
+        6: {
+            id: 6,
+            description: 'Warning',
+            is_item: true,
+            is_warning: true,
+        },
+        7: {
+            id: 7,
+            description: 'Previous Modified Parent',
+            is_item: true,
+            is_previous_modified_parent: true,
+        },
+        8: {
+            id: 8,
+            parent_id: null,
+            description: 'Previous Modified Child',
+            amount: 50,
+            is_item: true,
+            is_previous_modified_child: true,
+        },
+    },
+    columns: [
+        {
+            Header: 'Descripcion',
+            assesor: 'description',
+        }, 
+    ],
+    customRowClass:(row) => { 
+        return (row.is_close) ? 'Table-Row-Close' :
+        (row.is_warning) ? 'Table-Row-Warning' :
+        (row.is_previous_modified_parent) ? 'Table-Parent-Row-Previous-Modified' :
+        (row.is_previous_modified_child) ? 'Table-Child-Row-Previous-Modified' :
+        (row.is_current_modified_parent) ? 'Table-Parent-Row-Current-Modified' :
+        (row.is_current_modified_child) ? 'Table-Child-Row-Current-Modified' :
+        (row.is_lib) ? 'Table-Row-Lib' :
+        (row.is_close_alt) ? 'Table-Row-Close-Alt' : ''
+    },
+    isExpandRowsButtonActive: false,
+    isCollapseRowsButtonActive: false,
 };
