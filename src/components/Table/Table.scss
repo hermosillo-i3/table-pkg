@@ -18,10 +18,7 @@ $font-color-header: #ffffff;
   display: flex;
   flex-direction: column;
   font-size: 12px;
-
-
 }
-
 
 .modal-table-settings {
   .header-table-settings {
@@ -150,6 +147,36 @@ $font-color-header: #ffffff;
       color: #000000 !important;
     }
   }
+
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #8ee963;
+    }
+  }
+
+  &:hover {
+    cursor: default !important;
+
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #cdffb6 !important;
+    }
+  }
 }
 
 .Table-Child-Row-Previous-Modified {
@@ -209,6 +236,36 @@ $font-color-header: #ffffff;
       color: #000000 !important;
     }
   }
+
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #8ee963;
+    }
+  }
+
+  &:hover {
+    cursor: default !important;
+
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: #cdffb6 !important;
+    }
+  }
 }
 
 .Table-Row-Warning {
@@ -232,7 +289,7 @@ $font-color-header: #ffffff;
     cursor: default !important;
 
     .value,
-    div.flex.cell-read-only,
+    div,
     input,
     textarea,
     p,
@@ -285,10 +342,6 @@ $font-color-header: #ffffff;
   }
 }
 
-.Table-Row-Exchange-Rate-Alt {
-  background-color: #E0E0E0 !important;
-}
-
 .Table-Row-Lib {
   background-color: #93c47d !important;
 
@@ -323,10 +376,6 @@ $font-color-header: #ffffff;
   }
 }
 
-.Table-Row-Cancel {
-  text-decoration: line-through;
-}
-
 .Table-Row-Close-Alt {
   background-color: rgba(177, 185, 255, 0.5) !important;
 
@@ -356,9 +405,17 @@ $font-color-header: #ffffff;
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: initial !important;
+      background-color: rgba(176, 181, 231, 0.5) !important;
     }
   }
+}
+
+.Table-Row-Exchange-Rate-Alt {
+  background-color: #E0E0E0 !important;
+}
+
+.Table-Row-Cancel {
+  text-decoration: line-through;
 }
 
 .Table-Row--depth--1 {
