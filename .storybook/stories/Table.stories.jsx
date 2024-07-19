@@ -24,6 +24,16 @@ const SelectTemplate = (args) => {
     return <Table {...args} selected_rows={selectedRows} onRowSelect={onRowSelect}/>
 };
 
+const ColorsTemplate = (args) => {
+    return <div>
+        <div className="footer" style={{ backgroundColor: '#dde8f8', color: '#5298fe', padding: '10px', width: '100%', display: 'flex', alignItems: 'center' }}>
+    <span style={{ marginRight: '10px' }}>ℹ️</span>
+    Para utilizar alguno de los colores de la tabla, es necesario utilizar la función customRowClass. Esto permite, dependiendo del valor del row, asignarle uno de los colores que se muestran en la descripción.
+</div>
+        <Table {...args}/>
+    </div>
+};
+
 export const Default = Template.bind({});
 Default.args = {
     rows: {
@@ -999,55 +1009,55 @@ CustomColumnClass.args = {
     ],
 };
 
-export const RowColors = Template.bind({});
+export const RowColors = ColorsTemplate.bind({});
 RowColors.args = {
     rows: {
         1: {
             id: 1,
-            description: 'Close Alt',
+            description: 'Table-Row-Close-Alt',
             is_item: true,
             is_close_alt: true,
         },
         2: {
             id: 2,
-            description: 'Close',
+            description: 'Table-Row-Close',
             is_item: true,
             is_close: true,
         },
         3: {
             id: 3,
-            description: 'Current Modified Child',
+            description: 'Table-Child-Row-Current-Modified',
             is_item: true,
             is_current_modified_child: true,
         },
         4: {
             id: 4,
-            description: 'Current Modified Parent',
+            description: 'Table-Parent-Row-Current-Modified',
             is_item: true,
             is_current_modified_parent: true,
         },
         5: {
             id: 5,
-            description: 'Lib',
+            description: 'Table-Row-Lib',
             is_item: true,
             is_lib: true,
         },
         6: {
             id: 6,
-            description: 'Warning',
+            description: 'Table-Row-Warning',
             is_item: true,
             is_warning: true,
         },
         7: {
             id: 7,
-            description: 'Previous Modified Parent',
+            description: 'Table-Parent-Row-Previous-Modified',
             is_item: true,
             is_previous_modified_parent: true,
         },
         8: {
             id: 8,
             parent_id: null,
-            description: 'Previous Modified Child',
+            description: 'Table-Child-Row-Previous-Modified',
             amount: 50,
             is_item: true,
             is_previous_modified_child: true,
