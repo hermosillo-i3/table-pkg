@@ -16,6 +16,9 @@ jobs:
           registry-url: https://npm.pkg.github.com/
           scope: '@hermosillo-i3'
 
+      - name: Add npmrc
+        run: echo "${{ secrets.NPMRC_LOGGER_KEY }}" >> ./.npmrc
+
       - name: Install dependecies 
         run: npm install --no-progress  --legacy-peer-deps --ignore-scripts
 
