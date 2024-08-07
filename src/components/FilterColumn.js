@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import { convertObjectToArray } from "@hermosillo-i3/utils-pkg/src/object";
 import Cleave from 'cleave.js/react';
 import uniq from 'lodash/uniq';
+import { InputField } from '..';
 
 const FilterColumn = (props) => {
    const {
@@ -31,6 +32,7 @@ const FilterColumn = (props) => {
       min: null,
       equal: null,
    })
+   const [date, setDate] = useState('')
    const [filterStatus, setFilterStatus] = useState({})
 
    const toggleFilter = (filter) => {
@@ -317,6 +319,87 @@ const FilterColumn = (props) => {
 
       )
    }
+   if (colFormat === 'date') {
+      return (
+         <Popup
+            on='click'
+            pinned
+            content={
+               <div className="FilterColumnCurrency">
+                  <div className="FilterColumnCurrencyGroup">
+                     <FieldDate 
+                        label='De'
+                        value={range.min}
+                        disabled={range.equal}
+                        onChange={(value) => {
+                           const newRange = { ...range, min: value }
+                           setRange(newRange)
+                           if (value == null) {
+                              onSubmit(newRange)
+                           }
+                        }}
+                     />
+                     <FieldDate
+                        label="A"
+                        value={range.max}
+                        disabled={range.equal}
+                        onChange={(value) => {
+                           const newRange = { ...range, max: value }
+                           setRange(newRange)
+                           if (value == null) {
+                              onSubmit(newRange)
+                           }
+                        }}
+                     />
+
+                  </div>
+                  <div className="FilterColumnCurrencyGroup">
+                     <FieldDate
+                        label ='En'
+                        value={date}
+                        disabled={range.max || range.min}
+                        onChange={(value) => {
+                           // const newRange = { ...range, equal: value }
+                           setDate(value)
+                           // setDate(date)
+                           if (value == null) {
+                              onSubmit(date)
+                           }
+                        }}
+                     />
+                  </div>
+
+
+                  <Button
+                     // disabled={range.max == null && range.min == null && range.equal == null}
+                     size="tiny"
+                     icon
+                     labelPosition='left'
+                     fluid
+                     onClick={() => {
+                        // onSubmit(range)
+                        console.log(date);
+                     }}
+                  >
+                     <Icon name='search' size='tiny' />
+                     Buscar
+                  </Button>
+               </div>
+
+            }
+            trigger={
+               <Button
+                  size='mini'
+                  icon='filter'
+                  style={{
+                     padding: '0.4rem'
+                  }}
+                  {...(hasCurrencyValue ? { color: 'orange' } : {})}
+               />}
+         />
+
+      )
+   }
 
 }
 
@@ -362,4 +445,24 @@ const FieldCurrency = ({ label, value, onChange, disabled }) => {
       />
    </div>
 }
+
+const FieldDate = ({ label, value, onChange, disabled }) => {
+
+   return <div className="FilterColumnField">
+      <Label size="small">
+         {label}
+      </Label>
+      <InputField
+         format="date"
+         value={value}
+         disabled={disabled}
+         onChange={e => {
+            const value = e.target.value
+            onChange(value)
+            
+         }}
+      />
+   </div>
+}
+
 export default FilterColumn
