@@ -32,7 +32,6 @@ const FilterColumn = (props) => {
       min: null,
       equal: null,
    })
-   const [date, setDate] = useState('')
    const [filterStatus, setFilterStatus] = useState({})
 
    const toggleFilter = (filter) => {
@@ -353,21 +352,6 @@ const FilterColumn = (props) => {
                      />
 
                   </div>
-                  <div className="FilterColumnCurrencyGroup">
-                     <FieldDate
-                        label ='En'
-                        value={date}
-                        disabled={range.max || range.min}
-                        onChange={(value) => {
-                           // const newRange = { ...range, equal: value }
-                           setDate(value)
-                           // setDate(date)
-                           if (value == null) {
-                              onSubmit(date)
-                           }
-                        }}
-                     />
-                  </div>
 
 
                   <Button
@@ -377,8 +361,7 @@ const FilterColumn = (props) => {
                      labelPosition='left'
                      fluid
                      onClick={() => {
-                        // onSubmit(range)
-                        console.log(date);
+                        onSubmit(range)
                      }}
                   >
                      <Icon name='search' size='tiny' />
@@ -456,9 +439,8 @@ const FieldDate = ({ label, value, onChange, disabled }) => {
          format="date"
          value={value}
          disabled={disabled}
-         onChange={e => {
-            const value = e.target.value
-            onChange(value)
+         onUpdate={e => {
+            onChange(e)
             
          }}
       />
