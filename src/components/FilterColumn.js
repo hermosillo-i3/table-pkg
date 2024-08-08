@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import { convertObjectToArray } from "@hermosillo-i3/utils-pkg/src/object";
 import Cleave from 'cleave.js/react';
 import uniq from 'lodash/uniq';
+import { InputField } from '..';
 
 const FilterColumn = (props) => {
    const {
@@ -72,6 +73,10 @@ const FilterColumn = (props) => {
    
    const hasCurrencyValue = useMemo(() => {
       return (range.max != null || range.min != null || range.equal != null)
+   }, [range])
+
+   const hasDateValue = useMemo(() => {
+      return (range.max != "" || range.min != "")
    }, [range])
 
    // it will only contain the values that exists in the rows not all options available to select.
@@ -317,6 +322,71 @@ const FilterColumn = (props) => {
 
       )
    }
+   if (colFormat === 'date') {
+      return (
+         <Popup
+            on='click'
+            pinned
+            content={
+               <div className="FilterColumnCurrency">
+                  <div className="FilterColumnCurrencyGroup">
+                     <FieldDate 
+                        label='De'
+                        value={range.min}
+                        disabled={range.equal}
+                        onChange={(value) => {
+                           const newRange = { ...range, min: value }
+                           setRange(newRange)
+                           if (value == null) {
+                              onSubmit(newRange)
+                           }
+                        }}
+                     />
+                     <FieldDate
+                        label="A"
+                        value={range.max}
+                        disabled={range.equal}
+                        onChange={(value) => {
+                           const newRange = { ...range, max: value }
+                           setRange(newRange)
+                           if (value == null) {
+                              onSubmit(newRange)
+                           }
+                        }}
+                     />
+
+                  </div>
+
+
+                  <Button
+                     // disabled={range.max == null && range.min == null && range.equal == null}
+                     size="tiny"
+                     icon
+                     labelPosition='left'
+                     fluid
+                     onClick={() => {
+                        onSubmit(range)
+                     }}
+                  >
+                     <Icon name='search' size='tiny' />
+                     Buscar
+                  </Button>
+               </div>
+
+            }
+            trigger={
+               <Button
+                  size='mini'
+                  icon='filter'
+                  style={{
+                     padding: '0.4rem'
+                  }}
+                  {...(hasDateValue ? { color: 'orange' } : {color : 'white'})}
+               />}
+         />
+
+      )
+   }
 
 }
 
@@ -362,4 +432,23 @@ const FieldCurrency = ({ label, value, onChange, disabled }) => {
       />
    </div>
 }
+
+const FieldDate = ({ label, value, onChange, disabled }) => {
+
+   return <div className="FilterColumnField">
+      <Label size="small">
+         {label}
+      </Label>
+      <InputField
+         format="date"
+         value={value}
+         disabled={disabled}
+         onUpdate={e => {
+            onChange(e)
+            
+         }}
+      />
+   </div>
+}
+
 export default FilterColumn

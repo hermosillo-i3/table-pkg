@@ -656,7 +656,7 @@ class Table extends React.Component {
               : filter.value == null || filter.value == "";
             if (isFilterEmpty) return true;
 
-            if (cellValue != null) {
+            if (cellValue != null || filterFormat == 'date') {
               switch (filterFormat) {
                 case "select":
                   const final =
@@ -703,6 +703,14 @@ class Table extends React.Component {
                   return cellValue.find((value) =>
                     value.toLowerCase().includes(filter.value.toLowerCase())
                   );
+                case "date":
+                  let in_range = true;
+                  if (filter.value.max)
+                     in_range = cellValue <= filter.value.max;
+                  if (filter.value.min)
+                     in_range = in_range && cellValue >= filter.value.min;
+                  return in_range;
+
                 default:
                   if (Array.isArray(filter.value))
                     return cellValue.trim() !== ""
