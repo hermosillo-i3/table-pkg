@@ -3,7 +3,7 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
-## V 7.XX.X
+## V 1.XX.X
 Date: Aug XX, 2024
 * [NEW]
   * Add date filter

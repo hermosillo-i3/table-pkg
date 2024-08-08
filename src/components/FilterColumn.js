@@ -75,6 +75,10 @@ const FilterColumn = (props) => {
       return (range.max != null || range.min != null || range.equal != null)
    }, [range])
 
+   const hasDateValue = useMemo(() => {
+      return (range.max != null && range.min != null && range.max != "" && range.min != "")
+   }, [range])
+
    // it will only contain the values that exists in the rows not all options available to select.
    const filterOptionsInRows = useMemo(() => {
       if(colFormat === 'search'){
@@ -377,7 +381,7 @@ const FilterColumn = (props) => {
                   style={{
                      padding: '0.4rem'
                   }}
-                  {...(hasCurrencyValue ? { color: 'orange' } : {})}
+                  {...(hasDateValue ? { color: 'orange' } : {color : 'white'})}
                />}
          />
 
