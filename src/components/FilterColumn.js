@@ -76,7 +76,7 @@ const FilterColumn = (props) => {
    }, [range])
 
    const hasDateValue = useMemo(() => {
-      return (range.max != null && range.min != null && range.max != "" && range.min != "")
+      return (range.max != "" || range.min != "")
    }, [range])
 
    // it will only contain the values that exists in the rows not all options available to select.
