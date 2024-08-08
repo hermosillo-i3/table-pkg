@@ -4,6 +4,13 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.X.X
+Date: Aug XX, 2024
+* [NEW]
+  * Add new pull request template
+* [FIX]
+  * Warnings with scss base file 
+
 ## V 1.5.2
 Date: Jul 18, 2024
 * [UPDATE]
