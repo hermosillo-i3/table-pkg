@@ -3,6 +3,10 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+## V 7.XX.X
+Date: Aug XX, 2024
+* [NEW]
+  * Add date filter
 
 ## V 1.5.2
 Date: Jul 18, 2024
