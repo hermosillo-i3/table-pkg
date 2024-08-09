@@ -76,7 +76,7 @@ const FilterColumn = (props) => {
    }, [range])
 
    const hasDateValue = useMemo(() => {
-      return (range.max != "" || range.min != "")
+      return ((range.max !== null && range.max !== "") || (range.min !== null && range.min !== "")) 
    }, [range])
 
    // it will only contain the values that exists in the rows not all options available to select.
@@ -303,7 +303,7 @@ const FilterColumn = (props) => {
                         onSubmit(range)
                      }}
                   >
-                     <Icon name='search' size='tiny' />
+                     <Icon name='search' style={{"width": '5.38em'}} />
                      Buscar
                   </Button>
                </div>
@@ -368,7 +368,7 @@ const FilterColumn = (props) => {
                         onSubmit(range)
                      }}
                   >
-                     <Icon name='search' size='tiny' />
+                     <Icon name='search' style={{"width": '2.9em'}}/>
                      Buscar
                   </Button>
                </div>
@@ -399,7 +399,7 @@ FilterColumn.propTypes = {
 const FieldCurrency = ({ label, value, onChange, disabled }) => {
 
    return <div className="FilterColumnField">
-      <Label size="small">
+      <Label size="small" style={{"padding":'1em'}}>
          {label}
       </Label>
       <Cleave
@@ -436,7 +436,7 @@ const FieldCurrency = ({ label, value, onChange, disabled }) => {
 const FieldDate = ({ label, value, onChange, disabled }) => {
 
    return <div className="FilterColumnField">
-      <Label size="small">
+      <Label size="small" style={{"padding":'1em'}}>
          {label}
       </Label>
       <InputField
