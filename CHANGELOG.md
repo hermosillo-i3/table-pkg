@@ -6,6 +6,7 @@ This file is used to explain in detail changes made to the Table.
 ## V 1.XX.X
 Date: Aug XX, 2024
 * [NEW]
+
   * Add date filter
 
 ## V 1.5.2
