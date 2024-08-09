@@ -8,7 +8,6 @@ This file is used to explain in detail changes made to the Table.
 Date: Aug XX, 2024
 * [NEW]
   * Add new pull request template
-  * Add date filter
 * [FIX]
   * Warnings with scss base file 
   * Fix checkbox alignment
