@@ -337,8 +337,10 @@ const FilterColumn = (props) => {
                         onChange={(value) => {
                            const newRange = { ...range, min: value }
                            setRange(newRange)
-                           if (value == null) {
+                           if(value == null){
                               onSubmit(newRange)
+                           } else if ((newRange.max === null || newRange.max === '') && (newRange.min === null || newRange.min === '')) {
+                              onSubmit('');
                            }
                         }}
                      />
@@ -348,9 +350,11 @@ const FilterColumn = (props) => {
                         disabled={range.equal}
                         onChange={(value) => {
                            const newRange = { ...range, max: value }
-                           setRange(newRange)
-                           if (value == null) {
+                           setRange(newRange);
+                           if(value == null){
                               onSubmit(newRange)
+                           } else if ((newRange.max === null || newRange.max === '') && (newRange.min === null || newRange.min === '')) {
+                              onSubmit('');
                            }
                         }}
                      />
