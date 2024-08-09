@@ -10,6 +10,7 @@ Date: Aug XX, 2024
   * Add new pull request template
 * [FIX]
   * Warnings with scss base file 
+  * Fix checkbox alignment
 
 ## V 1.5.2
 Date: Jul 18, 2024
