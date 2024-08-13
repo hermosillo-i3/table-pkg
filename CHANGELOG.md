@@ -4,6 +4,16 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.6.0
+Date: Aug 13, 2024
+* [NEW]
+  * Add new pull request template
+  * Add date filter
+* [FIX]
+  * Warnings with scss base file 
+  * Fix checkbox alignment
+  * Fix label alignment
+
 ## V 1.5.2
 Date: Jul 18, 2024
 * [UPDATE]
