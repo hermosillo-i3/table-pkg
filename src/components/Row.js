@@ -410,8 +410,8 @@ const rowFunctionComponent = (props) => {
                   </span>}
                   {(!canDrag && shouldShowSelectIcon) && <>
                         {is_selected ? 
-                        <Icon color = 'black' name={'check square outline'}/> : 
-                        <Icon color = {row.is_item ? 'black' : 'white'} name={'square outline'}/>}
+                        <Icon color = 'black' name={'check square outline'} style={{"marginBottom": '0.63em' }}/> : 
+                        <Icon color = {row.is_item ? 'black' : 'white'} name={'square outline'} style={{"marginBottom": '0.63em' }}/>}
                      </>}
                </div>
             </td>
