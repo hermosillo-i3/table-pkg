@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.7.0
+Date: Aug 27, 2024
+* [NEW]
+  * Columns now can display buttons using the 'actions' param
+
 ## V 1.6.0
 Date: Aug 13, 2024
 * [NEW]
