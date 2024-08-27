@@ -652,79 +652,79 @@ class Table extends React.Component {
             // checks that filter has an actual value
             const isFilterArray = Array.isArray(filter.value);
             const isFilterEmpty = isFilterArray
-              ? filter.value.length === 0
-              : filter.value == null || filter.value == "";
+               ? filter.value.length === 0
+               : filter.value == null || filter.value == "";
             if (isFilterEmpty) return true;
 
             if (cellValue != null || filterFormat == 'date') {
-              switch (filterFormat) {
-                case "select":
-                  const final =
-                    cellValue.trim() !== ""
-                      ? filter.value.findIndex(
-                          (element) =>
-                            cellValue.toLowerCase() ===
-                            element.text.toLowerCase()
-                        ) != -1 ||
-                        filter.value.findIndex(
-                          (element) =>
-                            cellValue.toLowerCase() ===
-                            element.key.toLowerCase()
-                        ) != -1
-                      : false;
-                  return row.is_item ? final : false;
-                case "search":
-                  if (filter.value?.length === 0) {
-                    return true;
-                  }
-                  if (cellValue.trim() === " ") {
-                    return false;
-                  }
-                  // iterate over filter.value to see if any of the values is in the cellValue
-                  return filter.value.some((value) =>
-                    cellValue.toLowerCase().includes(value.toLowerCase())
-                  );
-                case "text":
-                  return cellValue.trim() !== ""
-                    ? cellValue
-                        .toLowerCase()
-                        .includes(filter.value.toLowerCase())
-                    : false;
-                case "currency":
-                  let is_valid = true;
-                  if (filter.value.max)
-                    is_valid = cellValue >= filter.value.max;
-                  if (filter.value.min)
-                    is_valid = is_valid && cellValue <= filter.value.min;
-                  if (filter.value.equal)
-                    is_valid = is_valid && cellValue === filter.value.equal;
-                  return is_valid;
-                case "list":
-                  return cellValue.find((value) =>
-                    value.toLowerCase().includes(filter.value.toLowerCase())
-                  );
-                case "date":
-                  let in_range = true;
-                  if (filter.value.max)
-                     in_range = cellValue <= filter.value.max;
-                  if (filter.value.min)
-                     in_range = in_range && cellValue >= filter.value.min;
-                  return in_range;
+               switch (filterFormat) {
+                  case "select":
+                     const final =
+                        cellValue.trim() !== ""
+                           ? filter.value.findIndex(
+                              (element) =>
+                                 cellValue.toLowerCase() ===
+                                 element.text.toLowerCase()
+                           ) != -1 ||
+                           filter.value.findIndex(
+                              (element) =>
+                                 cellValue.toLowerCase() ===
+                                 element.key.toLowerCase()
+                           ) != -1
+                           : false;
+                     return row.is_item ? final : false;
+                  case "search":
+                     if (filter.value?.length === 0) {
+                        return true;
+                     }
+                     if (cellValue.trim() === " ") {
+                        return false;
+                     }
+                     // iterate over filter.value to see if any of the values is in the cellValue
+                     return filter.value.some((value) =>
+                        cellValue.toLowerCase().includes(value.toLowerCase())
+                     );
+                  case "text":
+                     return cellValue.trim() !== ""
+                        ? cellValue
+                           .toLowerCase()
+                           .includes(filter.value.toLowerCase())
+                        : false;
+                  case "currency":
+                     let is_valid = true;
+                     if (filter.value.max)
+                        is_valid = cellValue >= filter.value.max;
+                     if (filter.value.min)
+                        is_valid = is_valid && cellValue <= filter.value.min;
+                     if (filter.value.equal)
+                        is_valid = is_valid && cellValue === filter.value.equal;
+                     return is_valid;
+                  case "list":
+                     return cellValue.find((value) =>
+                        value.toLowerCase().includes(filter.value.toLowerCase())
+                     );
+                  case "date":
+                     let in_range = true;
+                     if (filter.value.max)
+                        in_range = cellValue <= filter.value.max;
+                     if (filter.value.min)
+                        in_range = in_range && cellValue >= filter.value.min;
+                     return in_range;
 
-                default:
-                  if (Array.isArray(filter.value))
-                    return cellValue.trim() !== ""
-                      ? filter.value.includes(cellValue.trim())
-                      : false;
-                  else
-                    return cellValue.trim() !== ""
-                      ? cellValue
-                          .toLowerCase()
-                          .includes(filter.value.toLowerCase())
-                      : false;
-              }
+                  default:
+                     if (Array.isArray(filter.value))
+                        return cellValue.trim() !== ""
+                           ? filter.value.includes(cellValue.trim())
+                           : false;
+                     else
+                        return cellValue.trim() !== ""
+                           ? cellValue
+                              .toLowerCase()
+                              .includes(filter.value.toLowerCase())
+                           : false;
+               }
             } else {
-              return false;
+               return false;
             }
          })
          return a
@@ -1413,7 +1413,7 @@ class Table extends React.Component {
                   }
                }
             }
-            if(prevState.column_extended[key].filter_value != null){
+            if (prevState.column_extended[key].filter_value != null) {
                return {
                   ...acum,
                   [key]: {
@@ -1439,6 +1439,31 @@ class Table extends React.Component {
       if (this.props.onSubmitSettings) {
          this.props.onSubmitSettings({ name, columns })
       }
+   }
+
+   renderAction = ({ onClick, icon, style }) => {
+      return (
+         <div style={{
+            ...style
+         }}>
+            < Button
+               size='mini'
+               icon
+               style={
+                  {
+                     padding: '.4rem',
+                     paddingLeft: '0.3rem',
+                     paddingRight: '0.5rem',
+                  }
+               }
+               onClick={onClick}
+               circular
+            >
+               <Icon style={{ paddingRight: '0rem' }} name={icon} />
+
+            </Button>
+         </div>
+      )
    }
 
    render() {
@@ -1551,6 +1576,7 @@ class Table extends React.Component {
                         {typeof col.Header === 'string' ? col.Header : col.Header()}
                         &nbsp; {col.help_info != null && <Popup content={col.help_info} trigger={<Icon name='help circle' />} />}
                         {sort_directon != null && <Icon color="blue" name={`sort alphabet ${sort_directon}`} />}
+
                      </div>
                      {!!col.filter && <div>
                         <FilterColumn
@@ -1560,6 +1586,16 @@ class Table extends React.Component {
                            rows={this.props.rows}
                         />
                      </div>}
+                     {col.actions &&
+                        (Array.isArray(col.actions) ?
+                           (col.actions.map((action, index) => {
+                              return (
+                                 this.renderAction(action)
+                              )
+                           }))
+                           : this.renderAction(col.actions)
+                        )
+                     }
 
 
                   </div>
