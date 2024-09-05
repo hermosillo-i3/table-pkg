@@ -1114,7 +1114,8 @@ input.InputField {
 
 .InputField.search{
   .input{
-    width: 260px;
+    width: auto;
+    max-width: 100%;
   }
   .results{
     width: 260px !important;
