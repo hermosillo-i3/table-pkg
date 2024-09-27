@@ -146,9 +146,11 @@ describe('applyFilter', () => {
     const filterOne = applyFilter(row[0], filters);
     const filterTwo = applyFilter(row[1], filters);
     const filterThree = applyFilter(row[2], filters);
+    const filterFour = applyFilter(row[3], filters);
 
     expect(filterOne).toEqual(false);
     expect(filterTwo).toEqual(false);
     expect(filterThree).toEqual(true);
+    expect(filterFour).toEqual(false);
   });
 });
