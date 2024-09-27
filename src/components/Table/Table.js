@@ -13,6 +13,7 @@ import FilterColumn from "../FilterColumn";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import { isEqual, pad, isNumber, removeSpecialCharacters, getAllChildren, getAllParents } from "../../utils/Utils";
 import { getClipboardTextFromExcel, hasOwnProperty, replaceAll, KEY_CODES, calculateGranTotal } from "../../utils/index";
+import { applyFilter } from '../../utils/index';
 import {
    flatColumns,
    generateGroupColumns,
@@ -644,93 +645,8 @@ class Table extends React.Component {
          return acum;
       }, [])
 
-      const applyFilter = (row) => {
-         const a = column_filters.every(filter => {
-            const cellValue = row?.[filter.key];
-            let filterFormat = typeof filter.format === 'object' ? filter.format.type : filter.format;
-
-            // checks that filter has an actual value
-            const isFilterArray = Array.isArray(filter.value);
-            const isFilterEmpty = isFilterArray
-               ? filter.value.length === 0
-               : filter.value == null || filter.value == "";
-            if (isFilterEmpty) return true;
-
-            if (cellValue != null || filterFormat == 'date') {
-               switch (filterFormat) {
-                  case "select":
-                     const final =
-                        cellValue.trim() !== ""
-                           ? filter.value.findIndex(
-                              (element) =>
-                                 cellValue.toLowerCase() ===
-                                 element.text.toLowerCase()
-                           ) != -1 ||
-                           filter.value.findIndex(
-                              (element) =>
-                                 cellValue.toLowerCase() ===
-                                 element.key.toLowerCase()
-                           ) != -1
-                           : false;
-                     return row.is_item ? final : false;
-                  case "search":
-                     if (filter.value?.length === 0) {
-                        return true;
-                     }
-                     if (cellValue.trim() === " ") {
-                        return false;
-                     }
-                     // iterate over filter.value to see if any of the values is in the cellValue
-                     return filter.value.some((value) =>
-                        cellValue.toLowerCase().includes(value.toLowerCase())
-                     );
-                  case "text":
-                     return cellValue.trim() !== ""
-                        ? cellValue
-                           .toLowerCase()
-                           .includes(filter.value.toLowerCase())
-                        : false;
-                  case "currency":
-                     let is_valid = true;
-                     if (filter.value.max)
-                        is_valid = cellValue >= filter.value.max;
-                     if (filter.value.min)
-                        is_valid = is_valid && cellValue <= filter.value.min;
-                     if (filter.value.equal)
-                        is_valid = is_valid && cellValue === filter.value.equal;
-                     return is_valid;
-                  case "list":
-                     return cellValue.find((value) =>
-                        value.toLowerCase().includes(filter.value.toLowerCase())
-                     );
-                  case "date":
-                     let in_range = true;
-                     if (filter.value.max)
-                        in_range = cellValue <= filter.value.max;
-                     if (filter.value.min)
-                        in_range = in_range && cellValue >= filter.value.min;
-                     return in_range;
-
-                  default:
-                     if (Array.isArray(filter.value))
-                        return cellValue.trim() !== ""
-                           ? filter.value.includes(cellValue.trim())
-                           : false;
-                     else
-                        return cellValue.trim() !== ""
-                           ? cellValue
-                              .toLowerCase()
-                              .includes(filter.value.toLowerCase())
-                           : false;
-               }
-            } else {
-               return false;
-            }
-         })
-         return a
-      }
-
-
+      const resultApplyFilter = (row) => applyFilter(row, column_filters);
+      console.log(resultApplyFilter);
       const generateTree = (elements, depth) => {
          const { filterOptions } = this.props;
          const includeChildren = filterOptions.includeChildren ?? true;
@@ -742,15 +658,15 @@ class Table extends React.Component {
 
             // Here applies columns filters
             if (column_filters.length > 0) {
-               if (!applyFilter(element)) { // If the current element is filtered
+               if (!resultApplyFilter(element)) { // If the current element is filtered
                   // Check before the current element is removed if any child element is valid.
                   const children = element._children?.length > 0 ? getAllChildren(element._children, rows) : [];
-                  const isFilterSuccessOnChild = children.find((child) => applyFilter(child)) != null;
+                  const isFilterSuccessOnChild = children.find((child) => resultApplyFilter(child)) != null;
                   let isFilterSuccessOnParent = false;
                   if (includeChildren) {
                      // Check before the current element is removed if any parent element is valid.
                      const parents = getAllParents(element, rows);
-                     isFilterSuccessOnParent = parents.find((parent) => applyFilter(parent)) != null;
+                     isFilterSuccessOnParent = parents.find((parent) => resultApplyFilter(parent)) != null;
                   }
 
                   if (!isFilterSuccessOnParent && !isFilterSuccessOnChild) {

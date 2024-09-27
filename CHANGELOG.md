@@ -4,6 +4,13 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.9.0
+Date: Sep 27, 2024
+* [UPDATE]
+  * Move applyFilter from Table.js to utils/index.js
+* [NEW]
+  * Add test for applyFilter
+
 ## V 1.7.0
 Date: Aug 27, 2024
 * [NEW]
