@@ -140,6 +140,7 @@ describe('applyFilter', () => {
       { id: 24792, project_id: 168, procurement_schedule_id: 489, is_item: true,  description: 'REQUERIMIENTOS GENERALES', order_date:"2023-01-09", status: 'OPEN', purchase_orders:[]},
       { id: 24793, project_id: 169, procurement_schedule_id: 490, is_item: true, description: 'REQUERIMIENTOS obra', order_date:"2023-01-12", status: 'CLOSE', purchase_orders: []},
       { id: 24794, project_id: 170, procurement_schedule_id: 491, is_item: true, description: 'OBRA', order_date:"2023-01-11", status: 'CLOSE', purchase_orders: [ "4600002104", "4600004595"]},
+      { id: 24795, project_id: 171, procurement_schedule_id: 492, is_item: true, description: 'OBRA', order_date:null, status: 'CLOSE', purchase_orders: [ "4600002176"]},
     ];
 
     const filterOne = applyFilter(row[0], filters);
