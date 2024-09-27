@@ -81,15 +81,18 @@ describe('applyFilter', () => {
       { id: 24792, project_id: 168, procurement_schedule_id: 489, is_item: true,  description: 'REQUERIMIENTOS GENERALES', order_date:"2023-01-09", status: 'OPEN', },
       { id: 24793, project_id: 169, procurement_schedule_id: 490, is_item: true, description: 'REQUERIMIENTOS ESPECÍFICOS', order_date:"2023-01-12", status: 'CLOSE', },
       { id: 24794, project_id: 170, procurement_schedule_id: 491, is_item: true, description: 'OBRA', order_date:"2023-01-13", status: 'CLOSE', },
+      { id: 24795, project_id: 171, procurement_schedule_id: 492, is_item: true, description: 'OBRA', order_date:null, status: 'CLOSE', },
     ];
 
     const filterOne = applyFilter(row[0], dateFilter);
     const filterTwo = applyFilter(row[1], dateFilter);
     const filterThree = applyFilter(row[2], dateFilter);
+    const filterFour = applyFilter(row[3], dateFilter);
 
     expect(filterOne).toEqual(true);
     expect(filterTwo).toEqual(true);
     expect(filterThree).toEqual(false);
+    expect(filterFour).toEqual(false);
   });
 
   it('should apply multiple filters correctly', () => {
