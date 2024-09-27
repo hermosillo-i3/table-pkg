@@ -646,7 +646,6 @@ class Table extends React.Component {
       }, [])
 
       const resultApplyFilter = (row) => applyFilter(row, column_filters);
-      console.log(resultApplyFilter);
       const generateTree = (elements, depth) => {
          const { filterOptions } = this.props;
          const includeChildren = filterOptions.includeChildren ?? true;
