@@ -51,7 +51,7 @@ jobs:
         id: select-author
         run: |
           # Load the JSON data from the GitHub Actions variable or secret
-          user_map='${{ vars.REVIEWERS }}'
+          user_map='${{ vars.AUTHORS }}'
   
           # Get the GitHub actor (author of the PR)
           pr_author="${{ github.actor }}"
