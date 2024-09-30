@@ -11,6 +11,11 @@ Date: Sep 27, 2024
 * [NEW]
   * Add test for applyFilter
 
+## V 1.8.0
+Date: Sep 5, 2024
+* [FIX]
+  * Fix width issue
+
 ## V 1.7.0
 Date: Aug 27, 2024
 * [NEW]
