@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V X.X.X
+Date: XXX XX, XXXX
+* [UPDATE]
+  * Rows are now virtualized for optimization
+
 ## V 1.7.0
 Date: Aug 27, 2024
 * [NEW]

@@ -24,6 +24,7 @@ import {
 import "./Table.scss";
 import { addFreezeColumns } from "../../utils/table-utils";
 import DragDropContext from '../DragDropContext';
+import VirtualizedRowList from '../VirtualizedRowList';
 
 configure({
    ignoreTags: [],
@@ -85,7 +86,8 @@ class Table extends React.Component {
             x: 0,
             y: 0,
             actions: []
-         }
+         },
+         prevScroll: 0,
       };
 
       this.container = React.createRef();
@@ -338,6 +340,10 @@ class Table extends React.Component {
       if (this.props.isExpandByDefault) {
          this.expandRows()
       }
+      
+      if (this.tableHeader.current) {
+         this.tableHeader.current.addEventListener('scroll', this.handleScroll)
+      }
    };
 
    createDefaultValues = () => {
@@ -480,6 +486,18 @@ class Table extends React.Component {
       window.removeEventListener('keyup', this.handleCtrlKeyUp);
       window.removeEventListener('click', this.onClickOnDocument);
       window.removeEventListener('paste', this.onPaste);
+      if (this.tableHeader.current) {
+         this.tableHeader.current.removeEventListener('scroll', this.handleScroll)
+      }
+   }
+
+   handleScroll = () => {
+      if (this.tableHeader.current) {
+         const currentScrollLeft = this.tableHeader.current.scrollLeft;
+         const isScrollingLeft = currentScrollLeft < this.state.prevScroll;
+
+         this.setState({ prevScrollLeft: currentScrollLeft});
+      }
    }
 
    setRenderedRows = () => {
@@ -987,7 +1005,7 @@ class Table extends React.Component {
    };
 
 
-   initGenerateRows = () => {
+   initGenerateRows = (style) => {
       let rendered_rows = [];
       let object_rows = []
       let real_index_inge_andre = 0;
@@ -1065,6 +1083,7 @@ class Table extends React.Component {
                            }
                         }))
                      }}
+                     renderStyle={style}
                   />
                )
                object_rows.push(row)
@@ -1466,6 +1485,17 @@ class Table extends React.Component {
       )
    }
 
+   //TODO: Change this function
+   updateParentTable = () => {
+      this.forceUpdate();
+   }
+
+   updateParentHeaderScroll = (value) => {
+      if (this.tableHeader.current) {
+         this.tableHeader.current.scrollLeft = value;
+      }
+   };
+
    render() {
       const {
          title,
@@ -1742,7 +1772,9 @@ class Table extends React.Component {
 
                         style={{
                            display: 'table',
-                           padding: paddingBodyTable ? paddingBodyTable : 'none'
+                           padding: paddingBodyTable ? paddingBodyTable : 'none',
+                           height: '100%',
+                           width: '100%'
                         }}>
                         {
                            isEmpty ?
@@ -1762,7 +1794,13 @@ class Table extends React.Component {
                                     canDrop={this.props.canDropInZone}
                                     isCtrlPressed={this.state.isCtrlPressed}
                                  />,
-                                 this.initGenerateRows()
+                                 <VirtualizedRowList
+                                    getColumnsAll={this.getColumnsAll}
+                                    isDragColumnVisible={this.props.isDragColumnVisible}
+                                    initGenerateRows={this.initGenerateRows}
+                                    updateParentTable={() => this.updateParentTable()}
+                                    updateParentHeaderScroll={this.updateParentHeaderScroll}
+                                 />
                               ])
                         }
 
