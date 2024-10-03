@@ -88,7 +88,6 @@ const rowFunctionComponent = (props) => {
       shouldShowSelectIcon,
       styleTheme,
       is_selected,
-      renderStyle
    } = props;
    const [hasScrolled, setHasScrolled] = React.useState(false);
    const [rowRef, setRowRef] = React.useState(null);
@@ -386,11 +385,10 @@ const rowFunctionComponent = (props) => {
          className={className + ' tr_shaded custom-virtualized-row'}
          onClick={props.onRowClick ? onRowClick(row) : undefined}
          key={rowIndex}
-         style={{...getItemStyle(
-               isDragging,
-               null
-            ),
-         }}
+         style={getItemStyle(
+            isDragging,
+            null
+         )}
       >
          {isDragColumnVisible && cDS(
             <td

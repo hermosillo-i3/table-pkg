@@ -83,24 +83,22 @@ const VirtualizedRowList = ({
 
     return (
         <AutoSizer>
-            {({ height, width }) => {
-                return (
-                    <Grid
-                        ref={gridRef}
-                        width={totalWidth}
-                        height={height}
-                        columnWidth={totalWidth}
-                        rowHeight={cache.rowHeight}
-                        columnCount={1}
-                        rowCount={initGenerateRows().length}
-                        cellRenderer={cellRenderer}
-                        overscanRowCount={30}
-                        overscanIndicesGetter={overscanIndicesGetter}
-                        onScroll={handleScroll}
-                        deferredMeasurementCache={cache}
-                    />
-                );
-            }}
+            {({ height, width }) => (
+                 <Grid
+                    ref={gridRef}
+                    width={width}
+                    height={height}
+                    columnWidth={totalWidth}
+                    rowHeight={cache.rowHeight}
+                    columnCount={1}
+                    rowCount={initGenerateRows().length}
+                    cellRenderer={cellRenderer}
+                    overscanRowCount={30}
+                    overscanIndicesGetter={overscanIndicesGetter}
+                    onScroll={handleScroll}
+                    deferredMeasurementCache={cache}
+                />
+            )}
         </AutoSizer>
     );
 };

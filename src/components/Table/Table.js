@@ -495,7 +495,7 @@ class Table extends React.Component {
    handleScroll = () => {
       if (this.tableHeader.current) {
          const currentScrollLeft = this.tableHeader.current.scrollLeft;
-         const isScrollingLeft = currentScrollLeft < this.state.prevScroll;
+         // const isScrollingLeft = currentScrollLeft < this.state.prevScroll;
 
          this.setState({ prevScrollLeft: currentScrollLeft});
       }
@@ -998,7 +998,7 @@ class Table extends React.Component {
                            }
                         }))
                      }}
-                     renderStyle={style}
+                     // renderStyle={style}
                   />
                )
                object_rows.push(row)
@@ -1445,7 +1445,9 @@ class Table extends React.Component {
          flexDirection: 'column',
          fontSize: '12px',
          borderSpacing: 0,
-         height: `calc(100% - ${tableOffset}px)`
+         width: '100%',
+         height: '100%',
+         // height: `calc(100% - ${tableOffset}px)`
       };
 
       const droppableStyle = {

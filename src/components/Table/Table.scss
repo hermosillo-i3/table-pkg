@@ -1178,7 +1178,7 @@ input.InputField {
 }
 
 .the-table {
-  overflow-y: hidden !important;
+  overflow: auto;
 
   thead {
     display: none;
@@ -1405,7 +1405,7 @@ input.InputField {
 }
 
 .table-drag-n-drop {
-  // overflow: auto;
+  //overflow: auto;
 
   .cell {
     user-select: text;
@@ -1554,5 +1554,5 @@ input.InputField {
 }
 
 .ReactVirtualized__Grid {
-  // overflow-x: hidden !important;
+  overflow: inherit !important;
 }
