@@ -25,6 +25,7 @@ import {
 import "./Table.scss";
 import { addFreezeColumns } from "../../utils/table-utils";
 import DragDropContext from '../DragDropContext';
+import {Decimal} from "decimal.js";
 
 configure({
    ignoreTags: [],
@@ -1480,7 +1481,7 @@ class Table extends React.Component {
                                  }
                                  let colFormat = typeof col.format === 'object' ? col.format.type : col.format;
                                  if (colFormat === 'currency' || colFormat === 'number') {
-                                    return sortUp ? a[col.assesor] - b[col.assesor] : b[col.assesor] - a[col.assesor]
+                                    return sortUp ? new Decimal(a[col.assesor] ?? 0).minus(b[col.assesor] ?? 0).toNumber() : new Decimal(b[col.assesor] ?? 0).minus(a[col.assesor] ?? 0).toNumber()
                                  } else {
                                     return clean(a[col.assesor]) > clean(b[col.assesor]) ? (sortUp ? 1 : -1) : (sortUp ? -1 : 1)
                                  }

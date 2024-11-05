@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.9.1
+Date: Nov 05, 2024
+* [FIX]
+  * Fix sort in Table when columns format is currency/number
+
 ## V 1.9.0
 Date: Sep 27, 2024
 * [UPDATE]
