@@ -20,7 +20,7 @@ jobs:
         run: echo "${{ secrets.NPMRC_LOGGER_KEY }}" >> ./.npmrc
 
       - name: Install dependecies 
-        run: npm install --no-progress  --legacy-peer-deps --ignore-scripts
+        run: yarn install --no-progress  --legacy-peer-deps --ignore-scripts
 
       - name: Build Storybook
         run: yarn build-storybook
