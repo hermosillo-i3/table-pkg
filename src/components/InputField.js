@@ -442,6 +442,67 @@ class InputField extends React.Component {
           );
         }
 
+        case "percentage": {
+          return (
+            <Cleave
+              className={`InputField ${customColumnClass}`}
+              value={this.state.currentValue || "0"}
+              htmlRef={(input) => {
+                this.input = input;
+              }}
+              onChange={(e) => {
+                const value = e.target.rawValue;
+                let isValid = true;
+                if (maxValue != null) {
+                  const floatValue = parseFloat(value);
+                  isValid = floatValue <= maxValue;
+                }
+                if (isValid) {
+                  this.setState((prevState) => ({
+                    currentValue: value,
+                  }), () => {
+                    if (this.props.updateRow) {
+                      this.props.updateRow(value);
+                    }
+                  });
+                }
+              }}
+              onPaste={(e) => {
+                if (onPaste) {
+                  onPaste(e);
+                }
+              }}
+              onKeyDown={(e) => {
+                this.onKeyDown(e);
+                if (this.props.onKeyDownHotKeys) {
+                  this.props.onKeyDownHotKeys(e);
+                  if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                    this.setState((prevState) => ({
+                      isTextAreaMultiLineActive: true,
+                    }));
+                  } else if (
+                    (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
+                    (!isTextAreaMultiLineActive &&
+                      (e.keyCode === KEY_CODES.ARROW_UP ||
+                        e.keyCode === KEY_CODES.ARROW_DOWN))
+                  ) {
+                    this.onBlur(e);
+                  }
+                }
+              }}
+              onBlur={this.onBlur}
+              onFocus={this.onFocus}
+              options={{
+                numeral: true,
+                rawValueTrimPrefix: true,
+                numeralDecimalScale: decimals,
+                prefix: "%",
+                tailPrefix:true,
+              }}
+              />
+          );
+        }
+
         case "number-format": {
           return (
             <NumericFormat

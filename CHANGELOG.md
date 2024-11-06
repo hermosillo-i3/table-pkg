@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.9.2
+Date: Nov 05, 2024
+* [FIX]
+  * Fix editable option for columns when format is percentage.
+
 ## V 1.9.1
 Date: Nov 05, 2024
 * [FIX]
