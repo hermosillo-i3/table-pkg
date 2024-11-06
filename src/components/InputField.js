@@ -446,7 +446,7 @@ class InputField extends React.Component {
           return (
             <Cleave
               className={`InputField ${customColumnClass}`}
-              value={this.state.currentValue}
+              value={this.state.currentValue || "0"}
               htmlRef={(input) => {
                 this.input = input;
               }}
