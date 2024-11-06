@@ -442,6 +442,37 @@ class InputField extends React.Component {
           );
         }
 
+        case "percentage": {
+          return (
+            <Cleave
+              className={`InputField ${customColumnClass}`}
+              value={this.state.currentValue}
+              htmlRef={(input) => {
+                this.input = input;
+              }}
+              onChange={(e) => {
+                const value = e.target.rawValue;
+                let isValid = true;
+                if (maxValue != null) {
+                  const floatValue = parseFloat(value);
+                  isValid = floatValue <= maxValue;
+                }
+              }}
+              options={{
+                numeral: true,
+                numeralPositiveOnly: true,
+                numeralIntegerScale: 3,
+                numeralDecimalScale: decimals || 2,
+                numeralDecimalMark: '.',
+                prefix: '%',
+                tailPrefix:true,
+                rawValueTrimPrefix: true,
+              }
+              }
+              />
+          );
+        }
+
         case "number-format": {
           return (
             <NumericFormat
