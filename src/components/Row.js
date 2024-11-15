@@ -292,7 +292,7 @@ const rowFunctionComponent = (props) => {
          props.onFocus(props.index, colIndex);
    };
 
-   const renderCell = (column, row, isCellActive, colIndex) => {
+   const renderCell = (column, row, isCellActive, colIndex, is_editable) => {
  
       if (shouldRenderCell(column, row)) {
          let value = row[column.assesor];
@@ -302,7 +302,7 @@ const rowFunctionComponent = (props) => {
             if (value == null) {
                value = getDefaultValue(format)
             }
-            const is_editable = isColumnEditable(column, row);
+            // const is_editable = isColumnEditable(column, row);
             if (is_editable) {
                return (
                   <InputField
@@ -378,9 +378,7 @@ const rowFunctionComponent = (props) => {
       setRowRef(ref);
    }
 
-    return cDT(
-      // cDP(
-      <tr
+    return <tr
          ref={scrollTo}
          className={className + ' tr_shaded'}
          onClick={props.onRowClick ? onRowClick(row) : undefined}
@@ -493,7 +491,7 @@ const rowFunctionComponent = (props) => {
 
                            </div>
                         }
-                        {renderCell(col, row, cellActive === colIndex, colIndex)}
+                        {renderCell(col, row, cellActive === colIndex, colIndex, is_editable)}
                      </div>
 
                   </td>
@@ -520,7 +518,7 @@ const rowFunctionComponent = (props) => {
          })}
       </tr>
    // )
-   )
+   // )
 }
 
 export default rowFunctionComponent;

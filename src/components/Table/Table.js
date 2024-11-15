@@ -26,6 +26,7 @@ import "./Table.scss";
 import { addFreezeColumns } from "../../utils/table-utils";
 import DragDropContext from '../DragDropContext';
 import {Decimal} from "decimal.js";
+import { mergeDeep } from '@hermosillo-i3/utils-pkg/src/object';
 
 configure({
    ignoreTags: [],
@@ -907,17 +908,19 @@ class Table extends React.Component {
       let rendered_rows = [];
       let object_rows = []
       let real_index_inge_andre = 0;
+      const columns = this.getVisibleColumns();
 
       const generateRows = (rows, depth) => {
-         const columns = this.getVisibleColumns();
          let is_filter_active = false;
 
          rows.forEach((table_row, index) => {
-            const row = {
-               ...table_row,
-               ...this.props.rows[table_row.id],
-               ...this.state.rows_extended[table_row.id]
-            };
+            // const row = {
+            //    ...table_row,
+            //    ...this.props.rows[table_row.id],
+            //    ...this.state.rows_extended[table_row.id]
+            // };
+            const test = mergeDeep(table_row, this.props.rows[table_row.id],);
+            const row = mergeDeep(test, this.state.rows_extended[table_row.id]);
 
             if (!row) {
                return 0
