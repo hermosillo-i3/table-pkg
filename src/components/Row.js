@@ -70,7 +70,11 @@ const getDefaultValue = (format) => {
          default:
             return '';
       }
-   };
+};
+
+const formatColumn = (format, value) => {
+   return formatColumnUtils(format, value);
+}
 
 const rowFunctionComponent = (props) => {
    const {
@@ -99,7 +103,7 @@ const rowFunctionComponent = (props) => {
          rowRef.scrollIntoView({behavior: 'smooth'});
          setHasScrolled(true);
       }
-   }, [row, props.scrollTo]);
+   }, [row.id, props.scrollTo]);
 
    useEffect(() => {
       setHasScrolled(false);
@@ -202,10 +206,6 @@ const rowFunctionComponent = (props) => {
          cDT
       }
    }, [allowToDragRows]);
-
-   const formatColumn = (format, value) => {
-      return formatColumnUtils(format, value);
-   }
 
    const onRowClick = (row) => {
       return (e) => {
@@ -413,7 +413,7 @@ const rowFunctionComponent = (props) => {
                      </>}
                </div>
             </td>
-         )}
+         )} 
 
          {columns.map((col, colIndex) => {
             let is_editable = col.editable

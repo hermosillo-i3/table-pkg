@@ -55,6 +55,10 @@ const generateRowsToExpand = (expandRows) => {
    }, {});
 };
 
+const getCodeFromIndex = (index) => {
+   return pad(index + 1, 2);
+};
+
 class Table extends React.Component {
 
    constructor(props) {
@@ -206,6 +210,7 @@ class Table extends React.Component {
       // console.log(`----------------${this.props.type}-------------------`)
       // checkChange(this.props, nextProps)
 
+      //TODO: Check if order improves performance
       if (nextState.profile_selected !== this.state.profile_selected)
          return true;
 
@@ -679,7 +684,7 @@ class Table extends React.Component {
 
             const has_position = element.hasOwnProperty('order_position') && isNumber(element.order_position);
             let internal_columns_values = this.props.includeCodeColumm ? {
-               Internal_Table_Code: has_position ? this.getCodeFromPosition(element.id) : this.getCodeFromIndex(index)
+               Internal_Table_Code: has_position ? this.getCodeFromPosition(element.id) : getCodeFromIndex(index)
             } : {};
 
             let item = {
@@ -885,10 +890,6 @@ class Table extends React.Component {
       }
 
    }
-
-   getCodeFromIndex = (index) => {
-      return pad(index + 1, 2);
-   };
 
    getCodeFromPosition = (id) => {
 
@@ -1172,7 +1173,7 @@ class Table extends React.Component {
          rows = this.props.rows
       }
 
-      for (var row_id in rows) {
+      for (const row_id in rows) {
          const row = this.state.rows_extended[row_id];
          if (row) { // Check if the row has been extended
             if ((!row.hasOwnProperty('is_open') || row.is_open === false)) { // Check if the row is closed
@@ -1209,7 +1210,7 @@ class Table extends React.Component {
          rows = this.props.rows
       }
 
-      for (var row_id in rows) {
+      for (const row_id in rows) {
          const row = this.state.rows_extended[row_id];
          if (row) { // Check if the row has been extended
             if ((row.hasOwnProperty('is_open') && row.is_open === true)) { // Check if the row is opened

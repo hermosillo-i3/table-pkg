@@ -265,7 +265,6 @@ export const addChildrenToItems = (obj, parseKeys = true) => {
 };
 
 export const replaceAll = (text = '', search, replacement) => {
-   //for (var x in obj) {
    if (text == null || typeof text !== 'string')
       return '';
    text = text.replace(new RegExp(search, 'g'), replacement);
@@ -675,9 +674,9 @@ export const getObjectProp = function (object, stringProp) {
    let o = object;
    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
    s = s.replace(/^\./, '');           // strip a leading dot
-   var a = s.split('.');
-   for (var i = 0, n = a.length; i < n; ++i) {
-      var k = a[i];
+   const a = s.split('.');
+   for (let i = 0, n = a.length; i < n; ++i) {
+      const k = a[i];
       if (k in o) {
          o = o[k];
       } else {
