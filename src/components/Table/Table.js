@@ -332,7 +332,6 @@ class Table extends React.Component {
    }
 
    componentDidMount = () => {
-
       this.updateColumnsWidth();
       this.generateTableStructure();
       this.createDefaultValues();
@@ -360,11 +359,6 @@ class Table extends React.Component {
    };
 
    componentDidUpdate = (prevProps, prevState) => {
-      console.log('Did update Table', this.props.type);
-      // if (this.container.current.offsetWidth !== this.state.tableWidth) {
-      //    // console.log(`There is a diference ${this.container.current.offsetWidth} - ${this.state.tableWidth}`)
-      //    // this.updateColumnsWidth()
-      // }
 
       if (
          JSON.stringify(prevProps.rows) !== JSON.stringify(this.props.rows) ||
@@ -526,6 +520,7 @@ class Table extends React.Component {
       }
 
       return columns.reduce((acum, item) => {
+         
          const key = item.key || item.assesor || item.Header;
          const profileParentColumnExtended = profileData[key] || {};
          acum[key] = {};
