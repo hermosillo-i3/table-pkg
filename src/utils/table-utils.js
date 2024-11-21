@@ -27,6 +27,7 @@ const freeze_pane_listener = (tableElement) => {
          fixed_horizontal_elts[i].style.webkitTransform = translate_x;
          fixed_horizontal_elts[i].style.transform = translate_x;
       }
+
       console.timeEnd('freeze_pane_listener - 3');
    }
 }

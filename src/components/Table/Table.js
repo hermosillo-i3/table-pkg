@@ -11,7 +11,7 @@ import TableHeader from "../Header";
 import DropZone from "../DropZone";
 import FilterColumn from "../FilterColumn";
 import ContextMenu from "../ContextMenu/ContextMenu";
-import { isEqual, pad, isNumber, removeSpecialCharacters, getAllChildren, getAllParents } from "../../utils/Utils";
+import { pad, isNumber, removeSpecialCharacters, getAllChildren, getAllParents } from "../../utils/Utils";
 import { getClipboardTextFromExcel, hasOwnProperty, replaceAll, KEY_CODES, calculateGranTotal } from "../../utils/index";
 import { applyFilter } from '../../utils/index';
 import {
@@ -27,6 +27,8 @@ import { addFreezeColumns } from "../../utils/table-utils";
 import DragDropContext from '../DragDropContext';
 import {Decimal} from "decimal.js";
 import { mergeDeep } from '@hermosillo-i3/utils-pkg/src/object';
+
+import isEqual from 'lodash/isEqual';
 
 configure({
    ignoreTags: [],
@@ -196,98 +198,132 @@ class Table extends React.Component {
 
 
    shouldComponentUpdate = (nextProps, nextState) => {
-
-      // const checkChange = (olds, news) => {
-      //    Object.keys(olds).map((key) => {
-      //       if (JSON.stringify(olds[key]) != JSON.stringify(news[key])) {
-      //          console.log(`---${key}---`);
-      //          console.log(olds[key]);
-      //          console.log(news[key])
-      //       }
-
-      //    })
-      // };
-      // console.log(`----------------${this.props.type}-------------------`)
-      // checkChange(this.props, nextProps)
-
-      //TODO: Check if order improves performance
-      if (nextState.profile_selected !== this.state.profile_selected)
+      // TODO: Check if order improves performance
+      console.time('_shouldComponentUpdate');
+      if (nextState.profile_selected !== this.state.profile_selected) {
+         console.timeEnd('_shouldComponentUpdate');
          return true;
-
-      if (JSON.stringify(this.props.profiles) !== JSON.stringify(nextProps.profiles)) {
-         return true
       }
+   
+      if (!isEqual(this.props.profiles, nextProps.profiles)) {
+         console.timeEnd('_shouldComponentUpdate');
 
-      if (JSON.stringify(this.props.rows) !== JSON.stringify(nextProps.rows)) {
-         return true
+         return true;
       }
+   
+      if (!isEqual(this.props.rows, nextProps.rows)) {
+         console.timeEnd('_shouldComponentUpdate');
 
+         return true;
+      }
+   
       if (this.props.type !== nextProps.type) {
-         return true
-      }
+         console.timeEnd('_shouldComponentUpdate');
 
-      if (JSON.stringify(this.props.columns) !== JSON.stringify(nextProps.columns)) {
-         return true
+         return true;
       }
+   
+      if (!isEqual(this.props.columns, nextProps.columns)) {
+         console.timeEnd('_shouldComponentUpdate');
 
-      if (JSON.stringify(this.props.selected_rows) !== JSON.stringify(nextProps.selected_rows)) {
-         return true
+         return true;
       }
+   
+      if (!isEqual(this.props.selected_rows, nextProps.selected_rows)) {
+         console.timeEnd('_shouldComponentUpdate');
 
-      if (JSON.stringify(this.props.selected_cell) !== JSON.stringify(nextProps.selected_cell)) {
-         return true
+         return true;
       }
+   
+      if (!isEqual(this.props.selected_cell, nextProps.selected_cell)) {
+         console.timeEnd('_shouldComponentUpdate');
 
-      if (JSON.stringify(this.props.isLoading) !== JSON.stringify(nextProps.isLoading)) {
-         return true
+         return true;
       }
+   
+      if (!isEqual(this.props.isLoading, nextProps.isLoading)) {
+         console.timeEnd('_shouldComponentUpdate');
 
-      if (JSON.stringify(this.state.rows_extended) !== JSON.stringify(nextState.rows_extended)) {
-         return true
+         return true;
       }
+   
+      if (!isEqual(this.state.rows_extended, nextState.rows_extended)) {
+         console.timeEnd('_shouldComponentUpdate');
+         return true;
+      }
+   
+      if (!isEqual(this.state.structure, nextState.structure)) {
+         console.timeEnd('_shouldComponentUpdate');
 
-      if (JSON.stringify(this.state.structure) !== JSON.stringify(nextState.structure)) {
-         return true
+         return true;
       }
+   
+      if (!isEqual(this.state.is_setting_open, nextState.is_setting_open)) {
+         console.timeEnd('_shouldComponentUpdate');
 
-      if (JSON.stringify(this.state.is_setting_open) !== JSON.stringify(nextState.is_setting_open)) {
-         return true
+         return true;
       }
+   
+      if (!isEqual(this.state.column_extended, nextState.column_extended)) {
+         console.timeEnd('_shouldComponentUpdate');
 
-      if (JSON.stringify(this.state.column_extended) !== JSON.stringify(nextState.column_extended)) {
-         return true
+         return true;
       }
+   
+      if (!isEqual(this.state.cellActive, nextState.cellActive)) {
+         console.timeEnd('_shouldComponentUpdate');
 
-      if (JSON.stringify(this.state.cellActive) !== JSON.stringify(nextState.cellActive)) {
-         return true
+         return true;
       }
-      if (JSON.stringify(this.props.actions) !== JSON.stringify(nextProps.actions)) {
-         return true
-      }
+   
+      if (!isEqual(this.props.actions, nextProps.actions)) {
+         console.timeEnd('_shouldComponentUpdate');
 
-      if (JSON.stringify(this.state.isCtrlPressed) !== JSON.stringify(nextState.isCtrlPressed)) {
-         return true
+         return true;
       }
+   
+      if (!isEqual(this.state.isCtrlPressed, nextState.isCtrlPressed)) {
+         console.timeEnd('_shouldComponentUpdate');
 
+         return true;
+      }
+   
       if (this.props.title !== nextProps.title) {
-         return true
+         console.timeEnd('_shouldComponentUpdate');
+
+         return true;
       }
+   
       if (this.props.sortChange !== nextProps.sortChange) {
-         return true
+         console.timeEnd('_shouldComponentUpdate');
+
+         return true;
       }
+   
       if (this.state.sortMethod !== nextState.sortMethod) {
-         return true
+         console.timeEnd('_shouldComponentUpdate');
+
+         return true;
+      }
+   
+      if (!isEqual(this.props.expandRows, nextProps.expandRows)) {
+         console.timeEnd('_shouldComponentUpdate');
+
+         return true;
+      }
+   
+      if (
+         this.state.contextMenu.x !== nextState.contextMenu.x ||
+         this.state.contextMenu.y !== nextState.contextMenu.y
+      ) {
+         console.timeEnd('_shouldComponentUpdate');
+         return true;
       }
 
-      if (JSON.stringify(this.props.expandRows) !== JSON.stringify(nextProps.expandRows)) {
-         return true
-      }
-
-      if (this.state.contextMenu.x !== nextState.contextMenu.x || this.state.contextMenu.y !== nextState.contextMenu.y) {
-         return true
-      }
-
-      return false
+      console.timeEnd('_shouldComponentUpdate');
+ 
+      return false;
+      
    };
 
    handleCtrlKeyDown = ((event) => {
@@ -594,6 +630,8 @@ class Table extends React.Component {
       //  Updates the structure of the rows.
       //  It will only be executed when component is mounted and when rows or sortChange are updated.
 
+      console.time('generateTableStructure');
+
       const { rows } = this.props;
 
       //  Look for root elements (The ones with parent_id)
@@ -713,6 +751,7 @@ class Table extends React.Component {
          structure,
       }));
 
+      console.timeEnd('generateTableStructure');
    };
 
    updateColumnsWidth = (options = {}, callback) => {
@@ -1145,6 +1184,7 @@ class Table extends React.Component {
    };
 
    expandRows = () => {
+      console.time('expandRows');
       let rows = {};
       if (this.props.selected_rows.length > 0) { // To expand only the selected rows
          let rowsfromProps = this.props.rows;
@@ -1178,7 +1218,7 @@ class Table extends React.Component {
             this.onRowExpand(this.props.rows[row_id]);
          }
       }
-
+      console.timeEnd('expandRows');
    };
 
    collapseRows = () => {
