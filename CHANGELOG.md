@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.9.3
+Date: Nov 25, 2024
+* [FIX]
+  * Fix sass warnings for 5BIMP due to deprecated code
+
 ## V 1.9.2
 Date: Nov 05, 2024
 * [FIX]
