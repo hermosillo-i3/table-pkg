@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 //  Colors
 $row_total: #e65a28;
 $header_lv_0: #172c33;
@@ -845,7 +847,7 @@ $font-color-header: #ffffff;
 }
 
 .Table-Row--striped {
-  background-color: lighten($color: $header_lv_4, $amount: 5);
+  background-color: color.adjust($color: $header_lv_4, $lightness: 5%);
 }
 
 .Table-Row-Empty {
