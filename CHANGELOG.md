@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V X.X.X
+Date: XXX XX, 2024
+* [UPDATE]
+  * Updated deprecaded imports for scss files
+
 ## V 1.9.2
 Date: Nov 05, 2024
 * [FIX]
