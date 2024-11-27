@@ -451,7 +451,13 @@ class InputField extends React.Component {
                 this.input = input;
               }}
               onChange={(e) => {
-                const value = e.target.rawValue;
+                let value = e.target.rawValue;
+
+                // Ignore the tail prefix when pressing backspace and the cursor is at the end of the input
+                if (e.nativeEvent.inputType === "deleteContentBackward" && this.input.selectionEnd === this.input.value.length) {
+                  value = value.slice(0, -1);
+                }
+
                 let isValid = true;
                 if (maxValue != null) {
                   const floatValue = parseFloat(value);
@@ -497,9 +503,9 @@ class InputField extends React.Component {
                 rawValueTrimPrefix: true,
                 numeralDecimalScale: decimals,
                 prefix: "%",
-                tailPrefix:true,
+                tailPrefix: true,
               }}
-              />
+            />
           );
         }
 
