@@ -1,4 +1,5 @@
 const path = require('path');
+const sass = require('sass');
 
 module.exports = {
     webpack: {
@@ -15,6 +16,16 @@ module.exports = {
             '@babel/preset-react',
             '@babel/preset-env'
         ],
+    },
+    style: {
+        sass: {
+            loaderOptions: {
+                implementation: sass,
+                sassOptions: {
+                    silenceDeprecations: ['legacy-js-api'],
+                }
+            }
+        },
     },
     devServer: {
         port: 3001,
