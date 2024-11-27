@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.10.0
+Date: Nov 27, 2024
+* [NEW]
+  * Add merge-main-to-pages.yml script for github actions
+
 ## V 1.9.4
 Date: Nov 27, 2024
 * [FIX]
