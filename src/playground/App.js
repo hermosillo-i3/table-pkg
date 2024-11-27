@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Table } from '../index';
-import generateRows from './rows';
+import generateRows from './utils/generateRows';
 
 const App = () => {
     const [selectedRows, setSelectedRows] = useState([]);
