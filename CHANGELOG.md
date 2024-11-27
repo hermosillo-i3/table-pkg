@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.9.4
+Date: Nov 27, 2024
+* [FIX]
+  * Allow to delete the values for inputs of type percentage
+
 ## V 1.9.3
 Date: Nov 25, 2024
 * [FIX]
