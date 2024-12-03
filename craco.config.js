@@ -1,5 +1,4 @@
 const path = require('path');
-const sass = require('sass');
 
 module.exports = {
     webpack: {
@@ -8,6 +7,26 @@ module.exports = {
         },
         configure: (webpackConfig) => {
             webpackConfig.entry = path.resolve(__dirname, 'src/playground/index.js');
+            const oneOfRule = webpackConfig.module.rules.find((rule) => rule.oneOf);
+            if (oneOfRule) {
+                const sassRule = oneOfRule.oneOf.find((rule) => rule.test && rule.test.toString().includes('scss'));
+                if (sassRule) {
+                    sassRule.use = [
+                        'style-loader',
+                        'css-loader',
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                implementation: require('sass'),
+                                api: "modern",
+                                sassOptions: {
+                                    fiber: false,
+                                },
+                            },
+                        }
+                    ];
+                }
+            }
             return webpackConfig;
         },
     },
@@ -16,16 +35,6 @@ module.exports = {
             '@babel/preset-react',
             '@babel/preset-env'
         ],
-    },
-    style: {
-        sass: {
-            loaderOptions: {
-                implementation: sass,
-                sassOptions: {
-                    silenceDeprecations: ['legacy-js-api'],
-                }
-            }
-        },
     },
     devServer: {
         port: 3001,
