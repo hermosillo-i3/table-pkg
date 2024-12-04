@@ -215,9 +215,10 @@ export const formatColumn = (format, value) => {
             `${transform(parseFloat(value), decimals, 3, ',', '.')}`
          ) : value;
       case 'percentage':
-         return !isNaN(value) ? (
-            `${transform(parseFloat(value), decimals, 3, ',', '.')}%`
-         ) : value;
+         if (isNaN(value) || value === "") {
+            return value;
+         }
+         return `${transform(parseFloat(value), decimals, 3, ',', '.')}%`;
       case 'date':
          if (!value) {
             return '';
