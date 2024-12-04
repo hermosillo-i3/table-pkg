@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.10.1
+Date: Dec 04, 2024
+* [FIX]
+  * Add validation when a value is empty in the case 'percentage' in formatColumn
+
 ## V 1.10.0
 Date: Nov 27, 2024
 * [NEW]
