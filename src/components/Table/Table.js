@@ -27,6 +27,8 @@ import { addFreezeColumns } from "../../utils/table-utils";
 import DragDropContext from '../DragDropContext';
 import {Decimal} from "decimal.js";
 
+import _ from 'lodash';
+
 configure({
    ignoreTags: [],
    allowCombinationSubmatches: true,
@@ -256,7 +258,7 @@ class Table extends React.Component {
          return true
       }
 
-      if (!isEqual(this.props.actions, nextProps.actions)) {
+      if (!_.isEqual(this.props.actions, nextProps.actions)) {
          return true
       }
 
