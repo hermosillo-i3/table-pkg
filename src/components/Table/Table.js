@@ -255,7 +255,8 @@ class Table extends React.Component {
       if (JSON.stringify(this.state.cellActive) !== JSON.stringify(nextState.cellActive)) {
          return true
       }
-      if (JSON.stringify(this.props.actions) !== JSON.stringify(nextProps.actions)) {
+
+      if (!isEqual(this.props.actions, nextProps.actions)) {
          return true
       }
 
