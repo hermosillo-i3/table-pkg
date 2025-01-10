@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.10.2
+Date: Jan 10, 2025
+* [FIX]
+  * Change comparison for previous props.actions on componentShouldUpdate, from JSON.stringify to isEqual
+
 ## V 1.10.1
 Date: Dec 04, 2024
 * [FIX]
