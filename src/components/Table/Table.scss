@@ -160,7 +160,7 @@ $font-color-header: #ffffff;
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: #8ee963;
+      background-color: #8ee963 !important;
     }
   }
 
@@ -249,7 +249,7 @@ $font-color-header: #ffffff;
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: #8ee963;
+      background-color: #8ee963 !important;
     }
   }
 
@@ -379,7 +379,7 @@ $font-color-header: #ffffff;
 }
 
 .Table-Row-Close-Alt {
-  background-color: rgba(177, 185, 255, 0.5) !important;
+  background-color: #E5E8FF !important;
 
   .freeze_horizontal {
     .value,
@@ -391,7 +391,7 @@ $font-color-header: #ffffff;
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: rgba(177, 185, 255, 0.5);
+      background-color: #dee1fa !important; 
     }
   }
 
@@ -1541,4 +1541,9 @@ input.InputField {
 
 .custom-column-4 {
   background: rgb(255, 100, 90);
+}
+
+.custom-column-non-editable {
+  background-color: #f0f0f0; 
+  color: #a9a9a9; /* Gris oscuro */
 }
