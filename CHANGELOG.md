@@ -3,6 +3,10 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+## V 1.11.2
+Date: Jan 27, 2025
+* [FIX]
+  * Make border visible when using non-editable style
 
 ## V 1.11.1
 Date: Jan 27, 2025
