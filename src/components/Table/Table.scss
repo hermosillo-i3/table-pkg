@@ -12,6 +12,16 @@ $header_lv_6: #67c3f8;
 $header_lv_7: #80b8df;
 $header_lv_8: #BFD1E5;
 
+$header_lv_0_disabled: #8F9598;
+$header_lv_1_disabled: #8B99A9;
+$header_lv_2_disabled: #95AAB9;
+$header_lv_3_disabled: #98AECA;
+$header_lv_4_disabled: #A1BDE4;
+$header_lv_5_disabled: #B0D3EF;
+$header_lv_6_disabled: #C4E0F7;
+$header_lv_7_disabled: #C9DBEB;
+$header_lv_8_disabled: #CFDBEB;
+
 $font-color-header: #ffffff;
 
 .Table {
@@ -462,10 +472,10 @@ $font-color-header: #ffffff;
 
   .custom-column-non-editable {
     &.null-value {
-      background-color: #8F9598; 
+      background-color: $header_lv_0_disabled; 
     }
     &.cell{
-      background-color: #8F9598; 
+      background-color: $header_lv_0_disabled; 
     }
   }
   td {
@@ -517,10 +527,10 @@ $font-color-header: #ffffff;
 
   .custom-column-non-editable {
     &.null-value {
-      background-color: #8B99A9; 
+      background-color: $header_lv_1_disabled; 
     }
     &.cell{
-      background-color: #8B99A9; 
+      background-color: $header_lv_1_disabled; 
     }
   }
 
@@ -574,10 +584,10 @@ $font-color-header: #ffffff;
 
   .custom-column-non-editable {
     &.null-value {
-      background-color: #95AAB9; 
+      background-color: $header_lv_2_disabled; 
     }
     &.cell{
-      background-color: #95AAB9; 
+      background-color: $header_lv_2_disabled; 
     }
   }
 
@@ -631,10 +641,10 @@ $font-color-header: #ffffff;
 
   .custom-column-non-editable {
     &.null-value {
-      background-color: #98AECA; 
+      background-color: $header_lv_3_disabled; 
     }
     &.cell{
-      background-color: #98AECA; 
+      background-color: $header_lv_3_disabled; 
     }
   }
 
@@ -687,10 +697,10 @@ $font-color-header: #ffffff;
 
   .custom-column-non-editable {
     &.null-value {
-      background-color: #A1BDE4; 
+      background-color: $header_lv_4_disabled; 
     }
     &.cell{
-      background-color: #A1BDE4; 
+      background-color: $header_lv_4_disabled; 
     }
   }
 
@@ -743,10 +753,10 @@ $font-color-header: #ffffff;
 
   .custom-column-non-editable {
     &.null-value {
-      background-color: #B0D3EF; 
+      background-color: $header_lv_5_disabled; 
     }
     &.cell{
-      background-color: #B0D3EF; 
+      background-color: $header_lv_5_disabled; 
     }
   }
 
@@ -790,10 +800,10 @@ $font-color-header: #ffffff;
 
   .custom-column-non-editable {
     &.null-value {
-      background-color: #C4E0F7; 
+      background-color: $header_lv_6_disabled; 
     }
     &.cell{
-      background-color: #C4E0F7; 
+      background-color: $header_lv_6_disabled; 
     }
   }
 
@@ -837,10 +847,10 @@ $font-color-header: #ffffff;
 
   .custom-column-non-editable {
     &.null-value {
-      background-color: #C9DBEB; 
+      background-color: $header_lv_7_disabled; 
     }
     &.cell{
-      background-color: #C9DBEB; 
+      background-color: $header_lv_7_disabled; 
     }
   }
 
@@ -884,10 +894,10 @@ $font-color-header: #ffffff;
 
   .custom-column-non-editable {
     &.null-value {
-      background-color: #C9DBEB; 
+      background-color: $header_lv_8_disabled; 
     }
     &.cell{
-      background-color: #C9DBEB; 
+      background-color: $header_lv_8_disabled; 
     }
   }
 
