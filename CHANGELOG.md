@@ -4,6 +4,13 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.11.0
+Date: Jan 23, 2025
+* [NEW]
+  * Add style in scss for non editable columns
+* [FIX]
+  * Fix the color for custom rows when freezing
+
 ## V 1.10.2
 Date: Jan 10, 2025
 * [FIX]

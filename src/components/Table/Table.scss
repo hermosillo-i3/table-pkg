@@ -12,6 +12,16 @@ $header_lv_6: #67c3f8;
 $header_lv_7: #80b8df;
 $header_lv_8: #BFD1E5;
 
+$header_lv_0_disabled: #8F9598;
+$header_lv_1_disabled: #8B99A9;
+$header_lv_2_disabled: #95AAB9;
+$header_lv_3_disabled: #98AECA;
+$header_lv_4_disabled: #A1BDE4;
+$header_lv_5_disabled: #B0D3EF;
+$header_lv_6_disabled: #C4E0F7;
+$header_lv_7_disabled: #C9DBEB;
+$header_lv_8_disabled: #CFDBEB;
+
 $font-color-header: #ffffff;
 
 .Table {
@@ -160,7 +170,7 @@ $font-color-header: #ffffff;
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: #8ee963;
+      background-color: #8ee963 !important;
     }
   }
 
@@ -249,7 +259,7 @@ $font-color-header: #ffffff;
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: #8ee963;
+      background-color: #8ee963 !important;
     }
   }
 
@@ -379,7 +389,7 @@ $font-color-header: #ffffff;
 }
 
 .Table-Row-Close-Alt {
-  background-color: rgba(177, 185, 255, 0.5) !important;
+  background-color: #E5E8FF !important;
 
   .freeze_horizontal {
     .value,
@@ -391,7 +401,7 @@ $font-color-header: #ffffff;
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: rgba(177, 185, 255, 0.5);
+      background-color: #dee1fa !important; 
     }
   }
 
@@ -460,6 +470,14 @@ $font-color-header: #ffffff;
 .Table-Row--depth-0 {
   background-color: $header_lv_0;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: $header_lv_0_disabled; 
+    }
+    &.cell{
+      background-color: $header_lv_0_disabled; 
+    }
+  }
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -506,6 +524,15 @@ $font-color-header: #ffffff;
 
 .Table-Row--depth-1 {
   background-color: $header_lv_1;
+
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: $header_lv_1_disabled; 
+    }
+    &.cell{
+      background-color: $header_lv_1_disabled; 
+    }
+  }
 
   td {
     border-bottom: 1px solid #000000;
@@ -555,6 +582,15 @@ $font-color-header: #ffffff;
 .Table-Row--depth-2 {
   background-color: $header_lv_2;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: $header_lv_2_disabled; 
+    }
+    &.cell{
+      background-color: $header_lv_2_disabled; 
+    }
+  }
+
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -603,6 +639,15 @@ $font-color-header: #ffffff;
 .Table-Row--depth-3 {
   background-color: $header_lv_3;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: $header_lv_3_disabled; 
+    }
+    &.cell{
+      background-color: $header_lv_3_disabled; 
+    }
+  }
+
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -649,6 +694,15 @@ $font-color-header: #ffffff;
 
 .Table-Row--depth-4 {
   background-color: $header_lv_4;
+
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: $header_lv_4_disabled; 
+    }
+    &.cell{
+      background-color: $header_lv_4_disabled; 
+    }
+  }
 
   td {
     border-bottom: 1px solid #000000;
@@ -697,6 +751,15 @@ $font-color-header: #ffffff;
 .Table-Row--depth-5 {
   background-color: $header_lv_5;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: $header_lv_5_disabled; 
+    }
+    &.cell{
+      background-color: $header_lv_5_disabled; 
+    }
+  }
+
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -734,6 +797,15 @@ $font-color-header: #ffffff;
 
 .Table-Row--depth-6 {
   background-color: $header_lv_6;
+
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: $header_lv_6_disabled; 
+    }
+    &.cell{
+      background-color: $header_lv_6_disabled; 
+    }
+  }
 
   td {
     border-bottom: 1px solid #000000;
@@ -773,6 +845,15 @@ $font-color-header: #ffffff;
 .Table-Row--depth-7 {
   background-color: $header_lv_7;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: $header_lv_7_disabled; 
+    }
+    &.cell{
+      background-color: $header_lv_7_disabled; 
+    }
+  }
+
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -811,6 +892,15 @@ $font-color-header: #ffffff;
 .Table-Row--depth-8 {
   background-color: $header_lv_8;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: $header_lv_8_disabled; 
+    }
+    &.cell{
+      background-color: $header_lv_8_disabled; 
+    }
+  }
+
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -842,6 +932,7 @@ $font-color-header: #ffffff;
     .flex.expand-column,
     td.not-drag-drop-row {
       background: #cfdff1;
+      color: #000000!important;
     }
   }
 }
@@ -866,6 +957,18 @@ $font-color-header: #ffffff;
 
 .Table-Row-Item {
   background: white;
+
+  .custom-column-non-editable {
+
+    &.null-value {
+      background-color: #e0dfdf; 
+      color: #a9a9a9; 
+    }
+    &.cell{
+      background-color: #e0dfdf; 
+    color: #a9a9a9; 
+  }
+  }
 
   &.dragging-row {
     border-top: 1px solid rgba(224, 224, 224, 1);
@@ -914,6 +1017,7 @@ $font-color-header: #ffffff;
     .flex.expand-column,
     td.not-drag-drop-row {
       background: #dddddd;
+      color: #000000!important;
     }
   }
 }
@@ -1541,4 +1645,9 @@ input.InputField {
 
 .custom-column-4 {
   background: rgb(255, 100, 90);
+}
+
+.custom-column-non-editable {
+  background-color: #f0f0f0; 
+  color: #a9a9a9; /* Gris oscuro */
 }
