@@ -460,6 +460,14 @@ $font-color-header: #ffffff;
 .Table-Row--depth-0 {
   background-color: $header_lv_0;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: #8F9598; 
+    }
+    &.cell{
+      background-color: #8F9598; 
+    }
+  }
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -506,6 +514,15 @@ $font-color-header: #ffffff;
 
 .Table-Row--depth-1 {
   background-color: $header_lv_1;
+
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: #8B99A9; 
+    }
+    &.cell{
+      background-color: #8B99A9; 
+    }
+  }
 
   td {
     border-bottom: 1px solid #000000;
@@ -555,6 +572,15 @@ $font-color-header: #ffffff;
 .Table-Row--depth-2 {
   background-color: $header_lv_2;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: #95AAB9; 
+    }
+    &.cell{
+      background-color: #95AAB9; 
+    }
+  }
+
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -603,6 +629,15 @@ $font-color-header: #ffffff;
 .Table-Row--depth-3 {
   background-color: $header_lv_3;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: #98AECA; 
+    }
+    &.cell{
+      background-color: #98AECA; 
+    }
+  }
+
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -649,6 +684,15 @@ $font-color-header: #ffffff;
 
 .Table-Row--depth-4 {
   background-color: $header_lv_4;
+
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: #A1BDE4; 
+    }
+    &.cell{
+      background-color: #A1BDE4; 
+    }
+  }
 
   td {
     border-bottom: 1px solid #000000;
@@ -697,6 +741,15 @@ $font-color-header: #ffffff;
 .Table-Row--depth-5 {
   background-color: $header_lv_5;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: #B0D3EF; 
+    }
+    &.cell{
+      background-color: #B0D3EF; 
+    }
+  }
+
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -734,6 +787,15 @@ $font-color-header: #ffffff;
 
 .Table-Row--depth-6 {
   background-color: $header_lv_6;
+
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: #C4E0F7; 
+    }
+    &.cell{
+      background-color: #C4E0F7; 
+    }
+  }
 
   td {
     border-bottom: 1px solid #000000;
@@ -773,6 +835,15 @@ $font-color-header: #ffffff;
 .Table-Row--depth-7 {
   background-color: $header_lv_7;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: #C9DBEB; 
+    }
+    &.cell{
+      background-color: #C9DBEB; 
+    }
+  }
+
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -811,6 +882,15 @@ $font-color-header: #ffffff;
 .Table-Row--depth-8 {
   background-color: $header_lv_8;
 
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: #C9DBEB; 
+    }
+    &.cell{
+      background-color: #C9DBEB; 
+    }
+  }
+
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
@@ -842,6 +922,7 @@ $font-color-header: #ffffff;
     .flex.expand-column,
     td.not-drag-drop-row {
       background: #cfdff1;
+      color: #000000!important;
     }
   }
 }
@@ -866,6 +947,18 @@ $font-color-header: #ffffff;
 
 .Table-Row-Item {
   background: white;
+
+  .custom-column-non-editable {
+
+    &.null-value {
+      background-color: #e0dfdf; 
+      color: #a9a9a9; 
+    }
+    &.cell{
+      background-color: #e0dfdf; 
+    color: #a9a9a9; 
+  }
+  }
 
   &.dragging-row {
     border-top: 1px solid rgba(224, 224, 224, 1);
@@ -914,6 +1007,7 @@ $font-color-header: #ffffff;
     .flex.expand-column,
     td.not-drag-drop-row {
       background: #dddddd;
+      color: #000000!important;
     }
   }
 }
