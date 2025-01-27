@@ -4,6 +4,11 @@ This file is used to explain in detail changes made to the Table.
 <!-- TOC -->
   [[TOC]]
 
+## V 1.11.1
+Date: Jan 27, 2025
+* [FIX]
+  * Fix non-editable style for null values
+
 ## V 1.11.0
 Date: Jan 23, 2025
 * [NEW]

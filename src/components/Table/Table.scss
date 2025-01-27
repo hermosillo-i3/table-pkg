@@ -1648,6 +1648,12 @@ input.InputField {
 }
 
 .custom-column-non-editable {
-  background-color: #f0f0f0; 
-  color: #a9a9a9; /* Gris oscuro */
+  &.null-value {
+      background-color: #e0dfdf; 
+      color: #a9a9a9; 
+    }
+    &.cell{
+      background-color: #e0dfdf; 
+    color: #a9a9a9; 
+  }
 }
