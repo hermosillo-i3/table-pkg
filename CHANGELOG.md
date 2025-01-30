@@ -3,6 +3,11 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+## V 1.11.3
+Date: Jan 30, 2025
+* [UPDATE]
+  * Update the Table-Row-Warning class to include a color for disabled columns
+
 ## V 1.11.2
 Date: Jan 27, 2025
 * [FIX]
