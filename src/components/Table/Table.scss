@@ -282,6 +282,14 @@ $font-color-header: #ffffff;
 
 .Table-Row-Warning {
   background-color: #fbbd08 !important;
+  .custom-column-non-editable {
+    &.null-value {
+      background-color: #ffe0ae !important; 
+    }
+    &.cell{
+      background-color: #ffe0ae !important;
+    }
+  }
 
   .freeze_horizontal {
     .value,
