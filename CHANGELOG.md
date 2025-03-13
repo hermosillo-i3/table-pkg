@@ -3,6 +3,11 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+# V 1.11.4
+Date: Mar 10, 2025
+* [NEW]
+  * Add a new light yellow color for the rows, so it can be used to highlight rows in precalificacion.
+
 ## V 1.11.3
 Date: Jan 30, 2025
 * [UPDATE]
