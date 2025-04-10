@@ -1,7 +1,7 @@
 import React from 'react'
 import capitalize from "lodash/capitalize";
 import { replaceAll } from '../utils/index'
-import dateFormatter from "../utils/dateFormatter";
+import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
 import { Checkbox, Dropdown, Form } from "semantic-ui-react";
 import Select from "react-select";
 import Cleave from 'cleave.js/react';
