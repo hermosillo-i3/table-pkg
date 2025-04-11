@@ -1,4 +1,4 @@
-import dateFormatter from "./dateFormatter";
+import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
 import {Decimal} from "decimal.js";
 import each from "lodash/each";
 import cloneDeep from "lodash/cloneDeep";

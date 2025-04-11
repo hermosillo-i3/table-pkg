@@ -3,6 +3,11 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+# V 1.12.0
+Date: Apr 10, 2025
+* [UPDATE]
+  * Migrate from the local dateFormatter implementation to the one from utils-pkg
+
 # V 1.11.4
 Date: Mar 10, 2025
 * [NEW]
