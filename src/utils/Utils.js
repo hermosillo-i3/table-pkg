@@ -1,4 +1,4 @@
-import dateFormatter from "../utils/dateFormatter";
+import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
 import { sortByCode } from "./index";
 import _uniqBy from "lodash/uniqBy";
 
