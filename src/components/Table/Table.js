@@ -1255,16 +1255,21 @@ class Table extends React.Component {
          const newColumn = {
             ...previousColumn,
             width: updatedColumn.width,
+            is_width_calculate: updatedColumn.is_width_calculate,
             is_visible: updatedColumn.is_visible,
             freeze: updatedColumn.freeze,
          };
-         if (hasOwnProperty(updatedColumn, 'is_width_calculate') && !updatedColumn.is_width_calculate
-            && hasOwnProperty(newColumn, 'is_width_calculate')) {
-            delete newColumn['is_width_calculate'];
-         }
-         if (updatedColumn.is_width_calculate) {
+
+         if (hasOwnProperty(updatedColumn, 'is_width_calculate') && updatedColumn.is_width_calculate !== undefined) {
             newColumn['is_width_calculate'] = updatedColumn.is_width_calculate;
-            delete newColumn['width'];
+            // If setting a manual width, use the new widths
+            if (updatedColumn.is_width_calculate === false) {
+               newColumn['width_base'] = updatedColumn.width;
+               newColumn['width'] = updatedColumn.width;
+            } else {
+               // If setting an automatic width, remove the width from newColumn so it gets recalculated
+               delete newColumn['width'];
+            }
          }
          return {
             ...acum,
