@@ -145,7 +145,7 @@ export const generateExtraColumnProperties = ({columns, current_extended_columns
       const isVisible = isColumnVisible(column.assesor, current_extended_columns);
       const increase = (hasWidth && isVisible) ? column.width : 0;
       return {
-         free_space: acum.free_space + ((hasWidth && !isVisible) ? column.width_base : 0),
+         free_space: acum.free_space + ((hasWidth && !isVisible) ? (column.width_base || 0) : 0),
          visible_columns: acum.visible_columns + (isVisible ? 1 : 0),
          number: acum.number + ((hasWidth && isVisible) ? 1 : 0),
          value: acum.value + increase
@@ -161,12 +161,34 @@ export const generateExtraColumnProperties = ({columns, current_extended_columns
       if (column_width_taken.visible_columns < columnsExtended.length) {
          //  There are at less 1 invisible column. We need to increase the value of other columns
 
-         const increaseBy = new Decimal(new Decimal(column_width_taken.free_space).div(column_width_taken.visible_columns).toFixed(0)).toNumber();
+         // Get the columns that can receive the redistributed width (auto-calculated columns)
+         const columnsForRedistribution = columnsExtended.filter(column => {
+            const key = getColumnKey(column);
+            const isVisible = isColumnVisible(key, current_extended_columns);
+            const isManualWidth = current_extended_columns[key]?.is_width_calculate === false;
+            return isVisible && !isManualWidth;
+         });
+
+         // Calculate the amount of width to redistribute
+         let increaseBy = 0;
+         if (columnsForRedistribution.length > 0 && column_width_taken.free_space > 0) {
+            const freeSpacePerColumn = new Decimal(column_width_taken.free_space).div(columnsForRedistribution.length);
+            increaseBy = new Decimal(freeSpacePerColumn.toFixed(0)).toNumber();
+         }
+         
+         // Redistribute the width to the columns that can receive it
          new_columns = columnsExtended.reduce((acum, column) => {
             const key = getColumnKey(column);
             const isVisible = isColumnVisible(key, current_extended_columns);
-            if (isVisible) {
-               acum[key].width = current_extended_columns[key].width_base + increaseBy
+            const isManualWidth = current_extended_columns[key]?.is_width_calculate === false;
+            
+            // If the column is visible and has an automatic width, increase the width by the amount of width to redistribute
+            if (isVisible && !isManualWidth && increaseBy > 0) {
+               const baseWidth = current_extended_columns[key]?.width_base || 0;
+               acum[key].width = baseWidth + increaseBy;
+            } else if (isVisible) {
+               // If the column is visible and has a manual width, keep the width as is
+               acum[key].width = current_extended_columns[key].width || current_extended_columns[key].width_base || 0;
             }
             acum[key].is_visible = isVisible;
             return acum
@@ -186,9 +208,11 @@ export const generateExtraColumnProperties = ({columns, current_extended_columns
       let column_width = (maxWidth - column_width_taken.value - widthOfDummyColumns) / (column_width_taken.visible_columns - column_width_taken.number);
       const min_width = 120;
 
-      // Check if the new column width is smaller that the minimum width
-      if (column_width < min_width) {
-         column_width = min_width; // If is smaller, set the column width to this value. This will avoid breaks in the table.
+      /*
+         Check if the new column width is smaller than the minimum width or invalid
+         If it's smaller or NaN, set the column width to this value. */
+      if (isNaN(column_width) || column_width < min_width) {
+         column_width = min_width;
       }
 
       const extendedColumns = {
