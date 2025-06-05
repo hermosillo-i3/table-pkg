@@ -7,7 +7,7 @@ This file is used to explain in detail changes made to the Table.
 Date: Jun 5, 2025
 * [FIX]
   * Fix an error when using invisible, frozen columns with custom sizes causing the following problems:
-    - The frozen columns would change their stated width to take all the available space left by the invisible columns
+    - The frozen columns may change their stated width to take all the available space left by the invisible columns, and cover the whole horizontal space. 
     - Setting a width to these columns would not affect the rendered table as they would still take the available space left by the invisible columns
 
 # V 1.12.0
