@@ -3,19 +3,24 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
-# V 1.12.1
+## V 1.13.0
+Date: Jun 10, 2025
+* [NEW]
+  * Add new type of filter column where you can search within the select options
+
+## V 1.12.1
 Date: Jun 5, 2025
 * [FIX]
   * Fix an error when using invisible, frozen columns with custom sizes causing the following problems:
     - The frozen columns may change their stated width to take all the available space left by the invisible columns, and cover the whole horizontal space. 
     - Setting a width to these columns would not affect the rendered table as they would still take the available space left by the invisible columns
 
-# V 1.12.0
+## V 1.12.0
 Date: Apr 10, 2025
 * [UPDATE]
   * Migrate from the local dateFormatter implementation to the one from utils-pkg
 
-# V 1.11.4
+## V 1.11.4
 Date: Mar 10, 2025
 * [NEW]
   * Add a new light yellow color for the rows, so it can be used to highlight rows in precalificacion.
