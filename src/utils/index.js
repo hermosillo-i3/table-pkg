@@ -929,7 +929,10 @@ export const applyFilter = (row, column_filters) => {
                    if (filter.value.min)
                        in_range = in_range && cellValue >= filter.value.min;
                    return in_range;
-
+               case "searchSelect": 
+                   return filter.value.some((value) =>
+                       cellValue.toLowerCase().includes(value.toLowerCase())
+                   );
                default:
                    if (Array.isArray(filter.value))
                        return cellValue.trim() !== ""
