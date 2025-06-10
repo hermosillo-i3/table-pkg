@@ -33,6 +33,7 @@ const FilterColumn = (props) => {
       equal: null,
    })
    const [filterStatus, setFilterStatus] = useState({})
+   const [filteredOptions, setFilteredOptions] = useState(filter_options || {})
 
    const toggleFilter = (filter) => {
       const newFilterOptions = { ...filterStatus }
@@ -391,7 +392,131 @@ const FilterColumn = (props) => {
 
       )
    }
+   if (colFormat === 'searchSelect') {
+      return (
+         <Popup
+            on='click'
+            pinned
+            position='bottom left'
+            wide='very'
+            content={
+               <div style={{ padding: '12px',}}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', fontSize: '12px'}}>
+                     <div>
+                        <a 
+                           href="#" 
+                           style={{ color: '#4285f4', textDecoration: 'underline', marginRight: '4px' }}
+                           onClick={(e) => {
+                              e.preventDefault();
+                              const allSelected = Object.keys(filteredOptions).every(key => filterStatus[key] === true);
+                              const newFilterStatus = { ...filterStatus };
+                              Object.keys(filteredOptions).forEach(key => {
+                                 newFilterStatus[key] = !allSelected;
+                              });
+                              setFilterStatus(newFilterStatus);
+                           }}
+                        >
+                           Select all
+                        </a>
+                        -
+                        <a 
+                           href="#" 
+                           style={{ color: '#4285f4', textDecoration: 'underline', marginLeft: '4px' }}
+                           onClick={(e) => {
+                              e.preventDefault();
+                              const newFilterStatus = { ...filterStatus };
+                              Object.keys(filteredOptions).forEach(key => {
+                                 delete newFilterStatus[key];
+                              });
+                              setFilterStatus(newFilterStatus);
+                           }}
+                        >
+                           Clear
+                        </a>
+                     </div>
+                     <span style={{ color: '#666', fontSize: '12px', paddingLeft: '1em' }}>
+                        Mostrando {Object.keys(filteredOptions).length}
+                     </span>
+                  </div>
 
+                  <div>
+                     <Input
+                     style={{'paddingBottom': '.2em'}}
+                     value={text}
+                     onChange={(e) => {
+                        let value = e?.target?.value;
+                        setText(value);
+                        
+                        if (filter_options) {
+                           const filtered = Object.keys(filter_options).reduce((acc, key) => {
+                              if (filter_options[key].text.toLowerCase().startsWith(value.toLowerCase())) {
+                                 acc[key] = filter_options[key];
+                              }
+                              return acc;
+                           }, {});
+                           
+                           setFilteredOptions(filtered);
+                        }
+                        
+                        if (value?.length === 0) {
+                           setFilteredOptions(filter_options || {});
+                        }
+                     }}
+                     onKeyDown={(e) => {
+                        if (e.keyCode === 13) {
+                           onSubmit(text)
+                        }
+                     }}
+                     size='small'
+                     placeholder="Buscar"
+                  />
+                  </div>
+
+                  <div className='wrapper' style={{ marginTop: '8px' }}>
+                     {
+                        Object.keys(filteredOptions).map((item, index) => {
+                           return (
+                              <div key={index} style={{ display: 'fixed', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                 <Checkbox 
+                                    checked={filterStatus[item] === true}
+                                    onClick={() => { toggleFilter(item); }} 
+                                    label={filteredOptions[item].text} 
+                                 />                                 
+                              </div>
+                           )
+                        })
+                     }
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                     <Button
+                     size="tiny"
+                     icon
+                     labelPosition='left'
+                     fluid
+                     style={{ marginTop: '8px' }}
+                     onClick={() => {
+                        onSubmit(Object.keys(filterStatus).filter(key => filterStatus[key] === true));
+                     }}
+                  >
+                     <Icon name='search' size='small' />
+                     Buscar
+                  </Button>
+                  </div>
+               </div>
+            }
+            trigger={
+               <Button
+                  size='mini'
+                  icon='filter'
+                  style={{ padding: '0.4rem' }}
+                  type={'button'}
+                  {...(text.length > 0 || JSON.stringify(filterStatus) != '{}' ? { color: 'orange' } : {})}
+               />
+            }
+         />
+      )
+   }
 }
 
 FilterColumn.propTypes = {
