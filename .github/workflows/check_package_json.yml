@@ -1,0 +1,43 @@
+name: Check package json modification
+# This trigger runs on every pull request (created,updated) to the main branch. It does not run when a pull request is merged.
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, edited]
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: 
+        actions/checkout@v4 
+      with:
+        fetch-depth: 2  # This is important to fetch the previous commit as well
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y jq
+        sudo apt-get install -y grep
+
+    - name: Check version increase in package.json
+      run: |
+        # Get the version from the current commit
+        CURRENT_VERSION=$(jq -r .version package.json)
+
+        # Checkout the previous commit
+        git fetch origin main:main
+        git checkout main
+
+        # Get the version from the previous commit
+        MAIN_VERSION=$(jq -r .version package.json)
+
+        # Compare the versions
+        echo "New version ($CURRENT_VERSION). Main version ($MAIN_VERSION)."
+        if [[ "$CURRENT_VERSION" == "$MAIN_VERSION" ]]; then
+          echo "Error: Version in package.json has not been increased!"
+          exit 1
+        else
+          echo "Success: Version has been increased successfully!"
+        fi
