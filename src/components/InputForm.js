@@ -5,10 +5,13 @@ import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
 import { Checkbox, Dropdown, Form } from "semantic-ui-react";
 import Select from "react-select";
 import Cleave from 'cleave.js/react';
+// import DatePicker from 'react-datepicker';
+// import { es } from 'date-fns/locale';
 
 //Components
 import CheckboxList from "./CheckboxList";
 import ColorList from "./ColorList";
+import TableDatePicker from "./TableDatePicker";
 
 export default ({
    field, // { name, value, onChange, onBlur }
@@ -53,17 +56,24 @@ export default ({
          switch (type) {
 
             case 'date':
+               const isWorkingday = (date) => {
+                  return dateFormatter(date).isHermosilloWorkingDay();
+               };
+               
                return (
-                  <input 
-                  type='datetime' 
-                  value={field.value ? dateFormatter(field.value).format('YYYY-MM-DD') : null}  {...field} {...props}
-                  onChange={(date) => {
-                     const { onChange } = props;
-                     if (onChange)
-                        onChange(date);
-                     setFieldTouched(field.name, true);
-                     setFieldValue(field.name, date);
-                  }} />
+                  <TableDatePicker
+                     selected={field.value}
+                     onChange={(date) => {
+                        const {onChange} = props;
+                        if (onChange)
+                           onChange(date);
+                        setFieldTouched(field.name, true);
+                        setFieldValue(field.name, date);
+                     }}
+                     activateNonWorkingDaysFilter={props.activateNonWorkingDaysFilter}
+                     disabled={readOnly}
+                     {...props}
+                  />
                );
             case 'select':
                return (

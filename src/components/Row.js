@@ -328,6 +328,7 @@ const rowFunctionComponent = (props) => {
                      customProps={column.customProps}
                      customColumnClass={column.customColumnClass}
                      compressLongText={column.compressLongText}
+                     activateNonWorkingDaysFilter={props.activateNonWorkingDaysFilter}
                   />
                )
             } else {
