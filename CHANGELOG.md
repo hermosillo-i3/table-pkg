@@ -7,6 +7,8 @@ This file is used to explain in detail changes made to the Table.
 Date: Jun 19, 2025
 * [NEW]
   * Add new date picker in columns with date type to filter non-Working days
+* [UPDATE]
+  * Change english text to spanish
 
 ## V 1.13.0
 Date: Jun 10, 2025
