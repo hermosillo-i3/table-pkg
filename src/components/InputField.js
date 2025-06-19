@@ -5,8 +5,6 @@ import { Icon, Progress } from "semantic-ui-react";
 import Cleave from 'cleave.js/react';
 import {NumericFormat} from 'react-number-format';
 import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
-// import DatePicker from 'react-datepicker';
-// import { es } from 'date-fns/locale';
 
 import InputConfirm from "./InputConfirm";
 import InputFieldSearch from "./InputFieldSearch";

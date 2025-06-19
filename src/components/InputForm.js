@@ -5,8 +5,6 @@ import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
 import { Checkbox, Dropdown, Form } from "semantic-ui-react";
 import Select from "react-select";
 import Cleave from 'cleave.js/react';
-// import DatePicker from 'react-datepicker';
-// import { es } from 'date-fns/locale';
 
 //Components
 import CheckboxList from "./CheckboxList";
