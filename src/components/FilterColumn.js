@@ -416,7 +416,7 @@ const FilterColumn = (props) => {
                               setFilterStatus(newFilterStatus);
                            }}
                         >
-                           Select all
+                           Seleccionar todos
                         </a>
                         -
                         <a 
@@ -431,7 +431,7 @@ const FilterColumn = (props) => {
                               setFilterStatus(newFilterStatus);
                            }}
                         >
-                           Clear
+                           Limpiar
                         </a>
                      </div>
                      <span style={{ color: '#666', fontSize: '12px', paddingLeft: '1em' }}>

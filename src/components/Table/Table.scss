@@ -1700,3 +1700,76 @@ input.InputField {
   }
   border-color: #a2a2a2 !important;
 }
+
+.table-datepicker,
+.Table-Row-Selected:hover .table-datepicker,
+.Table-Row-Item:hover .table-datepicker {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0.5rem !important;
+  width: 100% !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+}
+
+.table-datepicker-popper {
+  z-index: 9999 !important;
+  position: absolute !important;
+}
+
+.table-datepicker-popper,
+.Table-Row:hover .table-datepicker-popper,
+.Table-Row:hover .table-datepicker-popper *,
+.Table-Row-Selected .table-datepicker-popper,
+.Table-Row-Selected .table-datepicker-popper * {
+  background: initial !important;
+}
+
+.Table-Row-Item .table-datepicker-popper .react-datepicker__day--keyboard-selected,
+.Table-Row-Item .table-datepicker-popper .react-datepicker {
+  background: #fff !important;
+}
+
+.Table-Row-Selected .table-datepicker-popper .react-datepicker__header,
+.Table-Row-Item .table-datepicker-popper .react-datepicker__header {
+  background: #f0f0f0 !important;
+}
+
+.table-datepicker-popper .react-datepicker__day--selected,
+.Table-Row:hover .table-datepicker-popper .react-datepicker__day--selected,
+.table-datepicker-popper .react-datepicker__day--selected.react-datepicker__day--disabled,
+.Table-Row-Selected .table-datepicker-popper .react-datepicker__day--selected.react-datepicker__day--disabled,
+.Table-Row-Item .table-datepicker-popper .react-datepicker__day--selected.react-datepicker__day--disabled,
+.Table-Row:hover .table-datepicker-popper .react-datepicker__day--selected.react-datepicker__day--disabled,
+.Table-Row-Selected:hover .table-datepicker-popper .react-datepicker__day--selected.react-datepicker__day--disabled {
+  background-color: #216ba5 !important;
+  color: #fff !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+/* Ensure disabled days remain gray */
+.table-datepicker-popper .react-datepicker__day--disabled,
+.table-datepicker-popper .react-datepicker__day--outside-month,
+.Table-Row:hover .table-datepicker-popper .react-datepicker__day--disabled,
+.Table-Row-Item:hover .table-datepicker-popper .react-datepicker__day--disabled,
+.Table-Row-Selected .table-datepicker-popper .react-datepicker__day--disabled,
+.Table-Row-Selected:hover .table-datepicker-popper .react-datepicker__day--disabled,
+.Table-Row:hover .table-datepicker-popper .react-datepicker__day--outside-month,
+.Table-Row-Item:hover .table-datepicker-popper .react-datepicker__day--outside-month,
+.Table-Row-Selected:hover .table-datepicker-popper .react-datepicker__day--outside-month {
+  color: #ccc !important;
+  background: none !important;
+}
+
+/* Day hover effects for enabled days */
+.table-datepicker-popper .react-datepicker__day:hover:not(.react-datepicker__day--disabled):not(.react-datepicker__day--outside-month):not(.react-datepicker__day--selected),
+.Table-Row:hover .table-datepicker-popper .react-datepicker__day:hover:not(.react-datepicker__day--disabled):not(.react-datepicker__day--outside-month):not(.react-datepicker__day--selected),
+.Table-Row-Item:hover .table-datepicker-popper .react-datepicker__day:hover:not(.react-datepicker__day--disabled):not(.react-datepicker__day--outside-month):not(.react-datepicker__day--selected),
+.Table-Row-Selected:hover .table-datepicker-popper .react-datepicker__day:hover:not(.react-datepicker__day--disabled):not(.react-datepicker__day--outside-month):not(.react-datepicker__day--selected),
+.Table-Row-Selected .table-datepicker-popper .react-datepicker__day:hover:not(.react-datepicker__day--disabled):not(.react-datepicker__day--outside-month):not(.react-datepicker__day--selected),
+.Table-Row-Item .table-datepicker-popper .react-datepicker__day:hover:not(.react-datepicker__day--disabled):not(.react-datepicker__day--outside-month):not(.react-datepicker__day--selected) {
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
+}
