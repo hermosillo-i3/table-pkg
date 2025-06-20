@@ -974,6 +974,7 @@ class Table extends React.Component {
                      onDrop={this.props.onDropInRow}
                      scrollTo={this.props.scrollToRow}
                      handleFilterColumn={this.handleFilterColumn}
+                     activateNonWorkingDaysFilter={this.props.activateNonWorkingDaysFilter}
                      onContextMenu={(x, y, actions) => {
                         this.setState((prevState) => ({
                            contextMenu: {
@@ -1019,6 +1020,7 @@ class Table extends React.Component {
                type={this.props.type}
                customRowClass={this.props.customRowClass}
                ignoreItemStyle={this.props.ignoreItemStyle}
+               activateNonWorkingDaysFilter={this.props.activateNonWorkingDaysFilter}
             />
          )
       } else if (this.props.totalRowColumns) {
@@ -1042,6 +1044,7 @@ class Table extends React.Component {
                type={this.props.type}
                customRowClass={this.props.customRowClass}
                ignoreItemStyle={this.props.ignoreItemStyle}
+               activateNonWorkingDaysFilter={this.props.activateNonWorkingDaysFilter}
             />
          )
       }
@@ -1627,6 +1630,7 @@ class Table extends React.Component {
                            type={this.props.type}
                            customRowClass={this.props.customRowClass}
                            ignoreItemStyle={this.props.ignoreItemStyle}
+                           activateNonWorkingDaysFilter={this.props.activateNonWorkingDaysFilter}
                         />}
                      </thead>
                   </table>
@@ -1853,6 +1857,7 @@ Table.propTypes = {
    filterOptions: PropTypes.object,
    ignoreItemStyle: PropTypes.bool,
    shouldShowSelectIcon: PropTypes.bool,
+   activateNonWorkingDaysFilter: PropTypes.bool,
 };
 
 Table.defaultProps = {

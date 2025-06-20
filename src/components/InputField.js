@@ -8,6 +8,7 @@ import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
 
 import InputConfirm from "./InputConfirm";
 import InputFieldSearch from "./InputFieldSearch";
+import TableDatePicker from "./TableDatePicker";
 
 import { KEY_CODES } from "../utils/index";
 
@@ -648,24 +649,24 @@ class InputField extends React.Component {
             selected = new Date(selected);
           }
 
+          // Check if filter function is provided in format
+          const filterDate = typeof format === 'object' ? format.filterDate : null;
+          const activateNonWorkingDaysFilter = this.props.activateNonWorkingDaysFilter || (typeof format === 'object' ? format.activateNonWorkingDaysFilter : false);
+          
+          const isWorkingday = (date) => {
+            return dateFormatter(date).isHermosilloWorkingDay();
+          };
+
           return (
-            <React.Fragment>
-              <input
-                type="date"
-                onFocus={this.onFocus}
-                className={`InputField ${customColumnClass}`}
-                onChange={this.onChangeDate}
-                value={
-                  selected ? dateFormatter(selected).format("YYYY-MM-DD") : null
-                }
-                onKeyDown={(e) => {
-                  this.onKeyDown(e);
-                  if (this.props.onKeyDownHotKeys)
-                    this.props.onKeyDownHotKeys(e);
-                }}
-                {...customProps}
-              />
-            </React.Fragment>
+            <TableDatePicker
+              selected={selected}
+              onChange={(date) => {
+                this.onChangeDate({ target: { value: date } });
+              }}
+              filterDate={activateNonWorkingDaysFilter ? isWorkingday : filterDate}
+              disabled={this.props.disabled}
+              {...customProps}
+            />
           );
         }
 
