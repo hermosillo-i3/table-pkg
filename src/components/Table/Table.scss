@@ -1690,6 +1690,7 @@ input.InputField {
 }
 
 .custom-column-non-editable {
+  border-color: #a2a2a2 !important;
   &.null-value {
     background-color: #e0dfdf; 
     color: #a9a9a9; 
@@ -1698,7 +1699,6 @@ input.InputField {
     background-color: #e0dfdf; 
     color: #a9a9a9; 
   }
-  border-color: #a2a2a2 !important;
 }
 
 .table-datepicker,

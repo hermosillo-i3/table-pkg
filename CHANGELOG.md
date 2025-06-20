@@ -3,6 +3,13 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+## V 1.14.1
+Date: Jun 19, 2025
+* [FIX]
+  * Adjust Table.scss styles
+* [UPDATE]
+  * Update react-datepicker version to the same one from the APP
+
 ## V 1.14.0
 Date: Jun 19, 2025
 * [NEW]
