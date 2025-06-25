@@ -99,6 +99,11 @@ class Table extends React.Component {
       this.tableHeader = React.createRef();
       this.tableToolbar = React.createRef();
       this.inputRefs = new Map();
+      
+      // Cache for navigable cells performance optimization
+      this.navigableCellsCache = new Map();
+      this.navigableCellsIndex = [];
+      this.lastCacheKey = null;
    }
 
    keyBoardHandlers = {
@@ -174,102 +179,113 @@ class Table extends React.Component {
    * @returns {object} - An object containing the rowId, columnIndex, and found property
    */
    findNextNavigableCell = (startRowIndex, startColIndex, direction = 'forward') => {
-      const columns = this.getVisibleColumns();
-      const renderedRows = this.state.rendered_rows;
-      const totalRows = renderedRows.length;
+      // Ensure the index is up to date
+      this.updateNavigableCellsIndex();
       
-      // If startRowIndex is -1, search for the first navigable cell in the table
+      if (this.navigableCellsIndex.length === 0) {
+         return { found: false };
+      }
+      
+      // If startRowIndex is -1, return the first navigable cell
       if (startRowIndex === -1) {
-         for (let rowIndex = 0; rowIndex < totalRows; rowIndex++) {
-            const searchRowId = renderedRows[rowIndex];
-            const searchRow = this.props.rows[searchRowId];
-            if (!searchRow) continue;
-            
-            for (let colIndex = 0; colIndex < columns.length; colIndex++) {
-               const col = columns[colIndex];
-               if (this.allowsTabNavigationForRow(col, searchRow) && isColumnEditable(col, searchRow)) {
-                  return { rowId: searchRowId, columnIndex: colIndex, found: true };
-               }
-            }
-         }
-         return {
-            found: false,
+         const firstCell = this.navigableCellsIndex[0];
+         return { 
+            rowId: firstCell.rowId, 
+            columnIndex: firstCell.columnIndex, 
+            found: true 
          };
       }
       
-      // Search in current row first (only if moving forward and not at the start)
-      if (direction === 'forward' && startColIndex < columns.length - 1 && startRowIndex < totalRows) {
-         const currentRowId = renderedRows[startRowIndex];
-         const currentRow = this.props.rows[currentRowId];
+      let resultCell = null;
+      
+      if (direction === 'forward') {
+         // Find the next cell after current position
+         const nextCell = this.navigableCellsIndex.find(cell => 
+            cell.rowIndex > startRowIndex || 
+            (cell.rowIndex === startRowIndex && cell.columnIndex > startColIndex)
+         );
          
-         for (let colIndex = startColIndex + 1; colIndex < columns.length; colIndex++) {
-            const col = columns[colIndex];
-            if (this.allowsTabNavigationForRow(col, currentRow) && isColumnEditable(col, currentRow)) {
-               return {
-                  rowId: currentRowId,
+         if (nextCell) {
+            resultCell = nextCell;
+         } else {
+            // Wrap around to first cell if at end
+            resultCell = this.navigableCellsIndex[0];
+         }
+      } else {
+         // Backward navigation
+         for (let i = this.navigableCellsIndex.length - 1; i >= 0; i--) {
+            const cell = this.navigableCellsIndex[i];
+            if (cell.rowIndex < startRowIndex || 
+                (cell.rowIndex === startRowIndex && cell.columnIndex < startColIndex)) {
+               resultCell = cell;
+               break;
+            }
+         }
+         
+         if (!resultCell) {
+            // Wrap around to last cell if at beginning
+            resultCell = this.navigableCellsIndex[this.navigableCellsIndex.length - 1];
+         }
+      }
+      
+      return {
+         rowId: resultCell.rowId,
+         columnIndex: resultCell.columnIndex,
+         found: true
+      };
+   }
+
+   // Memoized function to check if a cell is navigable
+   isCellNavigable = (column, row) => {
+      const cacheKey = `${row.id}-${column.assesor || column.key}`;
+      if (this.navigableCellsCache.has(cacheKey)) {
+         return this.navigableCellsCache.get(cacheKey);
+      }
+      
+      const isNavigable = this.allowsTabNavigationForRow(column, row) && isColumnEditable(column, row);
+      this.navigableCellsCache.set(cacheKey, isNavigable);
+      return isNavigable;
+   }
+
+   // Pre-compute all navigable cells and create an index
+   updateNavigableCellsIndex = () => {
+      const columns = this.getVisibleColumns();
+      const renderedRows = this.state.rendered_rows;
+      
+      // Create cache key to avoid unnecessary recalculations based on the rendered rows and columns
+      const cacheKey = `${renderedRows.join(',')}-${columns.map(c => c.assesor).join(',')}`;
+      if (this.lastCacheKey === cacheKey) {
+         // No need to update if nothing changed
+         return;
+      }
+      
+      // Cache miss - rebuild required
+      this.lastCacheKey = cacheKey;
+      this.navigableCellsIndex = [];
+      this.navigableCellsCache.clear();
+      
+      renderedRows.forEach((rowId, rowIndex) => {
+         const row = this.props.rows[rowId];
+         if (!row) return;
+         
+         columns.forEach((column, colIndex) => {
+            if (this.isCellNavigable(column, row)) {
+               this.navigableCellsIndex.push({
+                  rowId,
+                  rowIndex,
                   columnIndex: colIndex,
-                  found: true,
-               };
+                  // Store linear index for easier forward/backward navigation
+                  linearIndex: this.navigableCellsIndex.length
+               });
             }
-         }
-      }
-      
-      // Search in subsequent rows
-      const searchStart = direction === 'forward' ? startRowIndex + 1 : startRowIndex - 1;
-      const searchEnd = direction === 'forward' ? totalRows : -1;
-      const increment = direction === 'forward' ? 1 : -1;
-      
-      // Iterate through rows in the specified direction (forward or backward)
-      for (let rowIndex = searchStart; rowIndex !== searchEnd; rowIndex += increment) {
-         // Get the row ID and data for the current row being searched
-         const searchRowId = renderedRows[rowIndex];
-         const searchRow = this.props.rows[searchRowId];
-         // Skip if row data is not found
-         if (!searchRow) continue;
-         
-         /* Set column search parameters based on direction
-            - For forward: start at first column (0) and go to last column
-            - For backward: start at last column and go to first column (-1) */
-         const colStart = direction === 'forward' ? 0 : columns.length - 1;
-         const colEnd = direction === 'forward' ? columns.length : -1;
-         const colIncrement = direction === 'forward' ? 1 : -1;
-         
-         // Search through columns in the specified direction
-         for (let colIndex = colStart; colIndex !== colEnd; colIndex += colIncrement) {
-            const col = columns[colIndex];
-            // Check if the cell allows tab navigation and is editable
-            if (this.allowsTabNavigationForRow(col, searchRow) && isColumnEditable(col, searchRow)) {
-               // Return the first navigable cell found
-               return {
-                  rowId: searchRowId,
-                  columnIndex: colIndex,
-                  found: true,
-               };
-            }
-         }
-      }
-      
-      // If not found, wrap around (only for forward direction)
-      if (direction === 'forward' && startRowIndex > 0) {
-         for (let rowIndex = 0; rowIndex < startRowIndex; rowIndex++) {
-            const searchRowId = renderedRows[rowIndex];
-            const searchRow = this.props.rows[searchRowId];
-            if (!searchRow) continue;
-            
-            for (let colIndex = 0; colIndex < columns.length; colIndex++) {
-               const col = columns[colIndex];
-               if (this.allowsTabNavigationForRow(col, searchRow) && isColumnEditable(col, searchRow)) {
-                  return {
-                     rowId: searchRowId,
-                     columnIndex: colIndex,
-                     found: true,
-                  };
-               }
-            }
-         }
-      }
-      
-      return { found: false };
+         });
+      });
+   }
+
+   // Debug method to force cache rebuild
+   forceCacheRebuild = () => {
+      this.lastCacheKey = null;
+      this.updateNavigableCellsIndex();
    }
 
    onKeyDown = (...args) => {
@@ -748,6 +764,10 @@ class Table extends React.Component {
       window.removeEventListener('paste', this.onPaste);
       window.removeEventListener('keydown', this.handleGlobalTabIntercept, true);
       this.inputRefs.clear();
+      
+      // Clear caches to prevent memory leaks
+      this.navigableCellsCache.clear();
+      this.navigableCellsIndex = [];
    }
 
    setRenderedRows = () => {
@@ -773,6 +793,9 @@ class Table extends React.Component {
       this.setState((prevState) => ({
          rendered_rows: rendered_rows
       }))
+      
+      // Invalidate cache when rendered rows change
+      this.lastCacheKey = null;
    };
 
    generateColumnExtended = () => {
