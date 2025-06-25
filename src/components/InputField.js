@@ -32,6 +32,15 @@ class InputField extends React.Component {
       this.onFocus = this.onFocus.bind(this);
    }
 
+   componentDidMount() {
+      if (this.props.isFocused && this.input && this.input.focus) {
+         this.input.focus();
+      }
+      if (this.props.focusRef && this.input) {
+         this.props.focusRef(this.input);
+      }
+   }
+
    componentDidUpdate(prevProps, prevState) {
       if ((this.state.currentValue === prevState.currentValue) && (this.props.value !== prevState.previousValue)) {
          this.setState((prevState) => ({
@@ -225,8 +234,11 @@ class InputField extends React.Component {
                   resize: "none",
                   padding: 0,
                 }}
-                inputRef={(input) => {
+                ref={(input) => {
                   this.input = input;
+                  if (this.props.focusRef && input) {
+                      this.props.focusRef(input);
+                  }
                 }}
                 onKeyDown={(e) => {
                   this.onKeyDown(e);

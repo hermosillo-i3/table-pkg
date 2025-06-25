@@ -329,6 +329,11 @@ const rowFunctionComponent = (props) => {
                      customColumnClass={column.customColumnClass}
                      compressLongText={column.compressLongText}
                      activateNonWorkingDaysFilter={props.activateNonWorkingDaysFilter}
+                     focusRef={(input) => {
+                        if (props.focusRef) {
+                           props.focusRef(input, colIndex, props.rowId);
+                        }
+                     }}
                   />
                )
             } else {

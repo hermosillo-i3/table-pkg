@@ -3,6 +3,11 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+## V 1.15.0
+Date: Jun 25, 2025
+* [NEW]
+  * Allow navigation through columns using the tab key
+
 ## V 1.14.1
 Date: Jun 19, 2025
 * [FIX]
