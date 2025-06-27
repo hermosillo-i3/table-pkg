@@ -3,6 +3,11 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+## V 1.14.2
+Date: Jun 27, 2025
+* [FIX]
+  * Fix locale in date picker
+
 ## V 1.14.1
 Date: Jun 19, 2025
 * [FIX]
