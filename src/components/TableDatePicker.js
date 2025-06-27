@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
-import { es } from 'date-fns/locale';
 import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -68,7 +67,7 @@ const TableDatePicker = ({
 
   return (
     <DatePicker
-      locale={es}
+      locale="es"
       selected={selectedDate}
       onChange={handleDateChange}
       filterDate={getFilterDate()}
