@@ -38,7 +38,6 @@ const keyMap = {
    MOVE_UP: "up",
    MOVE_DOWN: ['down', 'enter'],
    CREATE_NEW: 'command+enter',
-   TAB_FORWARD: 'tab',
 };
 
 const KEY_EVENT = {
@@ -92,18 +91,15 @@ class Table extends React.Component {
             actions: []
          },
          pendingFocusRowId: null,
-         pendingFocusRowObj: null,
       };
 
       this.container = React.createRef();
       this.tableHeader = React.createRef();
       this.tableToolbar = React.createRef();
-      this.inputRefs = new Map();
-      
+
       // Cache for navigable cells performance optimization
-      this.navigableCellsCache = new Map();
-      this.navigableCellsIndex = [];
-      this.lastCacheKey = null;
+      this._tabIndexCache = new Map();
+      this._lastCacheKey = null;
    }
 
    keyBoardHandlers = {
@@ -126,11 +122,6 @@ class Table extends React.Component {
          if (this.props.onAddNew)
             this.props.onAddNew(this.state.cellActive.row_id);
       },
-      TAB_FORWARD: event => {
-         event.preventDefault();
-         event.stopPropagation();
-         this.onTabPressed(event);
-      },
    };
 
    // Checks if the row is a parent or a child and if the column allows tab navigation for the row type
@@ -141,152 +132,65 @@ class Table extends React.Component {
          : (column.allow_tab_navigation_for_children === true);
    }
 
-   // Searches for the first column that allows tab navigation for the row type and is editable
-   findFirstNavigableColumnIndex = (columns, row) => {
-      return columns.findIndex((col) => this.allowsTabNavigationForRow(col, row) && isColumnEditable(col, row));
-   }
 
-   // Navigate to a specific cell and focus it
-   navigateToCell = (rowId, columnIndex, callback) => {
-      const renderedRows = this.state.rendered_rows;
-      const rowPosition = renderedRows.findIndex(id => id === rowId) + 1;
-      
-      this.setState({
-         cellActive: {
-            row: rowPosition,
-            row_id: rowId,
-            cell: columnIndex
-         }
-      }, () => {
-         // Use ref to focus after state update
-         setTimeout(() => {
-            this.focusCellByRef(rowId, columnIndex);
-            if (callback) callback();
-         }, 10);
-      });
-   }
-
-   /**
-   * Function used to search for the next navigable cell in the table. Handles the following cases:
-   * - If there is no cell active, search for the first navigable cell in the table
-   * - If there is a cell active, search for the next navigable cell in the same row
-   * - If there is no next navigable cell in the same row, search for the next navigable cell in the next row
-   * - If there is no next navigable cell in the next row, wrap around to the first navigable cell in the table
-   * 
-   * @param {number} startRowIndex - The index of the row to start searching from
-   * @param {number} startColIndex - The index of the column to start searching from
-   * @param {string} direction - The direction to search in ('forward' or 'backward')
-   * @returns {object} - An object containing the rowId, columnIndex, and found property
-   */
-   findNextNavigableCell = (startRowIndex, startColIndex, direction = 'forward') => {
-      // Ensure the index is up to date
-      this.updateNavigableCellsIndex();
-      
-      if (this.navigableCellsIndex.length === 0) {
-         return { found: false };
-      }
-      
-      // If startRowIndex is -1, return the first navigable cell
-      if (startRowIndex === -1) {
-         const firstCell = this.navigableCellsIndex[0];
-         return { 
-            rowId: firstCell.rowId, 
-            columnIndex: firstCell.columnIndex, 
-            found: true 
-         };
-      }
-      
-      let resultCell = null;
-      
-      if (direction === 'forward') {
-         // Find the next cell after current position
-         const nextCell = this.navigableCellsIndex.find(cell => 
-            cell.rowIndex > startRowIndex || 
-            (cell.rowIndex === startRowIndex && cell.columnIndex > startColIndex)
-         );
-         
-         if (nextCell) {
-            resultCell = nextCell;
-         } else {
-            // Wrap around to first cell if at end
-            resultCell = this.navigableCellsIndex[0];
-         }
-      } else {
-         // Backward navigation
-         for (let i = this.navigableCellsIndex.length - 1; i >= 0; i--) {
-            const cell = this.navigableCellsIndex[i];
-            if (cell.rowIndex < startRowIndex || 
-                (cell.rowIndex === startRowIndex && cell.columnIndex < startColIndex)) {
-               resultCell = cell;
-               break;
-            }
-         }
-         
-         if (!resultCell) {
-            // Wrap around to last cell if at beginning
-            resultCell = this.navigableCellsIndex[this.navigableCellsIndex.length - 1];
-         }
-      }
-      
-      return {
-         rowId: resultCell.rowId,
-         columnIndex: resultCell.columnIndex,
-         found: true
-      };
-   }
-
-   // Memoized function to check if a cell is navigable
-   isCellNavigable = (column, row) => {
-      const cacheKey = `${row.id}-${column.assesor || column.key}`;
-      if (this.navigableCellsCache.has(cacheKey)) {
-         return this.navigableCellsCache.get(cacheKey);
-      }
-      
-      const isNavigable = this.allowsTabNavigationForRow(column, row) && isColumnEditable(column, row);
-      this.navigableCellsCache.set(cacheKey, isNavigable);
-      return isNavigable;
-   }
-
-   // Pre-compute all navigable cells and create an index
-   updateNavigableCellsIndex = () => {
+   /* Calculate tabIndex for a specific cell - optimized version
+   Returns a positive number for navigable cells, -1 for non-navigable */
+   calculateTabIndex = (row, columnIndex) => {
       const columns = this.getVisibleColumns();
-      const renderedRows = this.state.rendered_rows;
+      const column = columns[columnIndex];
       
-      // Create cache key to avoid unnecessary recalculations based on the rendered rows and columns
-      const cacheKey = `${renderedRows.join(',')}-${columns.map(c => c.assesor).join(',')}`;
-      if (this.lastCacheKey === cacheKey) {
-         // No need to update if nothing changed
-         return;
+      if (!column) {
+         return -1;
       }
       
-      // Cache miss - rebuild required
-      this.lastCacheKey = cacheKey;
-      this.navigableCellsIndex = [];
-      this.navigableCellsCache.clear();
+      const allowsNavigation = this.allowsTabNavigationForRow(column, row);
+      const isEditable = isColumnEditable(column, row);
       
-      renderedRows.forEach((rowId, rowIndex) => {
-         const row = this.props.rows[rowId];
-         if (!row) return;
-         
-         columns.forEach((column, colIndex) => {
-            if (this.isCellNavigable(column, row)) {
-               this.navigableCellsIndex.push({
-                  rowId,
-                  rowIndex,
-                  columnIndex: colIndex,
-                  // Store linear index for easier forward/backward navigation
-                  linearIndex: this.navigableCellsIndex.length
-               });
-            }
-         });
-      });
+      if (!allowsNavigation || !isEditable) {
+         return -1;
+      }
+
+      // Create a cache key based on current state
+      const cacheKey = `${this.state.rendered_rows.length}-${columns.length}-${JSON.stringify(this.state.column_extended)}`;
+      
+      // If cache is invalid, rebuild it
+      if (this._lastCacheKey !== cacheKey) {
+         this._rebuildTabIndexCache();
+         this._lastCacheKey = cacheKey;
+      }
+
+      // Return cached value
+      const cellKey = `${row.id}-${columnIndex}`;
+      return this._tabIndexCache.get(cellKey) || -1;
    }
 
-   // Debug method to force cache rebuild
-   forceCacheRebuild = () => {
-      this.lastCacheKey = null;
-      this.updateNavigableCellsIndex();
+   // Rebuild the tab index cache in a single pass
+   _rebuildTabIndexCache = () => {
+      this._tabIndexCache.clear();
+      const columns = this.getVisibleColumns();
+      let tabIndex = 1;
+
+      for (let rowIdx = 0; rowIdx < this.state.rendered_rows.length; rowIdx++) {
+         const rowId = this.state.rendered_rows[rowIdx];
+         const row = this.props.rows[rowId];
+         
+         if (!row) continue;
+
+         for (let colIdx = 0; colIdx < columns.length; colIdx++) {
+            const column = columns[colIdx];
+            const allowsNavigation = this.allowsTabNavigationForRow(column, row);
+            const isEditable = isColumnEditable(column, row);
+            
+            if (allowsNavigation && isEditable) {
+               const cellKey = `${row.id}-${colIdx}`;
+               this._tabIndexCache.set(cellKey, tabIndex);
+               tabIndex++;
+            }
+         }
+      }
    }
+
+
 
    onKeyDown = (...args) => {
       if (this.props.onKeyDown) {
@@ -294,67 +198,8 @@ class Table extends React.Component {
       }
    };
 
-   // Function used to handle the tab key press in the table when an editable cell is focused.
-   onTabPressed = (e) => {
-      const { cellActive } = this.state;
-
-      // If no cell is active, focus on the first available cell
-      if (cellActive.row == null || cellActive.cell == null) {
-         this.focusFirstAvailableCell();
-         return;
-      }
-
-      const { row: rowPosition, cell: cellPosition } = cellActive;
-      const currentRowIndex = rowPosition - 1;
-
-      // Find the next navigable cell
-      const result = this.findNextNavigableCell(currentRowIndex, cellPosition, 'forward');
-      
-      if (result.found) {
-         this.navigateToCell(result.rowId, result.columnIndex);
-      }
-   }
-
-   // Register an input element for a specific cell
-   registerInputRef = (rowId, colIndex, inputElement) => {
-      const key = `${rowId}-${colIndex}`;
-      if (inputElement) {
-         // Only register elements that can actually be focused (input, textarea, etc.)
-         const canFocus = typeof inputElement.focus === 'function';
-         if (canFocus) {
-            this.inputRefs.set(key, inputElement);
-         }
-      } else {
-         this.inputRefs.delete(key);
-      }
-   }
-
-   // Focus a cell using stored ref
-   focusCellByRef = (rowId, colIndex) => {
-      const key = `${rowId}-${colIndex}`;
-      const inputElement = this.inputRefs.get(key);
-
-      if (inputElement && inputElement.focus) {
-         inputElement.focus();
-         return true;
-      }
-      return false;
-   }
-
-   // Find the first navigable cell starting from the beginning
-   focusFirstAvailableCell = () => {
-      const result = this.findNextNavigableCell(-1, -1, 'forward');
-      
-      if (result.found) {
-         this.navigateToCell(result.rowId, result.columnIndex);
-      }
-   }
-
 
    onKeyDownHotKeys = (e) => {
-      if (e.keyCode === KEY_CODES.TAB) {
-         this.onTabPressed(e);
-      }
       if (e.target.type === 'textarea') {
          if (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
             e.preventDefault();
@@ -412,11 +257,6 @@ class Table extends React.Component {
                }
             }
          });
-
-         // Ensure the main table div has focus to capture tab events
-         if (this.mainTableDiv) {
-            this.mainTableDiv.focus();
-         }
       }
    };
 
@@ -570,40 +410,6 @@ class Table extends React.Component {
       }
    }
 
-   // This function is used to intercept the tab key and handle the custom tab navigation
-   handleGlobalTabIntercept = (e) => {
-      // Only intercept Tab keys
-      if (e.key === 'Tab' || e.keyCode === 9) {
-         // Check if this table has an active cell or focused element
-         const hasActiveCell = this.state.cellActive.row != null || this.state.cellActive.cell != null;
-         const isTableFocused = this.container.current && this.container.current.contains(document.activeElement);
-
-         if (hasActiveCell || isTableFocused) {
-            e.preventDefault();
-            e.stopPropagation();
-            this.onTabPressed(e);
-            return false;
-         }
-      }
-   }
-
-   handleTableKeyDown = (e) => {
-      // Tab key
-      if (e.keyCode === 9) {
-         e.preventDefault();
-         e.stopPropagation();
-
-         // Only handle tab if we have an active cell
-         if (this.state.cellActive.row && this.state.cellActive.cell !== undefined) {
-            this.onTabPressed(e);
-         } else {
-            // No active cell, focus the first available cell
-            this.focusFirstAvailableCell();
-         }
-
-         return false;
-      }
-   }
 
    componentDidMount = () => {
 
@@ -616,7 +422,6 @@ class Table extends React.Component {
       document.addEventListener('keydown', this.handleCtrlKeyDown);
       document.addEventListener('keyup', this.handleCtrlKeyUp);
       document.addEventListener('click', this.onClickOnDocument);
-      window.addEventListener('keydown', this.handleGlobalTabIntercept, true);
 
       if (this.props.isExpandByDefault) {
          this.expandRows()
@@ -762,12 +567,8 @@ class Table extends React.Component {
       window.removeEventListener('keyup', this.handleCtrlKeyUp);
       window.removeEventListener('click', this.onClickOnDocument);
       window.removeEventListener('paste', this.onPaste);
-      window.removeEventListener('keydown', this.handleGlobalTabIntercept, true);
-      this.inputRefs.clear();
-      
-      // Clear caches to prevent memory leaks
-      this.navigableCellsCache.clear();
-      this.navigableCellsIndex = [];
+      // Clear tab index cache to prevent memory leaks
+      this._tabIndexCache?.clear();
    }
 
    setRenderedRows = () => {
@@ -792,10 +593,18 @@ class Table extends React.Component {
 
       this.setState((prevState) => ({
          rendered_rows: rendered_rows
-      }))
-      
-      // Invalidate cache when rendered rows change
-      this.lastCacheKey = null;
+      }), () => {
+         // Check for pending auto-focus after rendered_rows is updated
+         if (this.state.pendingFocusRowId && rendered_rows.includes(this.state.pendingFocusRowId)) {
+            // Capture the ID before clearing
+            const rowIdToFocus = this.state.pendingFocusRowId;
+            setTimeout(() => {
+               if (this.focusFirstCellOfRow(rowIdToFocus)) {
+                  this.setState({ pendingFocusRowId: null });
+               }
+            }, 50);
+         }
+      })
    };
 
    generateColumnExtended = () => {
@@ -1172,13 +981,12 @@ class Table extends React.Component {
                   },
                   // Always set the latest pending focus
                   pendingFocusRowId: last_row_in_props.id,
-                  pendingFocusRowObj: last_row_in_props
                }));
                return;
             }
          }
          // Always set the latest pending focus
-         this.setState({ pendingFocusRowId: last_row_in_props.id, pendingFocusRowObj: last_row_in_props });
+         this.setState({ pendingFocusRowId: last_row_in_props.id });
       }
    }
 
@@ -1230,35 +1038,9 @@ class Table extends React.Component {
             if (shouldRender) {
                real_index_inge_andre++;
                let cellActive = undefined;
-               let focusRef = undefined;
                if (this.state.cellActive.row === real_index_inge_andre) {
                   cellActive = this.state.cellActive.cell;
                }
-
-               // For new rows that need focus, set the cellActive to the first editable column
-               if (row.id === this.state.pendingFocusRowId && typeof this.state.pendingFocusRowObj !== 'undefined' && this.state.pendingFocusRowObj !== null) {
-                  const columns = this.getVisibleColumns();
-                  const firstEditableColumnIndex = this.findFirstNavigableColumnIndex(columns, row);
-                  if (firstEditableColumnIndex !== -1) {
-                     cellActive = firstEditableColumnIndex;
-                  }
-               }
-
-               // Create ref registration callback for all inputs in this row
-               focusRef = (input, colIndex, rowId) => {
-                  // Register all input refs for this row
-                  this.registerInputRef(rowId, colIndex, input);
-
-                  // Handle special focus for new rows
-                  if (row.id === this.state.pendingFocusRowId && typeof this.state.pendingFocusRowObj !== 'undefined' && this.state.pendingFocusRowObj !== null) {
-                     const columns = this.getVisibleColumns();
-                     const firstEditableColumnIndex = this.findFirstNavigableColumnIndex(columns, row);
-
-                     if (firstEditableColumnIndex !== -1 && colIndex === firstEditableColumnIndex && input) {
-                        this.focusInputRef(input, rowId);
-                     }
-                  }
-               };
 
                const is_selected = this.props.selected_rows ? this.props.selected_rows.includes(row.id) : false;
 
@@ -1305,7 +1087,7 @@ class Table extends React.Component {
                            }
                         }))
                      }}
-                     focusRef={focusRef}
+                     getTabIndex={this.calculateTabIndex}
                      rowId={row.id}
                   />
                )
@@ -1614,8 +1396,7 @@ class Table extends React.Component {
             row: rowIndex,
             cell: colIndex
          },
-         pendingFocusRowId: undefined,
-         pendingFocusRowObj: undefined
+         pendingFocusRowId: null,
       });
       if (this.props.onCellClick)
          this.props.onCellClick(column, row);
@@ -1718,41 +1499,43 @@ class Table extends React.Component {
       )
    }
 
-   focusInputRef = (input, rowId) => {
-      if (input) {
-         if (rowId === this.state.pendingFocusRowId) {
-            // Use requestAnimationFrame to ensure DOM is ready
-            requestAnimationFrame(() => {
-               input.focus();
+   // Find the first navigable column for a row
+   findFirstNavigableColumnIndex = (columns, row) => {
+      return columns.findIndex((col) => this.allowsTabNavigationForRow(col, row) && isColumnEditable(col, row));
+   }
 
-               // Find the row position and column index for the focused cell
-               const renderedRows = this.state.rendered_rows;
-               const rowPosition = renderedRows.findIndex(id => id === rowId) + 1; // 1-based index
-               const columns = this.getVisibleColumns();
-               const row = this.props.rows[rowId];
-
-               // Find the column index that was focused (should be the first editable column with tab navigation)
-               const focusedColumnIndex = this.findFirstNavigableColumnIndex(columns, row);
-
-               // Register the input ref manually since it was focused programmatically
-               this.registerInputRef(rowId, focusedColumnIndex, input);
-
-               // Manually call onFocusRow to set cellActive state (since programmatic focus doesn't trigger onFocus event)
-               this.onFocusRow(rowPosition, focusedColumnIndex, rowId);
-
-               // Clear pending focus state
-               this.setState({
-                  pendingFocusRowId: undefined,
-                  pendingFocusRowObj: undefined
-               });
-            });
-         } else if (rowId === this.state.cellActive.row_id) {
-            // Focus the cell that was clicked
-            requestAnimationFrame(() => {
-               input.focus();
-            });
-         }
+   // Focus the first navigable cell of a row using tabIndex
+   focusFirstCellOfRow = (rowId) => {
+      const columns = this.getVisibleColumns();
+      const row = this.props.rows[rowId];
+      if (!row) {
+         return false;
       }
+
+      const firstNavigableColIndex = this.findFirstNavigableColumnIndex(columns, row);
+      if (firstNavigableColIndex === -1) {
+         return false;
+      }
+
+      const rowPosition = this.state.rendered_rows.findIndex(id => id === rowId);
+      if (rowPosition === -1) {
+         return false;
+      }
+
+      const expectedTabIndex = this.calculateTabIndex(row, firstNavigableColIndex);
+      const attemptFocus = (attempts = 0) => {
+         const elementToFocus = document.querySelector(`[tabindex="${expectedTabIndex}"]`);
+         
+         if (elementToFocus && elementToFocus.focus) {
+            elementToFocus.focus();
+            return true;
+         } else if (attempts < 3) {
+            requestAnimationFrame(() => attemptFocus(attempts + 1));
+            return false;
+         }
+      };
+
+      return attemptFocus();
    }
 
    render() {
@@ -1903,8 +1686,6 @@ class Table extends React.Component {
                <div
                   ref={(div) => { this.mainTableDiv = div; }}
                   style={droppableStyle}
-                  tabIndex={0}
-                  onKeyDown={this.handleTableKeyDown}
                >
                   {!isTableHeaderHidden && <TableHeader
                      tableHeaderOptions={tableHeaderOptions}
