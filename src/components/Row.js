@@ -328,7 +328,7 @@ const rowFunctionComponent = (props) => {
                      customProps={column.customProps}
                      customColumnClass={column.customColumnClass}
                      compressLongText={column.compressLongText}
-                     activateNonWorkingDaysFilter={props.activateNonWorkingDaysFilter}
+                     disable_hermosillo_non_working_days={props.disable_hermosillo_non_working_days}
                   />
                )
             } else {

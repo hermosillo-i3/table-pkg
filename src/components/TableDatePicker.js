@@ -8,7 +8,7 @@ const TableDatePicker = ({
   selected,
   onChange,
   disabled = false,
-  activateNonWorkingDaysFilter = false,
+  disable_hermosillo_non_working_days = false,
   filterDate = null,
   dateFormat = "dd/MM/yyyy",
   placeholderText = "dd/mm/yyyy",
@@ -57,7 +57,7 @@ const TableDatePicker = ({
 
   // Determine which filter to use
   const getFilterDate = () => {
-    if (activateNonWorkingDaysFilter) {
+    if (disable_hermosillo_non_working_days) {
       return isWorkingday;
     }
     return filterDate;
@@ -92,7 +92,7 @@ TableDatePicker.propTypes = {
   ]),
   onChange: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
-  activateNonWorkingDaysFilter: PropTypes.bool,
+  disable_hermosillo_non_working_days: PropTypes.bool,
   filterDate: PropTypes.func,
   dateFormat: PropTypes.string,
   placeholderText: PropTypes.string,

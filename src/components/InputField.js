@@ -651,7 +651,7 @@ class InputField extends React.Component {
 
           // Check if filter function is provided in format
           const filterDate = typeof format === 'object' ? format.filterDate : null;
-          const activateNonWorkingDaysFilter = this.props.activateNonWorkingDaysFilter || (typeof format === 'object' ? format.activateNonWorkingDaysFilter : false);
+          const disableHermosilloNonWorkingDays = typeof format === 'object' ? format.disable_hermosillo_non_working_days : false;
           
           const isWorkingday = (date) => {
             return dateFormatter(date).isHermosilloWorkingDay();
@@ -663,7 +663,7 @@ class InputField extends React.Component {
               onChange={(date) => {
                 this.onChangeDate({ target: { value: date } });
               }}
-              filterDate={activateNonWorkingDaysFilter ? isWorkingday : filterDate}
+              filterDate={!disableHermosilloNonWorkingDays ? filterDate : isWorkingday}
               disabled={this.props.disabled}
               {...customProps}
             />

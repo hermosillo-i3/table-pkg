@@ -68,7 +68,7 @@ export default ({
                         setFieldTouched(field.name, true);
                         setFieldValue(field.name, date);
                      }}
-                     activateNonWorkingDaysFilter={props.activateNonWorkingDaysFilter}
+                     disable_hermosillo_non_working_days={props.disable_hermosillo_non_working_days}
                      disabled={readOnly}
                      {...props}
                   />
