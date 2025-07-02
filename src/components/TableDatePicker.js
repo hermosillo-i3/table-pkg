@@ -8,7 +8,6 @@ const TableDatePicker = ({
   selected,
   onChange,
   disabled = false,
-  filter_hermosillo_non_working_days = false,
   filterDate = null,
   dateFormat = "dd/MM/yyyy",
   placeholderText = "dd/mm/yyyy",
