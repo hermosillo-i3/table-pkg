@@ -3,6 +3,16 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+## V 1.14.4
+Date: Jul 02, 2025
+* [FIX]
+  * Enhance date filtering in InputForm and remove unused prop from TableDatePicker
+
+## V 1.14.3
+Date: Jul 02, 2025
+* [FIX]
+  * Change date disableling to column level instead of table
+
 ## V 1.14.2
 Date: Jun 27, 2025
 * [FIX]
