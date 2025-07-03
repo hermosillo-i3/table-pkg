@@ -264,7 +264,7 @@ class InputField extends React.Component {
             );
           } else {
             return (
-              <div
+              <p
                 className={`Text ${customColumnClass} ${
                   compressLongText ? "compress-row" : ""
                 }`}
@@ -277,7 +277,7 @@ class InputField extends React.Component {
                 }}
               >
                 {this.state.currentValue}
-              </div>
+              </p>
             );
           }
         }
