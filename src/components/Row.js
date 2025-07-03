@@ -328,6 +328,7 @@ const rowFunctionComponent = (props) => {
                      customProps={column.customProps}
                      customColumnClass={column.customColumnClass}
                      compressLongText={column.compressLongText}
+                     tabIndex={props.getTabIndex ? props.getTabIndex(row, colIndex) : -1}
                      filter_hermosillo_non_working_days={props.filter_hermosillo_non_working_days}
                   />
                )
