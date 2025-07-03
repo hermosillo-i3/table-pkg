@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
-import { es } from 'date-fns/locale';
 import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -9,7 +8,6 @@ const TableDatePicker = ({
   selected,
   onChange,
   disabled = false,
-  activateNonWorkingDaysFilter = false,
   filterDate = null,
   dateFormat = "dd/MM/yyyy",
   placeholderText = "dd/mm/yyyy",
@@ -56,22 +54,14 @@ const TableDatePicker = ({
     }
   };
 
-  // Determine which filter to use
-  const getFilterDate = () => {
-    if (activateNonWorkingDaysFilter) {
-      return isWorkingday;
-    }
-    return filterDate;
-  };
-
   const selectedDate = getSelectedDate();
 
   return (
     <DatePicker
-      locale={es}
+      locale="es"
       selected={selectedDate}
       onChange={handleDateChange}
-      filterDate={getFilterDate()}
+      filterDate={filterDate}
       disabled={disabled}
       dateFormat={dateFormat}
       placeholderText={placeholderText}
@@ -93,7 +83,6 @@ TableDatePicker.propTypes = {
   ]),
   onChange: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
-  activateNonWorkingDaysFilter: PropTypes.bool,
   filterDate: PropTypes.func,
   dateFormat: PropTypes.string,
   placeholderText: PropTypes.string,

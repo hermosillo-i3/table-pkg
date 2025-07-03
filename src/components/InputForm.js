@@ -54,6 +54,9 @@ export default ({
          switch (type) {
 
             case 'date':
+               const filterDate = typeof format === 'object' ? format.filterDate : null;
+               const filterHermosilloNonWorkingDays = typeof format === 'object' ? format.filter_hermosillo_non_working_days : false;
+
                const isWorkingday = (date) => {
                   return dateFormatter(date).isHermosilloWorkingDay();
                };
@@ -68,7 +71,7 @@ export default ({
                         setFieldTouched(field.name, true);
                         setFieldValue(field.name, date);
                      }}
-                     activateNonWorkingDaysFilter={props.activateNonWorkingDaysFilter}
+                     filterDate={filterHermosilloNonWorkingDays ? filterDate : isWorkingday}
                      disabled={readOnly}
                      {...props}
                   />

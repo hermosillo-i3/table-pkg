@@ -8,6 +8,21 @@ Date: Jun 25, 2025
 * [NEW]
   * Allow navigation through columns using the tab key
 
+## V 1.14.4
+Date: Jul 02, 2025
+* [FIX]
+  * Enhance date filtering in InputForm and remove unused prop from TableDatePicker
+
+## V 1.14.3
+Date: Jul 02, 2025
+* [FIX]
+  * Change date disableling to column level instead of table
+
+## V 1.14.2
+Date: Jun 27, 2025
+* [FIX]
+  * Fix locale in date picker
+
 ## V 1.14.1
 Date: Jun 19, 2025
 * [FIX]
