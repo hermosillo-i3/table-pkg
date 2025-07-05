@@ -3,6 +3,11 @@ This file is used to explain in detail changes made to the Table.
 
 <!-- TOC -->
   [[TOC]]
+## V 1.14.5
+Date: Jul 04, 2025
+* [FIX]
+  * Fix the formatting of the rows before calling props.onPasteRows, allowing to paste several rows at the same time
+
 ## V 1.14.4
 Date: Jul 02, 2025
 * [FIX]
