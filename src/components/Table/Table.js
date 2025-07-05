@@ -764,8 +764,8 @@ class Table extends React.Component {
       }
    };
 
-      /**
-    * Function used to fix the rows copied from an spreadsheet before being used or formatted
+   /**
+    * Function used to fix the rows copied from an spreadsheet before being used by the table
     * @param {Array} rows - Array of rows to be fixed, as copied from a spreadsheet
     * @returns {Array} Fixed rows with proper column structure (Array (rows) of arrays (cells))
     */
