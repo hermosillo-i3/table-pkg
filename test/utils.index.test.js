@@ -1,4 +1,4 @@
-const { applyFilter } = require('../src/utils/index');
+const { applyFilter, fixRowsFromClipboard } = require('../src/utils/index');
 
 describe('applyFilter', () => {
   it('should apply status filters correctly', () => {
@@ -297,5 +297,100 @@ describe('applyFilter', () => {
     expect(filterTwo).toEqual(false);
     expect(filterThree).toEqual(false);
     expect(filterFour).toEqual(false);
+  });
+});
+
+describe('fixRowsFromClipboard', () => {
+  it('should reformat the rows copied from a spreadsheet and prepare them to be used pasted in the table', () => {
+      const initialRows = [[
+          "item1",
+          "lte",
+          "566",
+          "768\nitem2",
+          "lte",
+          "38",
+          "456\nitem3",
+          "lte",
+          "56",
+          "879\nitem4",
+          "lte",
+          "152",
+          "78\nitem5",
+          "lte",
+          "53",
+          "86\nitem6",
+          "lte",
+          "546",
+          "265\nitem7",
+          "lte",
+          "786",
+          "789\nitem8",
+          "lte",
+          "15",
+          "786\nitem9",
+          "lte",
+          "738",
+          "45\nitem10",
+          "lte",
+          "786",
+          "456"
+      ]];
+
+      const expectedRows = [
+          ['item1', 'lte', '566', '768'],
+          ['item2', 'lte', '38', '456'],
+          ['item3', 'lte', '56', '879'],
+          ['item4', 'lte', '152', '78'],
+          ['item5', 'lte', '53', '86'],
+          ['item6', 'lte', '546', '265'],
+          ['item7', 'lte', '786', '789'],
+          ['item8', 'lte', '15', '786'],
+          ['item9', 'lte', '738', '45'],
+          ['item10', 'lte', '786', '456']
+      ];
+
+      const fixedRows = fixRowsFromClipboard(initialRows);
+
+      expect(fixedRows).toEqual(expectedRows);
+  });
+
+  it('should handle rows with only one column', () => {
+    const initialRows = [[
+      'item1\nitem2\nitem3\nitem4\nitem5\nitem6\nitem7\nitem8\nitem9\nitem10\n'
+    ]];
+
+    const expectedRows = [
+      ['item1'],
+      ['item2'],
+      ['item3'],
+      ['item4'],
+      ['item5'],
+      ['item6'],
+      ['item7'],
+      ['item8'],
+      ['item9'],
+      ['item10']
+    ];
+
+    const fixedRows = fixRowsFromClipboard(initialRows);
+
+    expect(fixedRows).toEqual(expectedRows);
+  });
+
+  it('should handle formatting a single row with multiple columns', () => {
+    const initialRows = [[
+      'item1',
+      'lte',
+      '566',
+      '768\n'
+    ]];
+
+    const expectedRows = [
+      ['item1', 'lte', '566', '768']
+    ];
+
+    const fixedRows = fixRowsFromClipboard(initialRows);
+
+    expect(fixedRows).toEqual(expectedRows);
   });
 });
