@@ -32,6 +32,12 @@ class InputField extends React.Component {
       this.onFocus = this.onFocus.bind(this);
    }
 
+   componentDidMount() {
+      if (this.props.isFocused && this.input && this.input.focus) {
+         this.input.focus();
+      }
+   }
+
    componentDidUpdate(prevProps, prevState) {
       if ((this.state.currentValue === prevState.currentValue) && (this.props.value !== prevState.previousValue)) {
          this.setState((prevState) => ({
@@ -210,7 +216,7 @@ class InputField extends React.Component {
 
    render() {
 
-      const {isFocused, format, limit, customProps = {}, onPaste, maxValue, customColumnClass, compressLongText, isItem} = this.props;
+      const {isFocused, format, limit, customProps = {}, onPaste, maxValue, customColumnClass, compressLongText, isItem, tabIndex, onFocus} = this.props;
       const {currentValue, isTextAreaMultiLineActive} = this.state;
       const type = typeof format === 'string' ? format : format.type;
       const decimals = typeof format === 'string' ? 2 : format.decimals;
@@ -225,9 +231,10 @@ class InputField extends React.Component {
                   resize: "none",
                   padding: 0,
                 }}
-                inputRef={(input) => {
+                ref={(input) => {
                   this.input = input;
                 }}
+                tabIndex={tabIndex}
                 onKeyDown={(e) => {
                   this.onKeyDown(e);
                   if (this.props.onKeyDownHotKeys) {
@@ -261,7 +268,13 @@ class InputField extends React.Component {
                 className={`Text ${customColumnClass} ${
                   compressLongText ? "compress-row" : ""
                 }`}
+                tabIndex={tabIndex}
                 onClick={(e) => this.onCreateTextArea(e)}
+                onFocus={(e) => {
+                  if (onFocus) {
+                    onFocus();
+                  }
+                }}
               >
                 {this.state.currentValue}
               </p>
@@ -280,6 +293,7 @@ class InputField extends React.Component {
               value={this.state.currentValue}
               onChange={this.onChange}
               onBlur={this.onBlur}
+              tabIndex={tabIndex}
               onKeyDown={(e) => {
                 this.onKeyDown(e);
                 if (this.props.onKeyDownHotKeys) {
@@ -313,6 +327,7 @@ class InputField extends React.Component {
             <InputConfirm
               value={this.state.currentValue}
               hide={!isFocused}
+              tabIndex={tabIndex}
               onAccept={(value) => {
                 this.onChange({ target: { value } });
                 if (this.props.onUpdate) {
@@ -364,6 +379,7 @@ class InputField extends React.Component {
               onChange={this.onChange}
               onBlur={this.onBlur}
               onFocus={this.onFocus}
+              tabIndex={tabIndex}
               onKeyDown={(e) => {
                 this.onKeyDown(e);
                 if (this.props.onKeyDownHotKeys) {
@@ -394,6 +410,7 @@ class InputField extends React.Component {
               htmlRef={(input) => {
                 this.input = input;
               }}
+              tabIndex={tabIndex}
               onChange={(e) => {
                 const value = e.target.rawValue;
                 let isValid = true;
@@ -451,6 +468,7 @@ class InputField extends React.Component {
               htmlRef={(input) => {
                 this.input = input;
               }}
+              tabIndex={tabIndex}
               onChange={(e) => {
                 let value = e.target.rawValue;
 
@@ -519,6 +537,7 @@ class InputField extends React.Component {
               className={`InputField ${customColumnClass}`}
               value={this.state.currentValue}
               onBlur={this.onBlur}
+              tabIndex={tabIndex}
               onValueChange={(values) => {
                 const { value } = values;
                 // formattedValue = $2,223
@@ -569,6 +588,7 @@ class InputField extends React.Component {
               onChange={this.onChange}
               onBlur={this.onBlur}
               maxLength={limit}
+              tabIndex={tabIndex}
               onPaste={(e) => {
                 if (onPaste) {
                   onPaste(e);
@@ -598,6 +618,14 @@ class InputField extends React.Component {
           ) : (
             <div
               className={`left-align-flex value ${customColumnClass} expanded-column`}
+              tabIndex={tabIndex}
+              onClick={this.onFocus}
+              onFocus={(e) => {
+                if (this.props.onFocus) {
+                  this.props.onFocus();
+                }
+              }}
+              style={{ outline: 'none', cursor: 'text' }}
             >
               <span className={`${compressLongText ? "compress-row" : ""}`}>
                 {this.state.currentValue}
@@ -624,6 +652,7 @@ class InputField extends React.Component {
               onChange={this.onChange}
               onBlur={this.onBlur}
               onFocus={this.onFocus}
+              tabIndex={tabIndex}
             >
               {options.map(({ value, key, text }, index) => (
                 <option value={value} key={key ? key : index}>
@@ -665,6 +694,7 @@ class InputField extends React.Component {
               }}
               filterDate={!filterHermosilloNonWorkingDays ? filterDate : isWorkingday}
               disabled={this.props.disabled}
+              tabIndex={tabIndex}
               {...customProps}
             />
           );
@@ -676,6 +706,7 @@ class InputField extends React.Component {
               {this.state.currentValue ? (
                 <div
                   className={`InputField-Boolean ${customColumnClass}`}
+                  tabIndex={tabIndex}
                   onClick={() => {
                     this.props.onUpdate(
                       !this.state.currentValue,
@@ -698,6 +729,7 @@ class InputField extends React.Component {
               ) : (
                 <div
                   className={`InputField-Boolean ${customColumnClass}`}
+                  tabIndex={tabIndex}
                   onClick={() => {
                     this.props.onUpdate(
                       !this.state.currentValue,
@@ -720,6 +752,7 @@ class InputField extends React.Component {
              {...format}
              resetValue={this.resetValue}
              value={this.state.currentValue}
+             tabIndex={tabIndex}
            />
          );
          }
@@ -733,6 +766,7 @@ class InputField extends React.Component {
 InputField.propTypes = {
    value: PropTypes.any.isRequired,
    isFocused: PropTypes.bool,
+   tabIndex: PropTypes.number,
    //onBlur: PropTypes.func.isRequired
 };
 
