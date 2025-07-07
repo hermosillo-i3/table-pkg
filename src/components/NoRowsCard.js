@@ -10,6 +10,7 @@ const NoRowsCard = (props) => {
   const subtitle = noRowsMessage ? noRowsMessage.subtitle : '';
   const icon = noRowsMessage ? noRowsMessage.icon : 'tools';
   const isMultiple = noRowsMessage ? noRowsMessage.isMultiple : false;
+  const hasButtonProps = noRowsMessage ? noRowsMessage.buttonProps : false;
 
   // Reemplaza DropTarget con useDrop
   const [{ isOver, canDrop }, dropRef] = useDrop({
@@ -42,6 +43,7 @@ const NoRowsCard = (props) => {
             canDrop={canDrop}
             title={title}
             subtitle={subtitle}
+            buttonProps={hasButtonProps ?? noRowsMessage.buttonProps}
           />
         </div>
       </td>

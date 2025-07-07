@@ -89,12 +89,17 @@ class Table extends React.Component {
             x: 0,
             y: 0,
             actions: []
-         }
+         },
+         pendingFocusRowId: null,
       };
 
       this.container = React.createRef();
       this.tableHeader = React.createRef();
       this.tableToolbar = React.createRef();
+
+      // Cache for navigable cells performance optimization
+      this._tabIndexCache = new Map();
+      this._lastCacheKey = null;
    }
 
    keyBoardHandlers = {
@@ -117,8 +122,74 @@ class Table extends React.Component {
          if (this.props.onAddNew)
             this.props.onAddNew(this.state.cellActive.row_id);
       },
-
    };
+
+   // Checks if the row is a parent or a child and if the column allows tab navigation for the row type
+   allowsTabNavigationForRow = (column, row) => {
+      const isParent = row.parent_id === null || (Array.isArray(row?._children) && row?._children.length > 0);
+      return isParent 
+         ? (column.allow_tab_navigation_for_parents === true)
+         : (column.allow_tab_navigation_for_children === true);
+   }
+
+
+   /* Calculate tabIndex for a specific cell - optimized version
+   Returns a positive number for navigable cells, -1 for non-navigable */
+   calculateTabIndex = (row, columnIndex) => {
+      const columns = this.getVisibleColumns();
+      const column = columns[columnIndex];
+      
+      if (!column) {
+         return -1;
+      }
+      
+      const allowsNavigation = this.allowsTabNavigationForRow(column, row);
+      const isEditable = isColumnEditable(column, row);
+      
+      if (!allowsNavigation || !isEditable) {
+         return -1;
+      }
+
+      // Create a cache key based on current state
+      const cacheKey = `${this.state.rendered_rows.length}-${columns.length}-${JSON.stringify(this.state.column_extended)}`;
+      
+      // If cache is invalid, rebuild it
+      if (this._lastCacheKey !== cacheKey) {
+         this._rebuildTabIndexCache();
+         this._lastCacheKey = cacheKey;
+      }
+
+      // Return cached value
+      const cellKey = `${row.id}-${columnIndex}`;
+      return this._tabIndexCache.get(cellKey) || -1;
+   }
+
+   // Rebuild the tab index cache in a single pass
+   _rebuildTabIndexCache = () => {
+      this._tabIndexCache.clear();
+      const columns = this.getVisibleColumns();
+      let tabIndex = 1;
+
+      for (let rowIdx = 0; rowIdx < this.state.rendered_rows.length; rowIdx++) {
+         const rowId = this.state.rendered_rows[rowIdx];
+         const row = this.props.rows[rowId];
+         
+         if (!row) continue;
+
+         for (let colIdx = 0; colIdx < columns.length; colIdx++) {
+            const column = columns[colIdx];
+            const allowsNavigation = this.allowsTabNavigationForRow(column, row);
+            const isEditable = isColumnEditable(column, row);
+            
+            if (allowsNavigation && isEditable) {
+               const cellKey = `${row.id}-${colIdx}`;
+               this._tabIndexCache.set(cellKey, tabIndex);
+               tabIndex++;
+            }
+         }
+      }
+   }
+
 
 
    onKeyDown = (...args) => {
@@ -126,6 +197,7 @@ class Table extends React.Component {
          this.props.onKeyDown(...args);
       }
    };
+
 
    onKeyDownHotKeys = (e) => {
       if (e.target.type === 'textarea') {
@@ -143,38 +215,48 @@ class Table extends React.Component {
    keyboardKeyHandleMove = (movePosition) => {
       const { rows } = this.props;
       const { rendered_rows, cellActive } = this.state;
-      const minRows = 0;
-      const maxRows = rendered_rows.length;
       const { cell, row: rowPosition } = cellActive;
       let newRowIndex = rowPosition - 1;
       let newMovePosition = 0;
       const columns = this.getVisibleColumns();
       const column = columns[cell];
-      let is_editable = false;
+      
+      
+      // Keep moving until we find a row where the current column is navigable
       do {
          newRowIndex = newRowIndex + movePosition;
          newMovePosition = newMovePosition + movePosition;
+         
+         if (newRowIndex < 0 || newRowIndex >= rendered_rows.length) break;
+         
          const rowId = rendered_rows[newRowIndex];
          const row = rows[rowId];
-         is_editable = isColumnEditable(column, row);
-      } while (!is_editable && newRowIndex >= minRows && newRowIndex < maxRows);
-      if (newRowIndex >= minRows && newRowIndex < maxRows) {
-         this.moveToRow(newMovePosition);
-      }
+         
+         if (this.allowsTabNavigationForRow(column, row) && isColumnEditable(column, row)) {
+            this.moveToRow(newMovePosition);
+            return;
+         }
+      } while (newRowIndex >= 0 && newRowIndex < rendered_rows.length);
    };
 
-   onFocusRow = (rowIndex, cellIndex) => {
+   onFocusRow = (rowIndex, cellIndex, rowId = null) => {
       if (this.state.cellActive.row !== rowIndex || this.state.cellActive.cell !== cellIndex) {
+         // If rowId is not provided, get it from rendered_rows
+         if (rowId === null && this.state.rendered_rows && this.state.rendered_rows[rowIndex - 1]) {
+            rowId = this.state.rendered_rows[rowIndex - 1];
+         }
+
          this.setState((state) => {
             return {
                ...state,
                cellActive: {
                   ...state.cellActive,
                   row: rowIndex,
-                  cell: cellIndex
+                  cell: cellIndex,
+                  row_id: rowId
                }
             }
-         })
+         });
       }
    };
 
@@ -328,6 +410,7 @@ class Table extends React.Component {
       }
    }
 
+
    componentDidMount = () => {
 
       this.updateColumnsWidth();
@@ -357,7 +440,6 @@ class Table extends React.Component {
    };
 
    componentDidUpdate = (prevProps, prevState) => {
-      console.log('Did update Table', this.props.type);
       // if (this.container.current.offsetWidth !== this.state.tableWidth) {
       //    // console.log(`There is a diference ${this.container.current.offsetWidth} - ${this.state.tableWidth}`)
       //    // this.updateColumnsWidth()
@@ -485,6 +567,8 @@ class Table extends React.Component {
       window.removeEventListener('keyup', this.handleCtrlKeyUp);
       window.removeEventListener('click', this.onClickOnDocument);
       window.removeEventListener('paste', this.onPaste);
+      // Clear tab index cache to prevent memory leaks
+      this._tabIndexCache?.clear();
    }
 
    setRenderedRows = () => {
@@ -509,7 +593,18 @@ class Table extends React.Component {
 
       this.setState((prevState) => ({
          rendered_rows: rendered_rows
-      }))
+      }), () => {
+         // Check for pending auto-focus after rendered_rows is updated
+         if (this.state.pendingFocusRowId && rendered_rows.includes(this.state.pendingFocusRowId)) {
+            // Capture the ID before clearing
+            const rowIdToFocus = this.state.pendingFocusRowId;
+            setTimeout(() => {
+               if (this.focusFirstCellOfRow(rowIdToFocus)) {
+                  this.setState({ pendingFocusRowId: null });
+               }
+            }, 50);
+         }
+      })
    };
 
    generateColumnExtended = () => {
@@ -868,25 +963,32 @@ class Table extends React.Component {
    };
 
 
-   onNewRowExpand = (prevProps, prevState) => {
-      // This function is used to expand a row when an element is added to it.
-
+   onNewRowExpand = (prevProps, _) => {
       if ((Object.keys(prevProps.rows).length) < Object.keys(this.props.rows).length) { // Check if there is a new row
          const last_row_in_props = this.props.rows[Object.keys(this.props.rows)[Object.keys(this.props.rows).length - 1]];
-         if (last_row_in_props.parent_id !== null) {// Check that the new row was not a new section
-            if (this.props.selected_rows.length === 1) { // Check if only one row is selected
-               if (this.state.rows_extended[this.props.selected_rows[0]]) { // Check that a row has been opened at least once, this is to be able to check if the selected row is open or not
-                  const row = this.state.rows_extended[this.props.selected_rows[0]];
-                  if ((!row.hasOwnProperty('is_open') || row.is_open === false)) { // Check if the row is closed
-                     this.onRowExpand(this.props.rows[this.props.selected_rows[0]]);
-                  }
-               } else {
-                  this.onRowExpand(this.props.rows[this.props.selected_rows[0]] ?? this.props.rows[this.props.selected_rows[0].id]);
-               }
+         // If the new row has a parent_id, ensure the parent is expanded
+         if (last_row_in_props.parent_id !== null) {
+            const parentId = last_row_in_props.parent_id;
+            const parentExtended = this.state.rows_extended[parentId] || {};
+            if (!parentExtended.is_open) {
+               this.setState(prevState => ({
+                  rows_extended: {
+                     ...prevState.rows_extended,
+                     [parentId]: {
+                        ...parentExtended,
+                        is_open: true,
+                        should_render: true
+                     }
+                  },
+                  // Always set the latest pending focus
+                  pendingFocusRowId: last_row_in_props.id,
+               }));
+               return;
             }
          }
+         // Always set the latest pending focus
+         this.setState({ pendingFocusRowId: last_row_in_props.id });
       }
-
    }
 
    getCodeFromIndex = (index) => {
@@ -985,6 +1087,8 @@ class Table extends React.Component {
                            }
                         }))
                      }}
+                     getTabIndex={this.calculateTabIndex}
+                     rowId={row.id}
                   />
                )
                object_rows.push(row)
@@ -1283,12 +1387,14 @@ class Table extends React.Component {
    };
 
    onCellClick = (column, row, colIndex, rowIndex) => {
+      // Clear any pending focus state when clicking a cell
       this.setState({
          cellActive: {
             row_id: row.id,
             row: rowIndex,
             cell: colIndex
-         }
+         },
+         pendingFocusRowId: null,
       });
       if (this.props.onCellClick)
          this.props.onCellClick(column, row);
@@ -1389,6 +1495,45 @@ class Table extends React.Component {
             </Button>
          </div>
       )
+   }
+
+   // Find the first navigable column for a row
+   findFirstNavigableColumnIndex = (columns, row) => {
+      return columns.findIndex((col) => this.allowsTabNavigationForRow(col, row) && isColumnEditable(col, row));
+   }
+
+   // Focus the first navigable cell of a row using tabIndex
+   focusFirstCellOfRow = (rowId) => {
+      const columns = this.getVisibleColumns();
+      const row = this.props.rows[rowId];
+      if (!row) {
+         return false;
+      }
+
+      const firstNavigableColIndex = this.findFirstNavigableColumnIndex(columns, row);
+      if (firstNavigableColIndex === -1) {
+         return false;
+      }
+
+      const rowPosition = this.state.rendered_rows.findIndex(id => id === rowId);
+      if (rowPosition === -1) {
+         return false;
+      }
+
+      const expectedTabIndex = this.calculateTabIndex(row, firstNavigableColIndex);
+      const attemptFocus = (attempts = 0) => {
+         const elementToFocus = document.querySelector(`[tabindex="${expectedTabIndex}"]`);
+         
+         if (elementToFocus && elementToFocus.focus) {
+            elementToFocus.focus();
+            return true;
+         } else if (attempts < 3) {
+            requestAnimationFrame(() => attemptFocus(attempts + 1));
+            return false;
+         }
+      };
+
+      return attemptFocus();
    }
 
    render() {
@@ -1536,7 +1681,10 @@ class Table extends React.Component {
          <DragDropContext>
             <HotKeys handlers={this.keyBoardHandlers} keyMap={keyMap}
                style={{ outline: 'none', height: '100%', width: '100%', ...tableWrapperStyle }}>
-               <div style={droppableStyle}>
+               <div
+                  ref={(div) => { this.mainTableDiv = div; }}
+                  style={droppableStyle}
+               >
                   {!isTableHeaderHidden && <TableHeader
                      tableHeaderOptions={tableHeaderOptions}
                      profiles={this.props.profiles}
@@ -1854,6 +2002,8 @@ Table.propTypes = {
    filterOptions: PropTypes.object,
    ignoreItemStyle: PropTypes.bool,
    shouldShowSelectIcon: PropTypes.bool,
+   allowTabNavigationForParents: PropTypes.bool,
+   allowTabNavigationForChildren: PropTypes.bool,
 };
 
 Table.defaultProps = {
@@ -1890,6 +2040,8 @@ Table.defaultProps = {
    filterOptions: {
       includeChildren: true,
    },
+   allowTabNavigationForParents: false,
+   allowTabNavigationForChildren: false,
 };
 
 export default Table;
