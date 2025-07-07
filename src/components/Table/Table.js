@@ -12,7 +12,7 @@ import DropZone from "../DropZone";
 import FilterColumn from "../FilterColumn";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import { isEqual, pad, isNumber, removeSpecialCharacters, getAllChildren, getAllParents } from "../../utils/Utils";
-import { getClipboardTextFromExcel, hasOwnProperty, replaceAll, KEY_CODES, calculateGranTotal } from "../../utils/index";
+import { getClipboardTextFromExcel, hasOwnProperty, replaceAll, KEY_CODES, calculateGranTotal, fixRowsFromClipboard } from "../../utils/index";
 import { applyFilter } from '../../utils/index';
 import {
    flatColumns,
@@ -863,7 +863,8 @@ class Table extends React.Component {
       if (this.props.onPasteRows) {
          const rows = getClipboardTextFromExcel(e);
          const selected_rows = this.props.selected_rows ? this.props.selected_rows : [];
-         this.props.onPasteRows(selected_rows, rows);
+         const fixedRows = fixRowsFromClipboard(rows);
+         this.props.onPasteRows(selected_rows, fixedRows);
       }
    };
 

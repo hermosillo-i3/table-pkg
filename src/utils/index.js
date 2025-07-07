@@ -951,3 +951,56 @@ export const applyFilter = (row, column_filters) => {
        }
    }))
 };
+
+/**
+ * Function used to fix the rows copied from an spreadsheet before being used by the table
+ * @param {Array} rows - Array of rows to be fixed, as copied from a spreadsheet
+ * @returns {Array} Fixed rows with proper column structure (Array (rows) of arrays (cells))
+ */
+export const fixRowsFromClipboard = (rows) => {
+   if (!rows || rows.length === 0) return [];
+   
+   let hasAlreadySplitted = false;
+   let columnCount = 0;
+   const newRows = rows.map((row) => {
+      const newCells = row.reduce((acc, cell, index) => {
+         // If the cell contains '\n' characters, it means that the current row ends and the next row starts
+         if (typeof cell === 'string' && cell.includes('\n')) {
+            const splittedCell = cell.split('\n').filter(part => part.trim() !== '');
+
+            // If the cell has been splitted while the index is 0, it means that the rows are 1 cell long
+            if (index === 0) {
+               columnCount = 1;
+               hasAlreadySplitted = true;
+            }
+
+            acc.push(...splittedCell);
+            /*
+            Save the column count to be used to split the rows into chunks.
+               Only calculate columnCount if we actually have multiple parts after splitting */
+            if (!hasAlreadySplitted && splittedCell.length > 1) {
+               // Subtract 1 because the first cell is the description of the next row
+               columnCount = acc.length - 1;
+               hasAlreadySplitted = true;
+            }
+         } else {
+            acc.push(cell);
+         }
+         return acc;
+      }, []);
+
+      // If no newlines were found, use the original row length as column count
+      if (!hasAlreadySplitted && columnCount === 0) {
+         columnCount = newCells.length;
+      }
+
+      // Split the newCells into chunks of `columnCount` items each
+      const splittedRows = [];
+      for (let i = 0; i < newCells.length; i += columnCount) {
+         splittedRows.push(newCells.slice(i, i + columnCount));
+      }
+      return splittedRows;
+   }).flat();
+   
+   return newRows;
+};
