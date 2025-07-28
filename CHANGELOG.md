@@ -1,8 +1,10 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
-<!-- TOC -->
-  [[TOC]]
+## V 1.16.0
+Date: Jul 28, 2025
+* [NEW]
+  * Cell option in table now returns default cell value if the Cell function returns undefined or null
 
 ## V 1.15.1
 Date: Jul 07, 2025
