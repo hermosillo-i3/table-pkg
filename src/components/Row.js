@@ -427,7 +427,8 @@ const rowFunctionComponent = (props) => {
             const readOnlyClass = !is_editable ? 'cell-read-only' : '';
             const customColumnClass = col.className ? col.className : '';
             const columnClass = col.columnClass ? isFunction(col.columnClass) ? col.columnClass(col, row) : col.columnClass : '';
-            let cellToRender = (col.Cell ? (
+            let cellContent = col.Cell ? col.Cell(row) : null;
+            let cellToRender = (col.Cell && cellContent !== null && cellContent !== undefined ? (
                   <td
                      onClick={(e) => onCellClick(col, row, colIndex, rowIndex, e)}
                      onDoubleClick={(e) => onCellDoubleClick(col, row, colIndex, rowIndex, e)}
@@ -459,7 +460,7 @@ const rowFunctionComponent = (props) => {
 
                            </div>
                         }
-                        {<React.Fragment>{col.Cell(row)}</React.Fragment>}
+                        {<React.Fragment>{cellContent}</React.Fragment>}
                      </div>
                   </td>
 
