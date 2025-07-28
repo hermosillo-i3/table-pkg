@@ -6,6 +6,11 @@ Date: Jul 28, 2025
 * [NEW]
   * Cell option in table now returns default cell value if the Cell function returns undefined or null
 
+## V 1.15.1
+Date: Jul 07, 2025
+* [FIX]
+  * Add extra logic to balance "cargas de trabajo" on assign reviewer to pull request workflow
+
 ## V 1.15.0
 Date: Jun 25, 2025
 * [NEW]
