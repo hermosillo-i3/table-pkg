@@ -1,6 +1,13 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.16.1
+Date: Jul 31, 2025
+* [UPDATE]
+  * Improve the copying and pasting of rows
+* [FIX]
+  * Fix the copying and pasting of rows by formatting the cells coming from excel and google sheets with the same structure
+
 ## V 1.16.0
 Date: Jul 28, 2025
 * [NEW]

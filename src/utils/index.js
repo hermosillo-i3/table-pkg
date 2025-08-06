@@ -565,7 +565,10 @@ export const getClipboardTextFromExcel = (e) => {
    const clipboardData = e.clipboardData || window.clipboardData;
    const pastedData = clipboardData.getData('Text');
 
-   const clipRows = pastedData.trim().split('\r\n');
+   const lineSeparator = pastedData.includes('\r\n') ? '\r\n' : '\n';
+
+   const clipRows = pastedData.trim().split(lineSeparator);
+
    const rows = [];
    const regexForBreakLines = /\r?\n|\r/g;
    let columnsToRemove = [];
@@ -954,53 +957,91 @@ export const applyFilter = (row, column_filters) => {
 
 /**
  * Function used to fix the rows copied from an spreadsheet before being used by the table
- * @param {Array} rows - Array of rows to be fixed, as copied from a spreadsheet
- * @returns {Array} Fixed rows with proper column structure (Array (rows) of arrays (cells))
+ * @param {Array<Array<String>>} rows - Array of rows to be fixed, as copied from a spreadsheet
+ * @returns {Object} Object containing newRows (valid rows) and errorRows (invalid rows)
  */
 export const fixRowsFromClipboard = (rows) => {
-   if (!rows || rows.length === 0) return [];
-   
-   let hasAlreadySplitted = false;
-   let columnCount = 0;
-   const newRows = rows.map((row) => {
-      const newCells = row.reduce((acc, cell, index) => {
-         // If the cell contains '\n' characters, it means that the current row ends and the next row starts
-         if (typeof cell === 'string' && cell.includes('\n')) {
-            const splittedCell = cell.split('\n').filter(part => part.trim() !== '');
+   if (!rows || rows.length === 0) return {newRows: [], errorRows: []};
 
-            // If the cell has been splitted while the index is 0, it means that the rows are 1 cell long
-            if (index === 0) {
-               columnCount = 1;
-               hasAlreadySplitted = true;
+   let hasCalculatedRowLength = false;
+   let rowLength = 0;
+
+   const plainRows = [];
+   const errorRows = [];
+
+   const columnNames = [
+      {name: 'description', value: 'String'},
+      {name: 'unit', value: 'String'},
+      {name: 'quantity', value: 'Number'},
+      {name: 'unit_price_mxn', value: 'Number'},
+      {name: 'unit_rate_usd', value: 'Number'},
+   ];
+
+   for (const row of rows) {
+      // Calculate the row length only once
+      if (!hasCalculatedRowLength) {
+         rowLength = row.filter(cell => cell != null && cell.toString().trim() !== '').length;
+         hasCalculatedRowLength = true;
+      }
+
+      // Validate all cells in the row first
+      let isValidRow = true;
+      const validCells = [];
+
+      for (let index = 0; index < row.length; index++) {
+         const cell = row[index];
+         const cellType = columnNames[index]?.value;
+         const cellValue = cell != null ? cell.toString().trim() : '';
+
+         if (cellValue !== '') {
+            let isValidType = false;
+            
+            if (cellType === 'Number') {
+               // Check if the cell contains a valid number (remove commas and currency symbols first)
+               const cleanedValue = cellValue.replace(/[$,]/g, '');
+               isValidType = !isNaN(cleanedValue) && !isNaN(parseFloat(cleanedValue));
+            } else if (cellType === 'String') {
+               // For strings, check that it's not empty and not just a number
+               const cleanedValue = cellValue.replace(/[$,]/g, '');
+               const isJustANumber = !isNaN(cleanedValue) && !isNaN(parseFloat(cleanedValue)) && cleanedValue.trim() !== '';
+               isValidType = cellValue.length > 0 && !isJustANumber;
+            } else {
+               // Default to true for unknown types
+               isValidType = true;
             }
 
-            acc.push(...splittedCell);
-            /*
-            Save the column count to be used to split the rows into chunks.
-               Only calculate columnCount if we actually have multiple parts after splitting */
-            if (!hasAlreadySplitted && splittedCell.length > 1) {
-               // Subtract 1 because the first cell is the description of the next row
-               columnCount = acc.length - 1;
-               hasAlreadySplitted = true;
+            if (isValidType) {
+               validCells.push(cell);
+            } else {
+               console.warn('✗ Invalid cell type:', cell, 'Expected:', cellType, 'Column:', columnNames[index]?.name);
+               isValidRow = false;
+               break; // Stop checking this row
             }
-         } else {
-            acc.push(cell);
          }
-         return acc;
-      }, []);
-
-      // If no newlines were found, use the original row length as column count
-      if (!hasAlreadySplitted && columnCount === 0) {
-         columnCount = newCells.length;
       }
 
-      // Split the newCells into chunks of `columnCount` items each
-      const splittedRows = [];
-      for (let i = 0; i < newCells.length; i += columnCount) {
-         splittedRows.push(newCells.slice(i, i + columnCount));
+      // Add cells to appropriate arrays
+      if (isValidRow && validCells.length > 0) {
+         validCells.forEach(cell => plainRows.push(cell));
+         console.log('validCells', validCells);
+         console.log('✓ Valid row added with', validCells.length, 'cells');
+      } else if (!isValidRow) {
+         // Create an error row preserving original data
+         const errorRow = new Array(rowLength);
+         for (let i = 0; i < rowLength; i++) {
+            errorRow[i] = row[i] || '';
+         }
+         errorRows.push(errorRow);
+         console.log('errorRow', errorRow);
+         console.warn('✗ Added error row due to invalid cell(s)');
       }
-      return splittedRows;
-   }).flat();
-   
-   return newRows;
+   }
+
+   const newRows = [];
+
+   for (let i = 0; i < plainRows.length; i += rowLength) {
+      newRows.push(plainRows.slice(i, i + rowLength));
+   }
+
+   return {newRows, errorRows};
 };

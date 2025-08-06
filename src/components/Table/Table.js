@@ -11,6 +11,7 @@ import TableHeader from "../Header";
 import DropZone from "../DropZone";
 import FilterColumn from "../FilterColumn";
 import ContextMenu from "../ContextMenu/ContextMenu";
+import PasteErrorModal from "../PasteErrorModal";
 import { isEqual, pad, isNumber, removeSpecialCharacters, getAllChildren, getAllParents } from "../../utils/Utils";
 import { getClipboardTextFromExcel, hasOwnProperty, replaceAll, KEY_CODES, calculateGranTotal, fixRowsFromClipboard } from "../../utils/index";
 import { applyFilter } from '../../utils/index';
@@ -91,6 +92,10 @@ class Table extends React.Component {
             actions: []
          },
          pendingFocusRowId: null,
+         errorModal: {
+            visible: false,
+            errorRows: []
+         },
       };
 
       this.container = React.createRef();
@@ -863,9 +868,31 @@ class Table extends React.Component {
       if (this.props.onPasteRows) {
          const rows = getClipboardTextFromExcel(e);
          const selected_rows = this.props.selected_rows ? this.props.selected_rows : [];
-         const fixedRows = fixRowsFromClipboard(rows);
-         this.props.onPasteRows(selected_rows, fixedRows);
+         const {newRows, errorRows} = fixRowsFromClipboard(rows);
+         console.log('newRows', newRows);
+         console.log('errorRows', errorRows);
+         if (errorRows.length > 0) {
+            this.setState({
+               errorModal: {
+                  visible: true,
+                  errorRows: errorRows
+               }
+            });
+            return;
+         }
+         this.props.onPasteRows(selected_rows, newRows);
       }
+   };
+
+   closeErrorModal = () => {
+      this.setState({
+         errorModal: {
+            visible: false,
+            errorRows: []
+         }
+      }, () => {
+         this.forceUpdate();
+      });
    };
 
    addPasteEvent = () => {
@@ -1877,6 +1904,13 @@ class Table extends React.Component {
                      actions={this.state.contextMenu.actions}
                   />
                   }
+
+                  {this.state.errorModal.visible && <PasteErrorModal
+                     key={`error-modal-${Date.now()}`}
+                     open={this.state.errorModal.visible}
+                     onClose={() => this.closeErrorModal()}
+                     errorRows={this.state.errorModal.errorRows}
+                  />}
                </div>
 
             </HotKeys>
