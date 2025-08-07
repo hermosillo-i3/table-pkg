@@ -94,7 +94,9 @@ class Table extends React.Component {
          pendingFocusRowId: null,
          errorModal: {
             visible: false,
-            errorRows: []
+            errorRows: [],
+            originalNewRows: [],
+            errorRowIndexes: []
          },
       };
 
@@ -868,14 +870,14 @@ class Table extends React.Component {
       if (this.props.onPasteRows) {
          const rows = getClipboardTextFromExcel(e);
          const selected_rows = this.props.selected_rows ? this.props.selected_rows : [];
-         const {newRows, errorRows} = fixRowsFromClipboard(rows);
-         console.log('newRows', newRows);
-         console.log('errorRows', errorRows);
+         const {newRows, errorRows, errorRowIndexes} = fixRowsFromClipboard(rows);
          if (errorRows.length > 0) {
             this.setState({
                errorModal: {
                   visible: true,
-                  errorRows: errorRows
+                  errorRows: errorRows,
+                  originalNewRows: newRows,
+                  errorRowIndexes: errorRowIndexes
                }
             });
             return;
@@ -888,7 +890,9 @@ class Table extends React.Component {
       this.setState({
          errorModal: {
             visible: false,
-            errorRows: []
+            errorRows: [],
+            originalNewRows: [],
+            errorRowIndexes: []
          }
       }, () => {
          this.forceUpdate();
@@ -1562,6 +1566,28 @@ class Table extends React.Component {
 
       return attemptFocus();
    }
+ 
+   // This function is used to handle the corrected rows from the paste error modal
+   handleCorrectedRows = (correctedRows) => {
+      const {newRows: correctedValidRows} = fixRowsFromClipboard(correctedRows);
+      const originalNewRows = this.state.errorModal.originalNewRows || [];
+      const errorRowIndexes = this.state.errorModal.errorRowIndexes || [];
+      
+      // Create the final array by starting with the original valid rows
+      const allValidRows = [...originalNewRows];
+      
+      // Insert corrected rows at their original positions
+      correctedValidRows.forEach((correctedRow, correctedIndex) => {
+         if (correctedIndex < errorRowIndexes.length) {
+            const originalIndex = errorRowIndexes[correctedIndex] - 1;
+            allValidRows.splice(originalIndex, 0, correctedRow);
+         }
+      });
+      
+      // Replace the original rows with the initial rows
+      this.props.onPasteRows(this.props.selected_rows, allValidRows);
+      this.closeErrorModal();
+   }
 
    render() {
       const {
@@ -1910,6 +1936,7 @@ class Table extends React.Component {
                      open={this.state.errorModal.visible}
                      onClose={() => this.closeErrorModal()}
                      errorRows={this.state.errorModal.errorRows}
+                     onApplyCorrections={this.handleCorrectedRows}
                   />}
                </div>
 

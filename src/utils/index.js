@@ -961,13 +961,14 @@ export const applyFilter = (row, column_filters) => {
  * @returns {Object} Object containing newRows (valid rows) and errorRows (invalid rows)
  */
 export const fixRowsFromClipboard = (rows) => {
-   if (!rows || rows.length === 0) return {newRows: [], errorRows: []};
+   if (!rows || rows.length === 0) return {newRows: [], errorRows: [], errorRowIndexes: []};
 
    let hasCalculatedRowLength = false;
    let rowLength = 0;
 
    const plainRows = [];
    const errorRows = [];
+   const errorRowIndexes = [];
 
    const columnNames = [
       {name: 'description', value: 'String'},
@@ -977,7 +978,8 @@ export const fixRowsFromClipboard = (rows) => {
       {name: 'unit_rate_usd', value: 'Number'},
    ];
 
-   for (const row of rows) {
+   for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+      const row = rows[rowIndex];
       // Calculate the row length only once
       if (!hasCalculatedRowLength) {
          rowLength = row.filter(cell => cell != null && cell.toString().trim() !== '').length;
@@ -1013,7 +1015,6 @@ export const fixRowsFromClipboard = (rows) => {
             if (isValidType) {
                validCells.push(cell);
             } else {
-               console.warn('✗ Invalid cell type:', cell, 'Expected:', cellType, 'Column:', columnNames[index]?.name);
                isValidRow = false;
                break; // Stop checking this row
             }
@@ -1023,8 +1024,6 @@ export const fixRowsFromClipboard = (rows) => {
       // Add cells to appropriate arrays
       if (isValidRow && validCells.length > 0) {
          validCells.forEach(cell => plainRows.push(cell));
-         console.log('validCells', validCells);
-         console.log('✓ Valid row added with', validCells.length, 'cells');
       } else if (!isValidRow) {
          // Create an error row preserving original data
          const errorRow = new Array(rowLength);
@@ -1032,8 +1031,7 @@ export const fixRowsFromClipboard = (rows) => {
             errorRow[i] = row[i] || '';
          }
          errorRows.push(errorRow);
-         console.log('errorRow', errorRow);
-         console.warn('✗ Added error row due to invalid cell(s)');
+         errorRowIndexes.push(rowIndex);
       }
    }
 
@@ -1043,5 +1041,5 @@ export const fixRowsFromClipboard = (rows) => {
       newRows.push(plainRows.slice(i, i + rowLength));
    }
 
-   return {newRows, errorRows};
+   return {newRows, errorRows, errorRowIndexes};
 };
