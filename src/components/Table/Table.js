@@ -870,7 +870,7 @@ class Table extends React.Component {
       if (this.props.onPasteRows) {
          const rows = getClipboardTextFromExcel(e);
          const selected_rows = this.props.selected_rows ? this.props.selected_rows : [];
-         const {newRows, errorRows, errorRowIndexes} = fixRowsFromClipboard(rows);
+         const {newRows, errorRows, errorRowIndexes} = fixRowsFromClipboard(rows, this.props.pastedRowsValidator);
          if (errorRows.length > 0) {
             this.setState({
                errorModal: {
@@ -1568,8 +1568,8 @@ class Table extends React.Component {
    }
  
    // This function is used to handle the corrected rows from the paste error modal
-   handleCorrectedRows = (correctedRows) => {
-      const {newRows: correctedValidRows} = fixRowsFromClipboard(correctedRows);
+   handleSubmitCorrectedRows = (correctedRows) => {
+      const {newRows: correctedValidRows} = fixRowsFromClipboard(correctedRows, this.props.pastedRowsValidator);
       const originalNewRows = this.state.errorModal.originalNewRows || [];
       const errorRowIndexes = this.state.errorModal.errorRowIndexes || [];
       
@@ -1936,7 +1936,8 @@ class Table extends React.Component {
                      open={this.state.errorModal.visible}
                      onClose={() => this.closeErrorModal()}
                      errorRows={this.state.errorModal.errorRows}
-                     onApplyCorrections={this.handleCorrectedRows}
+                     onSubmit={this.handleSubmitCorrectedRows}
+                     pastedRowsValidator={this.props.pastedRowsValidator}
                   />}
                </div>
 
@@ -2065,6 +2066,10 @@ Table.propTypes = {
    shouldShowSelectIcon: PropTypes.bool,
    allowTabNavigationForParents: PropTypes.bool,
    allowTabNavigationForChildren: PropTypes.bool,
+   pastedRowsValidator: PropTypes.arrayOf(PropTypes.shape({
+      columnName: PropTypes.string, // The name of the column to be used on the paste error modal
+      columnType: PropTypes.string, // The type of the column data to be validated when pasting rows
+   })),
 };
 
 Table.defaultProps = {
@@ -2103,6 +2108,7 @@ Table.defaultProps = {
    },
    allowTabNavigationForParents: false,
    allowTabNavigationForChildren: false,
+   pastedRowsValidator: [],
 };
 
 export default Table;
