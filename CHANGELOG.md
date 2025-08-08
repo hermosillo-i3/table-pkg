@@ -1,6 +1,15 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.16.1
+Date: Aug 07, 2025
+* [UPDATE]
+  * Improve the copying and pasting of rows
+    * Check if the copied values have the right structure and type of data
+    * Allow the user to fix said values if they do not have the right type of data by using the PasteErrorModal component
+* [FIX]
+  * Fix the copying and pasting of rows by formatting the cells coming from excel and google sheets with the same structure
+
 ## V 1.16.0
 Date: Jul 28, 2025
 * [NEW]

@@ -557,6 +557,32 @@ const filterArrayObjectValuesRecursively = (arr) => {
    });
 };
 
+/**
+ * Validates if a pasted cell value is of the expected type
+ * @param {String} cellValue - The value of the cell to be validated
+ * @param {String} expectedType The expected type of the cell value (String, Number)
+ * @returns {Boolean} True if the cell value is of the expected type, false otherwise
+ */
+export const validatePastedCellValue = (cellValue, expectedType) => {
+   const value = cellValue != null ? cellValue.toString().trim() : '';
+   if (value === '') return true;
+
+   switch (expectedType) {
+      case 'Number':
+         const cleanedValue = value.replace(/[$,]/g, '');
+         return !isNaN(cleanedValue) && !isNaN(parseFloat(cleanedValue));
+      case 'Boolean':
+         const lowerCaseValue = value.toLowerCase();
+         const trueValues = ['true', '1', 'yes', 'si', 'y'];
+         const falseValues = ['false', '0', 'no', 'n'];
+         return trueValues.includes(lowerCaseValue) || falseValues.includes(lowerCaseValue);
+      case 'String':
+         return value.trim().length > 0;
+      default:
+         return true;
+   };
+};
+
 export default {
    isEqual,
    pad,
@@ -577,4 +603,5 @@ export default {
    convertTreeStructureToFlatArray,
    getAllParents,
    filterRowValues,
+   validatePastedCellValue,
 }
