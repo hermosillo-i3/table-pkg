@@ -642,8 +642,9 @@ export const getClipboardTextFromExcel = (e) => {
       currentCell += currentCharacter;
    }
 
-   // Push the last cell/row
-   pushCell();
+   /*
+      Only push the row if it has more than 1 cell or if it has 1 cell and it's not empty
+      This avoids pushing empty rows */
    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
       pushRow();
    }
@@ -652,13 +653,17 @@ export const getClipboardTextFromExcel = (e) => {
    let columnsToRemove = [];
    if (rows.length > 0) {
       const firstRow = rows[0];
-      for (let rowIndex = 0; rowIndex < firstRow.length; rowIndex++) {
-         const prev = rowIndex > 0 ? firstRow[rowIndex - 1] : undefined;
-         const isEmpty = firstRow[rowIndex] === '' || firstRow[rowIndex] == null;
+      /*
+         Spreadsheets produce two empty rows when pasting a merged row
+         E.g. Two columns |Code|  Description  |, where Description is a column made of two merged rows, would produce the following row ['Code', '', '', 'Description'].
+         The following logic detects those empty rows and removes them so that we end up with ['Code', 'Description'] */
+      for (let cellIndex = 0; cellIndex < firstRow.length; cellIndex++) {
+         const prev = cellIndex > 0 ? firstRow[cellIndex - 1] : undefined;
+         const isEmpty = firstRow[cellIndex] === '' || firstRow[cellIndex] == null;
          const prevIsEmpty = prev === '' || prev == null;
          if (isEmpty && prevIsEmpty) {
-            columnsToRemove.push(rowIndex);
-            if (rowIndex > 0) columnsToRemove.push(rowIndex - 1);
+            columnsToRemove.push(cellIndex);
+            if (cellIndex > 0) columnsToRemove.push(cellIndex - 1);
          }
       }
       // Remove duplicates while preserving order
