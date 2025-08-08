@@ -11,6 +11,7 @@ import TableHeader from "../Header";
 import DropZone from "../DropZone";
 import FilterColumn from "../FilterColumn";
 import ContextMenu from "../ContextMenu/ContextMenu";
+import PasteErrorModal from "../PasteErrorModal";
 import { isEqual, pad, isNumber, removeSpecialCharacters, getAllChildren, getAllParents } from "../../utils/Utils";
 import { getClipboardTextFromExcel, hasOwnProperty, replaceAll, KEY_CODES, calculateGranTotal, fixRowsFromClipboard } from "../../utils/index";
 import { applyFilter } from '../../utils/index';
@@ -91,6 +92,12 @@ class Table extends React.Component {
             actions: []
          },
          pendingFocusRowId: null,
+         errorModal: {
+            visible: false,
+            errorRows: [],
+            originalNewRows: [],
+            errorRowIndexes: []
+         },
       };
 
       this.container = React.createRef();
@@ -863,9 +870,33 @@ class Table extends React.Component {
       if (this.props.onPasteRows) {
          const rows = getClipboardTextFromExcel(e);
          const selected_rows = this.props.selected_rows ? this.props.selected_rows : [];
-         const fixedRows = fixRowsFromClipboard(rows);
-         this.props.onPasteRows(selected_rows, fixedRows);
+         const {newRows, errorRows, errorRowIndexes} = fixRowsFromClipboard(rows, this.props.pastedRowsValidator);
+         if (errorRows.length > 0) {
+            this.setState({
+               errorModal: {
+                  visible: true,
+                  errorRows: errorRows,
+                  originalNewRows: newRows,
+                  errorRowIndexes: errorRowIndexes
+               }
+            });
+            return;
+         }
+         this.props.onPasteRows(selected_rows, newRows);
       }
+   };
+
+   closeErrorModal = () => {
+      this.setState({
+         errorModal: {
+            visible: false,
+            errorRows: [],
+            originalNewRows: [],
+            errorRowIndexes: []
+         }
+      }, () => {
+         this.forceUpdate();
+      });
    };
 
    addPasteEvent = () => {
@@ -1535,6 +1566,28 @@ class Table extends React.Component {
 
       return attemptFocus();
    }
+ 
+   // This function is used to handle the corrected rows from the paste error modal
+   handleSubmitCorrectedRows = (correctedRows) => {
+      const {newRows: correctedValidRows} = fixRowsFromClipboard(correctedRows, this.props.pastedRowsValidator);
+      const originalNewRows = this.state.errorModal.originalNewRows || [];
+      const errorRowIndexes = this.state.errorModal.errorRowIndexes || [];
+      
+      // Create the final array by starting with the original valid rows
+      const allValidRows = [...originalNewRows];
+      
+      // Insert corrected rows at their original positions
+      correctedValidRows.forEach((correctedRow, correctedIndex) => {
+         if (correctedIndex < errorRowIndexes.length) {
+            const originalIndex = errorRowIndexes[correctedIndex] - 1;
+            allValidRows.splice(originalIndex, 0, correctedRow);
+         }
+      });
+      
+      // Replace the original rows with the initial rows
+      this.props.onPasteRows(this.props.selected_rows, allValidRows);
+      this.closeErrorModal();
+   }
 
    render() {
       const {
@@ -1877,6 +1930,15 @@ class Table extends React.Component {
                      actions={this.state.contextMenu.actions}
                   />
                   }
+
+                  {this.state.errorModal.visible && <PasteErrorModal
+                     key={`error-modal-${Date.now()}`}
+                     open={this.state.errorModal.visible}
+                     onClose={() => this.closeErrorModal()}
+                     errorRows={this.state.errorModal.errorRows}
+                     onSubmit={this.handleSubmitCorrectedRows}
+                     pastedRowsValidator={this.props.pastedRowsValidator}
+                  />}
                </div>
 
             </HotKeys>
@@ -2004,6 +2066,10 @@ Table.propTypes = {
    shouldShowSelectIcon: PropTypes.bool,
    allowTabNavigationForParents: PropTypes.bool,
    allowTabNavigationForChildren: PropTypes.bool,
+   pastedRowsValidator: PropTypes.arrayOf(PropTypes.shape({
+      columnName: PropTypes.string, // The name of the column to be used on the paste error modal
+      columnType: PropTypes.string, // The type of the column data to be validated when pasting rows
+   })),
 };
 
 Table.defaultProps = {
@@ -2042,6 +2108,7 @@ Table.defaultProps = {
    },
    allowTabNavigationForParents: false,
    allowTabNavigationForChildren: false,
+   pastedRowsValidator: [],
 };
 
 export default Table;

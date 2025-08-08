@@ -6,6 +6,8 @@ import isArray from "lodash/isArray";
 
 const cleanText = str => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 
+import {validatePastedCellValue} from './Utils';
+
 /**
  * Sort an array of objects by date using a custom property. It can be ascending or descending
  * If dates are equal tries to compare ID
@@ -556,6 +558,10 @@ export const isClipboardFromExcel = (e) => {
    return clipRows.length > 1;
 };
 
+/*
+   This function gets the copied data from either a google spreadshed or an excel file
+   This new implementation no handles line breaks inside the contents of a cell.
+   While previously a line break would trigger a new row. Now it will be treated as part of the cell as long as it is inside quotes. */
 export const getClipboardTextFromExcel = (e) => {
    // Stop data actually being pasted into div
    e.stopPropagation();
@@ -565,38 +571,108 @@ export const getClipboardTextFromExcel = (e) => {
    const clipboardData = e.clipboardData || window.clipboardData;
    const pastedData = clipboardData.getData('Text');
 
-   const clipRows = pastedData.trim().split('\r\n');
+   /*
+      We parse the pasted content as TSV (Tab Separated Values) in a resilient way:
+      - Split cells by TAB (\t) only when we are NOT inside quotes
+      - Split rows by LF (\n) or CRLF (\r\n) only when we are NOT inside quotes
+      - Respect quoted fields that may themselves contain tabs and newlines  */
    const rows = [];
-   const regexForBreakLines = /\r?\n|\r/g;
-   let columnsToRemove = [];
-   let firstRowSplitted = clipRows[0].trim().split('\t');
+   let currentRow = [];
+   let currentCell = '';
+   let inQuotes = false;
 
-   // Check if exists empty columns. This is to remove posible combined columns.
-   for (let y = 0; y < firstRowSplitted.length; y++) {
-      if (firstRowSplitted[y] === '' && firstRowSplitted[y - 1] === '') {
-         columnsToRemove.push(y);
-         columnsToRemove.push(y - 1);
+   const pushCell = () => {
+      let value = currentCell;
+      /*
+         If the cell is surrounded by quotes, strip them and unescape doubled quotes
+         Example: "Medicion de area ""Explanada"""  -> Medicion de area "Explanada" */
+      if (value.length >= 2 && value[0] === '"' && value[value.length - 1] === '"') {
+         value = value.slice(1, -1).replace(/""/g, '"');
       }
+      currentRow.push(value);
+      currentCell = '';
+   };
+
+   const pushRow = () => {
+      rows.push(currentRow);
+      currentRow = [];
+   };
+
+   /*
+      Iterate every character in the pasted data to classify it as:
+      - quote toggle ( ")
+      - cell separator (\t) when not in quotes
+      - row separator (\n or \r\n) when not in quotes
+      - or just part of the current cell */
+   for (let i = 0; i < pastedData.length; i++) {
+      const currentCharacter = pastedData[i];
+      const nextCharacter = pastedData[i + 1];
+
+      if (currentCharacter === '"') {
+         /*
+            If we are inside quotes and the next char is also a quote,
+            that means this is an escaped quote ("") and NOT the end of the field */
+         if (inQuotes && nextCharacter === '"') {
+            currentCell += '"';
+            // skip the second quote
+            i++;
+         } else {
+            // toggle quoting state
+            inQuotes = !inQuotes;
+         }
+         continue;
+      }
+
+      // Outside quotes, a TAB ends the cell
+      if (!inQuotes && currentCharacter === '\t') {
+         pushCell();
+         continue;
+      }
+
+      // Outside quotes, a LF or CRLF ends the row
+      if (!inQuotes && (currentCharacter === '\n' || currentCharacter === '\r')) {
+         pushCell();
+         // Treat CRLF as a single line break
+         if (currentCharacter === '\r' && nextCharacter === '\n') i++;
+         pushRow();
+         continue;
+      }
+
+      // If not a special character, add it to the current cell
+      currentCell += currentCharacter;
    }
-   columnsToRemove = columnsToRemove.filter((item, index) => columnsToRemove.indexOf(item) === index); // Remove duplicated values
 
-   for (let x = 0; x < clipRows.length; x++) {
-      // Split rows into columns
-      let rowSplitted = clipRows[x].trim().split('\t');
+   /*
+      Only push the row if it has more than 1 cell or if it has 1 cell and it's not empty
+      This avoids pushing empty rows */
+   if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
+      pushRow();
+   }
 
-      // Remove the set of empty columns
-      rowSplitted = rowSplitted.filter((item, index) => columnsToRemove.indexOf(index) === -1)
-
-      // Remove quotes from strings with break lines
-      for (let y = 0; y < rowSplitted.length; y++) {
-         if (typeof rowSplitted[y] === 'string' && rowSplitted[y].match(regexForBreakLines)) {
-            if (rowSplitted[y].charAt(0) === '"' && rowSplitted[y].charAt(rowSplitted[y].length - 1) === '"') {
-               rowSplitted[y] = rowSplitted[y].substring(1, rowSplitted[y].length - 1)
-            }
+   // Post-process: remove sets of empty columns (combined columns)
+   let columnsToRemove = [];
+   if (rows.length > 0) {
+      const firstRow = rows[0];
+      /*
+         Spreadsheets produce two empty rows when pasting a merged row
+         E.g. Two columns |Code|  Description  |, where Description is a column made of two merged rows, would produce the following row ['Code', '', '', 'Description'].
+         The following logic detects those empty rows and removes them so that we end up with ['Code', 'Description'] */
+      for (let cellIndex = 0; cellIndex < firstRow.length; cellIndex++) {
+         const prev = cellIndex > 0 ? firstRow[cellIndex - 1] : undefined;
+         const isEmpty = firstRow[cellIndex] === '' || firstRow[cellIndex] == null;
+         const prevIsEmpty = prev === '' || prev == null;
+         if (isEmpty && prevIsEmpty) {
+            columnsToRemove.push(cellIndex);
+            if (cellIndex > 0) columnsToRemove.push(cellIndex - 1);
          }
       }
+      // Remove duplicates while preserving order
+      columnsToRemove = columnsToRemove.filter((item, index) => columnsToRemove.indexOf(item) === index);
 
-      rows.push(rowSplitted);
+      // Apply the column removal to every row
+      for (let x = 0; x < rows.length; x++) {
+         rows[x] = rows[x].filter((item, index) => columnsToRemove.indexOf(index) === -1);
+      }
    }
 
    return rows;
@@ -954,53 +1030,63 @@ export const applyFilter = (row, column_filters) => {
 
 /**
  * Function used to fix the rows copied from an spreadsheet before being used by the table
- * @param {Array} rows - Array of rows to be fixed, as copied from a spreadsheet
- * @returns {Array} Fixed rows with proper column structure (Array (rows) of arrays (cells))
+ * @param {Array<Array<String>>} rows - Array of rows to be fixed, as copied from a spreadsheet
+ * @param {Array<Object<String, String>>} pastedRowsValidator - Array of objects with the column name and type to be validated.
+ *    E.g. [{columnName: 'Descripción', columnType: 'String}, {columnName: 'Cantidad', columnType: 'Number'}]
+ * @returns {Object} Object containing newRows (valid rows) and errorRows (invalid rows)
  */
-export const fixRowsFromClipboard = (rows) => {
-   if (!rows || rows.length === 0) return [];
-   
-   let hasAlreadySplitted = false;
-   let columnCount = 0;
-   const newRows = rows.map((row) => {
-      const newCells = row.reduce((acc, cell, index) => {
-         // If the cell contains '\n' characters, it means that the current row ends and the next row starts
-         if (typeof cell === 'string' && cell.includes('\n')) {
-            const splittedCell = cell.split('\n').filter(part => part.trim() !== '');
+export const fixRowsFromClipboard = (rows, pastedRowsValidator) => {
+   if (!rows || rows.length === 0) return {newRows: [], errorRows: [], errorRowIndexes: []};
+   let hasCalculatedRowLength = false;
+   let rowLength = 0;
 
-            // If the cell has been splitted while the index is 0, it means that the rows are 1 cell long
-            if (index === 0) {
-               columnCount = 1;
-               hasAlreadySplitted = true;
-            }
+   const plainRows = [];
+   const errorRows = [];
+   const errorRowIndexes = [];
 
-            acc.push(...splittedCell);
-            /*
-            Save the column count to be used to split the rows into chunks.
-               Only calculate columnCount if we actually have multiple parts after splitting */
-            if (!hasAlreadySplitted && splittedCell.length > 1) {
-               // Subtract 1 because the first cell is the description of the next row
-               columnCount = acc.length - 1;
-               hasAlreadySplitted = true;
+   for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+      const row = rows[rowIndex];
+      // Calculate the row length only once
+      if (!hasCalculatedRowLength) {
+         rowLength = row.filter(cell => cell != null && cell.toString().trim() !== '').length;
+         hasCalculatedRowLength = true;
+      }
+
+      // Validate all cells in the row first
+      let isValidRow = true;
+      const validCells = [];
+      for (let index = 0; index < row.length; index++) {
+         const cell = row[index];
+         const cellType = pastedRowsValidator[index]?.columnType;
+         const cellValue = cell != null ? cell.toString().trim() : '';
+
+         if (cellValue !== '') {
+            const isValidType = validatePastedCellValue(cellValue, cellType);
+
+            if (isValidType) {
+               validCells.push(cell);
+            } else {
+               isValidRow = false;
+               break; // Stop checking this row
             }
-         } else {
-            acc.push(cell);
          }
-         return acc;
-      }, []);
-
-      // If no newlines were found, use the original row length as column count
-      if (!hasAlreadySplitted && columnCount === 0) {
-         columnCount = newCells.length;
       }
 
-      // Split the newCells into chunks of `columnCount` items each
-      const splittedRows = [];
-      for (let i = 0; i < newCells.length; i += columnCount) {
-         splittedRows.push(newCells.slice(i, i + columnCount));
+      // Add cells to appropriate arrays
+      if (isValidRow && validCells.length > 0) {
+         validCells.forEach(cell => plainRows.push(cell));
+      } else if (!isValidRow) {
+         // Create an error row preserving only non-empty cells (trimmed)
+         const errorRow = row.filter(cell => cell != null && cell.toString().trim() !== '');
+         errorRows.push(errorRow);
+         errorRowIndexes.push(rowIndex);
       }
-      return splittedRows;
-   }).flat();
-   
-   return newRows;
+   }
+
+   const newRows = [];
+
+   for (let i = 0; i < plainRows.length; i += rowLength) {
+      newRows.push(plainRows.slice(i, i + rowLength));
+   }
+   return {newRows, errorRows, errorRowIndexes};
 };
