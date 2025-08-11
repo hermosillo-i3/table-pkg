@@ -10,6 +10,8 @@ Date: Aug 11, 2025
       * Cliking outside the editable cell, will select the current row
     * For non-editable rows:
       * Clicking any cell will select the current row
+* [FIX]
+  * Fix frozen columns ignoring the Table-Row-Selected class background color
 
 ## V 1.16.1
 Date: Aug 07, 2025
