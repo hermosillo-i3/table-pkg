@@ -1,6 +1,16 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.0
+Date: Aug 11, 2025
+* [UPDATE]
+  * Update the row selection experience, toggling the allowNewRowSelectionProcess prop will cause the following:
+    * For editable rows:
+      * Clicking inside an editable cell, will allow the edition of said cell
+      * Cliking outside the editable cell, will select the current row
+    * For non-editable rows:
+      * Clicking any cell will select the current row
+
 ## V 1.16.1
 Date: Aug 07, 2025
 * [UPDATE]
