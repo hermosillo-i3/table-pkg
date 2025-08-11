@@ -838,6 +838,14 @@ class Table extends React.Component {
 
    onRowSelect = (row, isCtrlPress) => {
       const selected_rows = this.props.selected_rows ? this.props.selected_rows : [];
+
+      // Ensure that the row is not empty
+      if (Object.keys(row).length === 0) {
+         this.props.onRowSelect([])
+         this.removePasteEvent();
+         return;
+      }
+
       let shouldAdd = !selected_rows.includes(row.id);
 
       if (this.props.onRowSelect) {
@@ -1120,6 +1128,7 @@ class Table extends React.Component {
                      }}
                      getTabIndex={this.calculateTabIndex}
                      rowId={row.id}
+                     allowNewRowSelectionProcess={this.props.allowNewRowSelectionProcess}
                   />
                )
                object_rows.push(row)
@@ -2070,6 +2079,7 @@ Table.propTypes = {
       columnName: PropTypes.string, // The name of the column to be used on the paste error modal
       columnType: PropTypes.string, // The type of the column data to be validated when pasting rows
    })),
+   allowNewRowSelectionProcess: PropTypes.bool,
 };
 
 Table.defaultProps = {
@@ -2109,6 +2119,7 @@ Table.defaultProps = {
    allowTabNavigationForParents: false,
    allowTabNavigationForChildren: false,
    pastedRowsValidator: [],
+   allowNewRowSelectionProcess: false,
 };
 
 export default Table;
