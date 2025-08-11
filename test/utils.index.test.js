@@ -1,4 +1,4 @@
-const { applyFilter } = require('../src/utils/index');
+const { applyFilter, fixRowsFromClipboard } = require('../src/utils/index');
 
 describe('applyFilter', () => {
   it('should apply status filters correctly', () => {
@@ -297,5 +297,123 @@ describe('applyFilter', () => {
     expect(filterTwo).toEqual(false);
     expect(filterThree).toEqual(false);
     expect(filterFour).toEqual(false);
+  });
+});
+
+describe('fixRowsFromClipboard', () => {
+  it('should clean the rows copied from a spreadsheet and prepare them to be used pasted in the table', () => {
+      const initialRows = [
+        ['item1', 'lte', '', '', '566', '768'],
+        ['item2', 'lte', '', '', '38', '456'],
+        ['item3', 'lte', '', '', '56', '879'],
+        ['item4', 'lte', '', '', '152', '78'],
+        ['item5', 'lte', '', '', '53', '86'],
+        ['item6', 'lte', '', '', '546', '265'],
+        ['item7', 'lte', '', '', '786', '789'],
+      ];
+
+      const expectedRows = [
+          ['item1', 'lte', '566', '768'],
+          ['item2', 'lte', '38', '456'],
+          ['item3', 'lte', '56', '879'],
+          ['item4', 'lte', '152', '78'],
+          ['item5', 'lte', '53', '86'],
+          ['item6', 'lte', '546', '265'],
+          ['item7', 'lte', '786', '789'],
+      ];
+
+      const pastedRowsValidator = [
+        {columnName: 'Descripción', columnType: 'String'},
+        {columnName: 'Unidad', columnType: 'String'},
+        {columnName: 'Cantidad', columnType: 'Number'},
+        {columnName: 'Pu mxn', columnType: 'Number'},
+      ];
+
+      const {newRows, errorRows, errorRowIndexes} = fixRowsFromClipboard(initialRows, pastedRowsValidator);
+
+      expect(newRows).toEqual(expectedRows);
+      expect(errorRows).toEqual([]);
+      expect(errorRowIndexes).toEqual([]);
+  });
+
+  it ('should handle rows with the incorrect structure and return the error rows and indexes', () => {
+    const initialRows = [
+      ['item1', 'lte', '566', '768'],
+      ['item2', 'lte', '38', '456'],
+      ['item3', 'lte', '56', '879'],
+      ['item4', 'lte', 'pza', '78'],
+    ];
+
+    const expectedErrorRows = [
+      ['item4', 'lte', 'pza', '78'],
+    ];
+
+    const pastedRowsValidator = [
+      {columnName: 'Descripción', columnType: 'String'},
+      {columnName: 'Unidad', columnType: 'String'},
+      {columnName: 'Cantidad', columnType: 'Number'},
+      {columnName: 'Pu mxn', columnType: 'Number'},
+    ];
+
+    const expectedErrorRowIndexes = [3];
+
+    const {errorRows, errorRowIndexes} = fixRowsFromClipboard(initialRows, pastedRowsValidator);
+    expect(errorRows).toEqual(expectedErrorRows);
+    expect(errorRowIndexes).toEqual(expectedErrorRowIndexes);
+  });
+
+  it('should handle both correct and incorrect rows', () => {
+    const initialRows = [
+      ['item1', 'lte', '566', '768'],
+      ['item2', '4', 'test', '456'],
+      ['item3', 'lte', '56', '879'],
+    ];
+
+    const expectedNewRows = [
+      ['item1', 'lte', '566', '768'],
+      ['item3', 'lte', '56', '879'],
+    ];
+
+    const expectedErrorRows = [
+      ['item2', '4', 'test', '456'],
+    ];
+
+    const pastedRowsValidator = [
+      {columnName: 'Descripción', columnType: 'String'},
+      {columnName: 'Unidad', columnType: 'String'},
+      {columnName: 'Cantidad', columnType: 'Number'},
+      {columnName: 'Pu mxn', columnType: 'Number'},
+    ];
+
+    const expectedErrorRowIndexes = [1];
+
+    const {newRows, errorRows, errorRowIndexes} = fixRowsFromClipboard(initialRows, pastedRowsValidator);
+    expect(newRows).toEqual(expectedNewRows);
+    expect(errorRows).toEqual(expectedErrorRows);
+    expect(errorRowIndexes).toEqual(expectedErrorRowIndexes);
+  });
+
+  it('should handle formatting a single row with multiple columns', () => {
+    const initialRows = [[
+      'item1',
+      'lte',
+      '566',
+      '768'
+    ]];
+
+    const expectedRows = [
+      ['item1', 'lte', '566', '768']
+    ];
+
+    const pastedRowsValidator = [
+      {columnName: 'Descripción', columnType: 'String'},
+      {columnName: 'Unidad', columnType: 'String'},
+      {columnName: 'Cantidad', columnType: 'Number'},
+      {columnName: 'Pu mxn', columnType: 'Number'},
+    ];
+
+    const {newRows} = fixRowsFromClipboard(initialRows, pastedRowsValidator);
+
+    expect(newRows).toEqual(expectedRows);
   });
 });

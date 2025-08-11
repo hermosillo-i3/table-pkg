@@ -8,6 +8,7 @@ import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
 
 import InputConfirm from "./InputConfirm";
 import InputFieldSearch from "./InputFieldSearch";
+import TableDatePicker from "./TableDatePicker";
 
 import { KEY_CODES } from "../utils/index";
 
@@ -29,6 +30,12 @@ class InputField extends React.Component {
       this.onChangeDate = this.onChangeDate.bind(this);
       this.onBlur = this.onBlur.bind(this);
       this.onFocus = this.onFocus.bind(this);
+   }
+
+   componentDidMount() {
+      if (this.props.isFocused && this.input && this.input.focus) {
+         this.input.focus();
+      }
    }
 
    componentDidUpdate(prevProps, prevState) {
@@ -209,7 +216,7 @@ class InputField extends React.Component {
 
    render() {
 
-      const {isFocused, format, limit, customProps = {}, onPaste, maxValue, customColumnClass, compressLongText, isItem} = this.props;
+      const {isFocused, format, limit, customProps = {}, onPaste, maxValue, customColumnClass, compressLongText, isItem, tabIndex, onFocus} = this.props;
       const {currentValue, isTextAreaMultiLineActive} = this.state;
       const type = typeof format === 'string' ? format : format.type;
       const decimals = typeof format === 'string' ? 2 : format.decimals;
@@ -224,9 +231,10 @@ class InputField extends React.Component {
                   resize: "none",
                   padding: 0,
                 }}
-                inputRef={(input) => {
+                ref={(input) => {
                   this.input = input;
                 }}
+                tabIndex={tabIndex}
                 onKeyDown={(e) => {
                   this.onKeyDown(e);
                   if (this.props.onKeyDownHotKeys) {
@@ -260,7 +268,13 @@ class InputField extends React.Component {
                 className={`Text ${customColumnClass} ${
                   compressLongText ? "compress-row" : ""
                 }`}
+                tabIndex={tabIndex}
                 onClick={(e) => this.onCreateTextArea(e)}
+                onFocus={(e) => {
+                  if (onFocus) {
+                    onFocus();
+                  }
+                }}
               >
                 {this.state.currentValue}
               </p>
@@ -279,6 +293,7 @@ class InputField extends React.Component {
               value={this.state.currentValue}
               onChange={this.onChange}
               onBlur={this.onBlur}
+              tabIndex={tabIndex}
               onKeyDown={(e) => {
                 this.onKeyDown(e);
                 if (this.props.onKeyDownHotKeys) {
@@ -312,6 +327,7 @@ class InputField extends React.Component {
             <InputConfirm
               value={this.state.currentValue}
               hide={!isFocused}
+              tabIndex={tabIndex}
               onAccept={(value) => {
                 this.onChange({ target: { value } });
                 if (this.props.onUpdate) {
@@ -363,6 +379,7 @@ class InputField extends React.Component {
               onChange={this.onChange}
               onBlur={this.onBlur}
               onFocus={this.onFocus}
+              tabIndex={tabIndex}
               onKeyDown={(e) => {
                 this.onKeyDown(e);
                 if (this.props.onKeyDownHotKeys) {
@@ -393,6 +410,7 @@ class InputField extends React.Component {
               htmlRef={(input) => {
                 this.input = input;
               }}
+              tabIndex={tabIndex}
               onChange={(e) => {
                 const value = e.target.rawValue;
                 let isValid = true;
@@ -450,6 +468,7 @@ class InputField extends React.Component {
               htmlRef={(input) => {
                 this.input = input;
               }}
+              tabIndex={tabIndex}
               onChange={(e) => {
                 let value = e.target.rawValue;
 
@@ -518,6 +537,7 @@ class InputField extends React.Component {
               className={`InputField ${customColumnClass}`}
               value={this.state.currentValue}
               onBlur={this.onBlur}
+              tabIndex={tabIndex}
               onValueChange={(values) => {
                 const { value } = values;
                 // formattedValue = $2,223
@@ -568,6 +588,7 @@ class InputField extends React.Component {
               onChange={this.onChange}
               onBlur={this.onBlur}
               maxLength={limit}
+              tabIndex={tabIndex}
               onPaste={(e) => {
                 if (onPaste) {
                   onPaste(e);
@@ -597,6 +618,14 @@ class InputField extends React.Component {
           ) : (
             <div
               className={`left-align-flex value ${customColumnClass} expanded-column`}
+              tabIndex={tabIndex}
+              onClick={this.onFocus}
+              onFocus={(e) => {
+                if (this.props.onFocus) {
+                  this.props.onFocus();
+                }
+              }}
+              style={{ outline: 'none', cursor: 'text' }}
             >
               <span className={`${compressLongText ? "compress-row" : ""}`}>
                 {this.state.currentValue}
@@ -623,6 +652,7 @@ class InputField extends React.Component {
               onChange={this.onChange}
               onBlur={this.onBlur}
               onFocus={this.onFocus}
+              tabIndex={tabIndex}
             >
               {options.map(({ value, key, text }, index) => (
                 <option value={value} key={key ? key : index}>
@@ -648,24 +678,25 @@ class InputField extends React.Component {
             selected = new Date(selected);
           }
 
+          // Check if filter function is provided in format
+          const filterDate = typeof format === 'object' ? format.filterDate : null;
+          const filterHermosilloNonWorkingDays = typeof format === 'object' ? format.filter_hermosillo_non_working_days : false;
+          
+          const isWorkingday = (date) => {
+            return dateFormatter(date).isHermosilloWorkingDay();
+          };
+
           return (
-            <React.Fragment>
-              <input
-                type="date"
-                onFocus={this.onFocus}
-                className={`InputField ${customColumnClass}`}
-                onChange={this.onChangeDate}
-                value={
-                  selected ? dateFormatter(selected).format("YYYY-MM-DD") : null
-                }
-                onKeyDown={(e) => {
-                  this.onKeyDown(e);
-                  if (this.props.onKeyDownHotKeys)
-                    this.props.onKeyDownHotKeys(e);
-                }}
-                {...customProps}
-              />
-            </React.Fragment>
+            <TableDatePicker
+              selected={selected}
+              onChange={(date) => {
+                this.onChangeDate({ target: { value: date } });
+              }}
+              filterDate={!filterHermosilloNonWorkingDays ? filterDate : isWorkingday}
+              disabled={this.props.disabled}
+              tabIndex={tabIndex}
+              {...customProps}
+            />
           );
         }
 
@@ -675,6 +706,7 @@ class InputField extends React.Component {
               {this.state.currentValue ? (
                 <div
                   className={`InputField-Boolean ${customColumnClass}`}
+                  tabIndex={tabIndex}
                   onClick={() => {
                     this.props.onUpdate(
                       !this.state.currentValue,
@@ -697,6 +729,7 @@ class InputField extends React.Component {
               ) : (
                 <div
                   className={`InputField-Boolean ${customColumnClass}`}
+                  tabIndex={tabIndex}
                   onClick={() => {
                     this.props.onUpdate(
                       !this.state.currentValue,
@@ -719,6 +752,7 @@ class InputField extends React.Component {
              {...format}
              resetValue={this.resetValue}
              value={this.state.currentValue}
+             tabIndex={tabIndex}
            />
          );
          }
@@ -732,6 +766,7 @@ class InputField extends React.Component {
 InputField.propTypes = {
    value: PropTypes.any.isRequired,
    isFocused: PropTypes.bool,
+   tabIndex: PropTypes.number,
    //onBlur: PropTypes.func.isRequired
 };
 

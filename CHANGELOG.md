@@ -1,8 +1,76 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
-<!-- TOC -->
-  [[TOC]]
+## V 1.17.0
+Date: Aug 11, 2025
+* [UPDATE]
+  * Update the row selection experience, toggling the allowNewRowSelectionProcess prop will cause the following:
+    * For editable rows:
+      * Clicking inside an editable cell, will allow the edition of said cell
+      * Cliking outside the editable cell, will select the current row
+    * For non-editable rows:
+      * Clicking any cell will select the current row
+* [FIX]
+  * Fix frozen columns ignoring the Table-Row-Selected class background color
+
+## V 1.16.1
+Date: Aug 07, 2025
+* [UPDATE]
+  * Improve the copying and pasting of rows
+    * Check if the copied values have the right structure and type of data
+    * Allow the user to fix said values if they do not have the right type of data by using the PasteErrorModal component
+* [FIX]
+  * Fix the copying and pasting of rows by formatting the cells coming from excel and google sheets with the same structure
+
+## V 1.16.0
+Date: Jul 28, 2025
+* [NEW]
+  * Cell option in table now returns default cell value if the Cell function returns undefined or null
+
+## V 1.15.1
+Date: Jul 07, 2025
+* [FIX]
+  * Add extra logic to balance "cargas de trabajo" on assign reviewer to pull request workflow
+
+## V 1.15.0
+Date: Jun 25, 2025
+* [NEW]
+  * Allow navigation through columns using the tab key
+
+## V 1.14.5
+Date: Jul 04, 2025
+* [FIX]
+  * Fix the formatting of the rows before calling props.onPasteRows, allowing to paste several rows at the same time
+
+## V 1.14.4
+Date: Jul 02, 2025
+* [FIX]
+  * Enhance date filtering in InputForm and remove unused prop from TableDatePicker
+
+## V 1.14.3
+Date: Jul 02, 2025
+* [FIX]
+  * Change date disableling to column level instead of table
+
+## V 1.14.2
+Date: Jun 27, 2025
+* [FIX]
+  * Fix locale in date picker
+
+## V 1.14.1
+Date: Jun 19, 2025
+* [FIX]
+  * Adjust Table.scss styles
+* [UPDATE]
+  * Update react-datepicker version to the same one from the APP
+
+## V 1.14.0
+Date: Jun 19, 2025
+* [NEW]
+  * Add new date picker in columns with date type to filter non-Working days
+* [UPDATE]
+  * Change english text to spanish
+
 ## V 1.13.0
 Date: Jun 10, 2025
 * [NEW]

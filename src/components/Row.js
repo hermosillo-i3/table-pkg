@@ -6,8 +6,8 @@ import {ItemTypes} from './Constants'
 import {formatColumn as formatColumnUtils, isFunction, formatForSelect} from "../utils/Utils";
 
 import {
-   useDrag, 
-   useDrop, 
+   useDrag,
+   useDrop,
    // connectDragPreview
    useDragDropManager,
 } from 'react-dnd'
@@ -58,19 +58,19 @@ const shouldRenderCell = (column, row) => {
 };
 
 const getDefaultValue = (format) => {
-      switch (format) {
-         case 'text':
-            return '';
-         case 'number':
-            return 0;
-         case 'currency':
-            return 0;
-         case 'textarea':
-            return ''
-         default:
-            return '';
-      }
-   };
+   switch (format) {
+      case 'text':
+         return '';
+      case 'number':
+         return 0;
+      case 'currency':
+         return 0;
+      case 'textarea':
+         return ''
+      default:
+         return '';
+   }
+};
 
 const rowFunctionComponent = (props) => {
    const {
@@ -88,11 +88,13 @@ const rowFunctionComponent = (props) => {
       shouldShowSelectIcon,
       styleTheme,
       is_selected,
+      allowNewRowSelectionProcess,
    } = props;
    const [hasScrolled, setHasScrolled] = React.useState(false);
    const [rowRef, setRowRef] = React.useState(null);
    const [className, setClassName] = React.useState('Table-Row');
-   
+   const [hoveredCellIndex, setHoveredCellIndex] = React.useState(null);
+
    useEffect(() => {
       const shouldScroll = props.scrollTo === row.id;
       if (rowRef && shouldScroll && !hasScrolled) {
@@ -104,48 +106,48 @@ const rowFunctionComponent = (props) => {
    useEffect(() => {
       setHasScrolled(false);
    }, [props.scrollTo]);
-      
+
 
    // Definimos los hooks useDrag y useDrop
    const [{ isDragging, canDrag }, connectDragSource] = useDrag({
       type: ItemTypes.ROW,
       item: {
-        row: row,
-        type: props.type,
+         row: row,
+         type: props.type,
       },
       canDrag: (monitor) => {
-        return props.canDrag ? props.canDrag(props, monitor) : false;
+         return props.canDrag ? props.canDrag(props, monitor) : false;
       },
       item: () => {
-        return {
-          row: row,
-          type: props.type,
-        };
+         return {
+            row: row,
+            type: props.type,
+         };
       },
       collect: (monitor) => ({
-        isDragging: monitor.isDragging(),
-        canDrag: props.canDrag ? props.canDrag(props, monitor) : false,
+         isDragging: monitor.isDragging(),
+         canDrag: props.canDrag ? props.canDrag(props, monitor) : false,
       }),
-    });
+   });
 
-    const [{isOver, canDrop}, connectDropTarget] = useDrop({
+   const [{isOver, canDrop}, connectDropTarget] = useDrop({
       accept: ItemTypes.ROW,
       drop: (item) => {
-        if (props.onDrop) {
-          props.onDrop(item, row);
-        }
+         if (props.onDrop) {
+            props.onDrop(item, row);
+         }
       },
       canDrop: (item, monitor) => {
          const canBeDropped = props.canDrop ? props.canDrop(props, item) : false;
-        return canBeDropped
+         return canBeDropped
       },
       collect: (monitor) => ({
-        isOver: monitor.isOver({ shallow: true }),
-        canDrop: (props.canDrop && monitor.getItem()) ? props.canDrop(props, monitor.getItem()) : false,
+         isOver: monitor.isOver({ shallow: true }),
+         canDrop: (props.canDrop && monitor.getItem()) ? props.canDrop(props, monitor.getItem()) : false,
       }),
-    });
+   });
 
-    useEffect(() => {
+   useEffect(() => {
       let classname = 'Table-Row';
       if (props.is_selected) {
          classname += ` Table-Row-Selected Table-Row--depth-${depth} ${row.is_item ? 'Table-Row-Item' : ''}`
@@ -172,29 +174,29 @@ const rowFunctionComponent = (props) => {
       if (customRowClass) {
          classname += ' ' + customRowClass(row)
       }
-      
 
-      setClassName(classname);      
+
+      setClassName(classname);
    }, [props.is_selected, styleTheme, rowIndex, row.is_item, depth, customRowClass, isOver, canDrop]);
 
    const {
       // cDP, 
-      cDS, 
+      cDS,
       cDT
    } = useMemo(() => {
       // let cDP;
       let cDS, cDT;
- 
-       if (!allowToDragRows) {
+
+      if (!allowToDragRows) {
          //  cDP = item => item
-          cDS = item => item
-          cDT = item => item
- 
-       } else {
+         cDS = item => item
+         cDT = item => item
+
+      } else {
          //  cDP = connectDragPreview
-          cDS = connectDragSource
-          cDT = connectDropTarget
-       }
+         cDS = connectDragSource
+         cDT = connectDropTarget
+      }
 
       return {
          // cDP,
@@ -253,33 +255,33 @@ const rowFunctionComponent = (props) => {
    const onCellContextMenu = (column, row, colIndex, rowIndex, e) => {
       if (props.onContextMenu) {
          const colFormat =
-           typeof column.format === "object"
-             ? column.format.type
-             : column.format;
-             const validFormatsToApplyFilter = ["text", "textarea", "currency", "search"];
+            typeof column.format === "object"
+               ? column.format.type
+               : column.format;
+         const validFormatsToApplyFilter = ["text", "textarea", "currency", "search"];
          if (column.filter && validFormatsToApplyFilter.includes(colFormat)) {
-           e.preventDefault();
-           props.onContextMenu(e.pageX, e.pageY, [
-             {
-               name: "Aplicar filtro con este valor",
-               icon: "filter",
-               action: () => {
-                 const filterFunc = props.handleFilterColumn(column);
+            e.preventDefault();
+            props.onContextMenu(e.pageX, e.pageY, [
+               {
+                  name: "Aplicar filtro con este valor",
+                  icon: "filter",
+                  action: () => {
+                     const filterFunc = props.handleFilterColumn(column);
 
-                 if (colFormat === "text" || colFormat === "textarea") {
-                   filterFunc(row[column.assesor]);
-                 } else if (colFormat === "currency") {
-                   filterFunc({
-                     max: null,
-                     min: null,
-                     equal: row[column.assesor],
-                   });
-                 } else if (colFormat === "search") {
-                   filterFunc([row[column.assesor]]);
-                 }
+                     if (colFormat === "text" || colFormat === "textarea") {
+                        filterFunc(row[column.assesor]);
+                     } else if (colFormat === "currency") {
+                        filterFunc({
+                           max: null,
+                           min: null,
+                           equal: row[column.assesor],
+                        });
+                     } else if (colFormat === "search") {
+                        filterFunc([row[column.assesor]]);
+                     }
+                  },
                },
-             },
-           ]);
+            ]);
          }
 
       }
@@ -293,7 +295,7 @@ const rowFunctionComponent = (props) => {
    };
 
    const renderCell = (column, row, isCellActive, colIndex) => {
- 
+
       if (shouldRenderCell(column, row)) {
          let value = row[column.assesor];
          const {editable} = column;
@@ -305,30 +307,79 @@ const rowFunctionComponent = (props) => {
             const is_editable = isColumnEditable(column, row);
             if (is_editable) {
                return (
-                  <InputField
-                     isItem={row.is_item}
-                     onFocus={() => onFocus(colIndex)}
-                     isFocused={isCellActive}
-                     format={format}
-                     value={value}
-                     limit={column.limit}
-                     onKeyDown={(e, options) => {
-                        const {value, resetValue} = options;
-                        props.onKeyDown(e, {column, row, value, resetValue})
-                     }}
-                     onKeyDownHotKeys={props.onKeyDownHotKeys}
-                     onUpdate={props.onUpdateRow ? (value, resetValue) => {
-                        props.onUpdateRow(column, row, value, resetValue)
-                     } : undefined}
-                     onPaste={(e) => {
-                        if (props.onPaste) {
-                           props.onPaste(e, column, row);
+                  // Cell Container
+                  <div style={{
+                     display: 'flex',
+                     alignItems: 'center',
+                     justifyContent: 'center',
+                     width: '100%',
+                     height: '100%',
+                     boxSizing: 'border-box',
+                     flex: 1,
+                     cursor: allowNewRowSelectionProcess ? 'pointer' : 'default'
+                  }}
+                     onMouseEnter={() => {
+                        if (allowNewRowSelectionProcess) {
+                           setHoveredCellIndex(colIndex)
                         }
                      }}
-                     customProps={column.customProps}
-                     customColumnClass={column.customColumnClass}
-                     compressLongText={column.compressLongText}
-                  />
+                     onMouseLeave={() => {
+                        if (allowNewRowSelectionProcess) {
+                           setHoveredCellIndex(null)
+                        }
+                     }}
+                     onClick={(e) => {
+                        if (allowNewRowSelectionProcess && props.onRowSelect) {
+                           e.stopPropagation();
+                           props.onRowSelect(row, e.ctrlKey || e.metaKey);
+                        }
+                     }}
+                  >
+                     {/* Input Container */}
+                     <div
+                        style={{
+                           width: '80%',
+                           height: '100%',
+                           margin: '0 auto',
+                           border: (hoveredCellIndex === colIndex && allowNewRowSelectionProcess) && '2px solid #1f76b7',
+                           cursor: allowNewRowSelectionProcess ? 'text' : 'default'
+                        }}
+
+                        onClick={(e) => {
+                           if (allowNewRowSelectionProcess && props.onRowSelect) {
+                              e.stopPropagation();
+                              props.onRowSelect({}, e.ctrlKey || e.metaKey);
+                           }
+                        }}
+                     >
+                        <InputField
+                           isItem={row.is_item}
+                           onFocus={() => onFocus(colIndex)}
+                           isFocused={isCellActive}
+                           format={format}
+                           value={value}
+                           limit={column.limit}
+                           onKeyDown={(e, options) => {
+                              const { value, resetValue } = options;
+                              props.onKeyDown(e, { column, row, value, resetValue })
+                           }}
+                           onKeyDownHotKeys={props.onKeyDownHotKeys}
+                           onUpdate={props.onUpdateRow ? (value, resetValue) => {
+                              props.onUpdateRow(column, row, value, resetValue)
+                           } : undefined}
+                           onPaste={(e) => {
+                              if (props.onPaste) {
+                                 props.onPaste(e, column, row);
+                              }
+                           }}
+                           customProps={column.customProps}
+                           customColumnClass={column.customColumnClass}
+                           compressLongText={column.compressLongText}
+                           tabIndex={props.getTabIndex ? props.getTabIndex(row, colIndex) : -1}
+                           filter_hermosillo_non_working_days={props.filter_hermosillo_non_working_days}
+                        />
+                     </div>
+                  </div>
                )
             } else {
                if (column.hasOwnProperty('format')) {
@@ -337,8 +388,8 @@ const rowFunctionComponent = (props) => {
                      if (value) {
                         return format.trueIcon ? format.trueIcon({isItem: row.is_item}) : <Icon
                         style={{margin: 'auto', color: row.is_item ? 'black' : 'white'}}
-                        name={'checkmark'}
-                     />
+                           name={'checkmark'}
+                        />
                      } else {
                         return format.falseIcon ? format.falseIcon({isItem: row.is_item}) : ''
                      }
@@ -346,7 +397,18 @@ const rowFunctionComponent = (props) => {
                   value = formatColumn(format, value)
                }
 
-               return <div className={`left-align-flex value ${column.customColumnClass}`}>
+               return <div
+                  className={`left-align-flex value ${column.customColumnClass}`}
+                  style={{
+                     cursor: allowNewRowSelectionProcess ? 'pointer' : 'default'
+                  }}
+                  onClick={(e) => {
+                     if (allowNewRowSelectionProcess && props.onRowSelect) {
+                        e.stopPropagation();
+                        props.onRowSelect(row, e.ctrlKey || e.metaKey);
+                     }
+                  }}
+               >
                   <span>{value}</span></div>;
             }
 
@@ -358,8 +420,8 @@ const rowFunctionComponent = (props) => {
                   if (value) {
                      return format.trueIcon ? format.trueIcon({isItem: row.is_item}) : <Icon
                      style={{margin: 'auto', color: row.is_item ? 'black' : 'white'}}
-                     name={'checkmark'}
-                  />
+                        name={'checkmark'}
+                     />
                   } else {
                      return format.falseIcon ? format.falseIcon({isItem: row.is_item}) : ''
                   }
@@ -367,18 +429,29 @@ const rowFunctionComponent = (props) => {
                value = formatColumn(format, value)
             }
 
-            return <div className={`left-align-flex value ${column.customColumnClass} expanded-column`}>
+            return <div
+               className={`left-align-flex value ${column.customColumnClass} expanded-column`}
+               style={{
+                  cursor: allowNewRowSelectionProcess ? 'pointer' : 'default'
+               }}
+               onClick={(e) => {
+                  if (allowNewRowSelectionProcess && props.onRowSelect) {
+                     e.stopPropagation();
+                     props.onRowSelect(row, e.ctrlKey || e.metaKey);
+                  }
+               }}
+            >
                <span className={`${column.compressLongText ? 'compress-row' : ''}`}>{value}</span></div>;
          }
       }
 
    };
 
-    const scrollTo = (ref) => {
+   const scrollTo = (ref) => {
       setRowRef(ref);
    }
 
-    return cDT(
+   return cDT(
       // cDP(
       <tr
          ref={scrollTo}
@@ -405,14 +478,14 @@ const rowFunctionComponent = (props) => {
                }}
             >
                <div className="middle-align-flex">
-               {canDrag && <span className="drag-drop-icon">
+                  {canDrag && <span className="drag-drop-icon">
                      <FontAwesomeIcon icon={faGripVertical} size="1x"/>
                   </span>}
                   {(!canDrag && shouldShowSelectIcon) && <>
-                        {is_selected ? 
+                     {is_selected ?
                         <Icon color = 'black' name={'check square outline'} style={{"marginBottom": '0.63em' }}/> : 
                         <Icon color = {row.is_item ? 'black' : 'white'} name={'square outline'} style={{"marginBottom": '0.63em' }}/>}
-                     </>}
+                  </>}
                </div>
             </td>
          )}
@@ -425,80 +498,91 @@ const rowFunctionComponent = (props) => {
             const readOnlyClass = !is_editable ? 'cell-read-only' : '';
             const customColumnClass = col.className ? col.className : '';
             const columnClass = col.columnClass ? isFunction(col.columnClass) ? col.columnClass(col, row) : col.columnClass : '';
-            let cellToRender = (col.Cell ? (
-                  <td
-                     onClick={(e) => onCellClick(col, row, colIndex, rowIndex, e)}
-                     onDoubleClick={(e) => onCellDoubleClick(col, row, colIndex, rowIndex, e)}
-                     onContextMenu={(e) => onCellContextMenu(col, row, colIndex, rowIndex, e)}
-                     key={colIndex}
+            let cellContent = col.Cell ? col.Cell(row) : null;
+            let cellToRender = (col.Cell && cellContent !== null && cellContent !== undefined ? (
+               <td
+                  onClick={(e) => onCellClick(col, row, colIndex, rowIndex, e)}
+                  onDoubleClick={(e) => onCellDoubleClick(col, row, colIndex, rowIndex, e)}
+                  onContextMenu={(e) => onCellContextMenu(col, row, colIndex, rowIndex, e)}
+                  key={colIndex}
+                  style={{
+                     width: col.width,
+                     flex: `${col.width} 0 auto`,
+                     maxWidth: col.width,
+                     overflow: col.overflow ? col.overflow : 'inherit'
+                  }}
+                  className={`cell ${customColumnClass} ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
+               >
+                  <div
+                     className={`flex ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""} ${readOnlyClass}`}>
+                     {!row.is_item && colIndex === expandCollapseColumnIndex &&
+                        <div className={`Table-Column-${is_open ? 'Expanded' : 'Contracted'}`}
+                           onClick={onRowExpand(row)}>
+                           {hasChildren && (
+                              is_open ? (
+                                 <Icon className="icon-collapse" disabled
+                                    name='minus square outline'/>
+                              ) : (
+                                 <Icon className="icon-expand" disabled
+                                    name='plus square outline' />
+                              )
+                           )}
+
+
+                        </div>
+                     }
+                     {<React.Fragment>{cellContent}</React.Fragment>}
+                  </div>
+               </td>
+
+            ) : (
+               <td
+                  onClick={(e) => onCellClick(col, row, colIndex, rowIndex, e)}
+                  onDoubleClick={(e) => onCellDoubleClick(col, row, colIndex, rowIndex, e)}
+                  onContextMenu={(e) => onCellContextMenu(col, row, colIndex, rowIndex, e)}
+                  key={colIndex}
+                  style={{
+                     width: col.width,
+                     flex: `${col.width} 0 auto`,
+                     maxWidth: col.width,
+                     overflow: col.overflow ? col.overflow : 'inherit'
+                  }}
+                  className={`cell ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
+               >
+                  <div
+                     className={`flex ${readOnlyClass} ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""}`}
                      style={{
-                        width: col.width,
-                        flex: `${col.width} 0 auto`,
-                        maxWidth: col.width,
-                        overflow: col.overflow ? col.overflow : 'inherit'
+                        cursor: allowNewRowSelectionProcess ? 'pointer' : 'default'
                      }}
-                     className={`cell ${customColumnClass} ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
-                  >
-                     <div
-                        className={`flex ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""} ${readOnlyClass}`}>
-                        {!row.is_item && colIndex === expandCollapseColumnIndex &&
-                           <div className={`Table-Column-${is_open ? 'Expanded' : 'Contracted'}`}
-                                onClick={onRowExpand(row)}>
-                              {hasChildren && (
-                                 is_open ? (
-                                    <Icon className="icon-collapse" disabled
-                                          name='minus square outline'/>
-                                 ) : (
-                                    <Icon className="icon-expand" disabled
-                                          name='plus square outline'/>
-                                 )
-                              )}
-
-
-                           </div>
+                     onClick={(e) => {
+                        if (allowNewRowSelectionProcess && props.onRowSelect) {
+                           e.stopPropagation();
+                           props.onRowSelect(row, e.ctrlKey || e.metaKey);
                         }
-                        {<React.Fragment>{col.Cell(row)}</React.Fragment>}
-                     </div>
-                  </td>
-
-               ) : (
-                  <td
-                     onClick={(e) => onCellClick(col, row, colIndex, rowIndex, e)}
-                     onDoubleClick={(e) => onCellDoubleClick(col, row, colIndex, rowIndex, e)}
-                     onContextMenu={(e) => onCellContextMenu(col, row, colIndex, rowIndex, e)}
-                     key={colIndex}
-                     style={{
-                        width: col.width,
-                        flex: `${col.width} 0 auto`,
-                        maxWidth: col.width,
-                        overflow: col.overflow ? col.overflow : 'inherit'
                      }}
-                     className={`cell ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                   >
-                     <div
-                        className={`flex ${readOnlyClass} ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""}`}>
 
-                        {!row.is_item && colIndex === expandCollapseColumnIndex &&
-                           <div className={`Table-Column-${is_open ? 'Expanded' : 'Contracted'}`}
-                                onClick={onRowExpand(row)}>
-                              {hasChildren && (
-                                 is_open ? (
-                                    <Icon className="icon-collapse" disabled
-                                          name='minus square outline'/>
-                                 ) : (
-                                    <Icon className="icon-expand" disabled
-                                          name='plus square outline'/>
-                                 )
-                              )}
+                     {!row.is_item && colIndex === expandCollapseColumnIndex &&
+                        <div className={`Table-Column-${is_open ? 'Expanded' : 'Contracted'}`}
+                           onClick={onRowExpand(row)}>
+                           {hasChildren && (
+                              is_open ? (
+                                 <Icon className="icon-collapse" disabled
+                                    name='minus square outline' />
+                              ) : (
+                                 <Icon className="icon-expand" disabled
+                                    name='plus square outline' />
+                              )
+                           )}
 
 
-                           </div>
-                        }
-                        {renderCell(col, row, cellActive === colIndex, colIndex)}
-                     </div>
+                        </div>
+                     }
+                     {renderCell(col, row, cellActive === colIndex, colIndex)}
+                  </div>
 
-                  </td>
-               )
+               </td>
+            )
 
             )
 
@@ -516,11 +600,11 @@ const rowFunctionComponent = (props) => {
 
                cellToRender = <Popup content={content} position={position} inverted={inverted} trigger={cellToRender} />
             }
-            
+
             return cellToRender;
          })}
       </tr>
-   // )
+      // )
    )
 }
 
