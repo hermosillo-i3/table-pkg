@@ -1008,6 +1008,11 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
+"@babel/runtime@^7.21.0":
+  version "7.27.6"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.27.6.tgz#ec4070a04d76bae8ddbb10770ba55714a417b7c6"
+  integrity sha512-vbavdySgbTTrmFE+EsiqUTzlOr5bzlnJtUv9PynGCAKvfQqjIXbvFdumPM/GxMDfyuGMJaJAU6TO4zc1Jf1i8Q==
+
 "@babel/template@^7.25.9", "@babel/template@^7.3.3":
   version "7.25.9"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.25.9.tgz#ecb62d81a8a6f5dc5fe8abfc3901fc52ddf15016"
@@ -1327,10 +1332,10 @@
   resolved "https://npm.pkg.github.com/download/@hermosillo-i3/catalogs-pkg/1.4.0/ff2d6608f1901e133c50c341ecfaa940e677e30b#ff2d6608f1901e133c50c341ecfaa940e677e30b"
   integrity sha512-Ed8sQmEVKHhfLR5jxrC76ptIiWl28lFbYo86H+KDfWLq1GYlpCj1frchRvzEnM5xQdALIEd80NGiaeswI2Ly8A==
 
-"@hermosillo-i3/utils-pkg@^1.5.0":
-  version "1.11.1"
-  resolved "https://npm.pkg.github.com/download/@hermosillo-i3/utils-pkg/1.11.1/3844103a9f76af3a55a9fd03c4d23751d1ff3d46#3844103a9f76af3a55a9fd03c4d23751d1ff3d46"
-  integrity sha512-5hrpdRfjwgbomsdlwA1PbKKm1F+Fg9yff/kBk0Br6DI+4ed7iD64SSY2ZobcvrlpMOeDu1EC4qYEh/CDjtZStw==
+"@hermosillo-i3/utils-pkg@1.13.1":
+  version "1.13.1"
+  resolved "https://npm.pkg.github.com/download/@hermosillo-i3/utils-pkg/1.13.1/f25ede210ebbdadf1a8b986d9444bbf2dd26061d#f25ede210ebbdadf1a8b986d9444bbf2dd26061d"
+  integrity sha512-e4iYow0TzA1Yjj8m/9XjQFE6MKPnqNQCQQlW+ufo+BJ7dD9ME/u6E80MRr1lHGNnmLjh471EkrzFN6uNl4VDsQ==
   dependencies:
     "@hermosillo-i3/catalogs-pkg" "1.4.0"
     dayjs "^1.10.7"
@@ -1768,7 +1773,7 @@
     schema-utils "^4.2.0"
     source-map "^0.7.3"
 
-"@popperjs/core@^2.6.0":
+"@popperjs/core@^2.11.8", "@popperjs/core@^2.6.0":
   version "2.11.8"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
@@ -4152,6 +4157,11 @@ cjs-module-lexer@^1.0.0, cjs-module-lexer@^1.2.3:
   resolved "https://registry.yarnpkg.com/cjs-module-lexer/-/cjs-module-lexer-1.4.1.tgz#707413784dbb3a72aa11c2f2b042a0bef4004170"
   integrity sha512-cuSVIHi9/9E/+821Qjdvngor+xpnlwnuwIyZOaLmHBVdXL+gP+I6QQB9VkO7RI77YIcTV+S1W9AreJ5eN63JBA==
 
+classnames@^2.2.6:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.5.1.tgz#ba774c614be0f016da105c858e7159eae8e7687b"
+  integrity sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==
+
 clean-css@^5.2.2:
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-5.3.3.tgz#b330653cd3bd6b75009cc25c714cae7b93351ccd"
@@ -4453,6 +4463,18 @@ csstype@^3.0.2:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.3.tgz#d80ff294d114fb0e6ac500fbf85b60137d7eff81"
   integrity sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==
+
+date-fns@^2.30.0:
+  version "2.30.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.30.0.tgz#f367e644839ff57894ec6ac480de40cae4b0f4d0"
+  integrity sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+
+date-fns@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-4.1.0.tgz#64b3d83fff5aa80438f5b1a633c2e83b8a1c2d14"
+  integrity sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==
 
 dayjs-business-days@^1.0.4:
   version "1.0.4"
@@ -7740,6 +7762,18 @@ react-csv@^2.2.2:
   resolved "https://registry.yarnpkg.com/react-csv/-/react-csv-2.2.2.tgz#5bbf0d72a846412221a14880f294da9d6def9bfb"
   integrity sha512-RG5hOcZKZFigIGE8LxIEV/OgS1vigFQT4EkaHeKgyuCbUAu9Nbd/1RYq++bJcJJ9VOqO/n9TZRADsXNDR4VEpw==
 
+react-datepicker@^4.18.0:
+  version "4.25.0"
+  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-4.25.0.tgz#86b3ee8ac764bad1650046d0cf9280837bf6d845"
+  integrity sha512-zB7CSi44SJ0sqo8hUQ3BF1saE/knn7u25qEMTO1CQGofY1VAKahO8k9drZtp0cfW1DMfoYLR3uSY1/uMvbEzbg==
+  dependencies:
+    "@popperjs/core" "^2.11.8"
+    classnames "^2.2.6"
+    date-fns "^2.30.0"
+    prop-types "^15.7.2"
+    react-onclickoutside "^6.13.0"
+    react-popper "^2.3.0"
+
 react-dnd-html5-backend@^16.0.1:
   version "16.0.1"
   resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-16.0.1.tgz#87faef15845d512a23b3c08d29ecfd34871688b6"
@@ -7837,6 +7871,11 @@ react-number-format@^5.3.1:
   version "5.4.2"
   resolved "https://registry.yarnpkg.com/react-number-format/-/react-number-format-5.4.2.tgz#aec282241f36cee31da13dc5e0f364c0fc6902ab"
   integrity sha512-cg//jVdS49PYDgmcYoBnMMHl4XNTMuV723ZnHD2aXYtWWWqbVF3hjQ8iB+UZEuXapLbeA8P8H+1o6ZB1lcw3vg==
+
+react-onclickoutside@^6.13.0:
+  version "6.13.2"
+  resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.13.2.tgz#caa6df2c0cfe017506548fa810303fb85d13fb7c"
+  integrity sha512-h6Hbf1c8b7tIYY4u90mDdBLY4+AGQVMFtIE89HgC0DtVCh/JfKl477gYqUtGLmjZBKK3MJxomP/lFiLbz4sq9A==
 
 react-popper@^2.3.0:
   version "2.3.0"
@@ -8816,9 +8855,9 @@ to-regex-range@^5.0.1:
     is-number "^7.0.0"
 
 to-words@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/to-words/-/to-words-4.1.0.tgz#6f2229ea75990d22e6bfd80a52278415d88c2432"
-  integrity sha512-42GLFZQr/7i3sNiXJ7J83Kkw3hj8pWdTtj5kPjSWnyr1lkxmCnC2Dkx8JMttMAnQxj76ktyGpuDRsrxU5UeXpw==
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/to-words/-/to-words-4.6.0.tgz#6331a556672c405e9e023d7956fc2ba6cafe6173"
+  integrity sha512-az4QR+yBvEl2IoIGePdExNOmyJR0K4QSY/qK+mlQkYJl9K6OedlrDr3w2YjLVGgA4BjMPxJOFkaz09OPrzFceg==
 
 tocbot@^4.20.1:
   version "4.31.0"
