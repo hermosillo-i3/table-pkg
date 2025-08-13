@@ -32,6 +32,24 @@ class InputField extends React.Component {
       this.onFocus = this.onFocus.bind(this);
    }
 
+  /*
+    This function is used to calculate the width of the InputField depending on it's contents
+    This is used to avoid the input shriking when not using 100% of the width of the parent cell */
+  calculateInputWidth = (text) => {
+      const textLength = text?.toString().length || 0;
+      
+      // Empty InputFields should take up 50% of the cell width. No matter if the user is hovering or focusing the input
+      if (textLength === 0) {
+        return '50%';
+      }
+
+      const charWidth = 5;
+      const padding = 32;
+      const contentWidth = (textLength * charWidth) + padding;
+      
+      return `${contentWidth}px`;
+  }
+
    componentDidMount() {
       if (this.props.isFocused && this.input && this.input.focus) {
          this.input.focus();
@@ -221,15 +239,33 @@ class InputField extends React.Component {
       const type = typeof format === 'string' ? format : format.type;
       const decimals = typeof format === 'string' ? 2 : format.decimals;
 
+      const shouldShowBorder = this.props.allowNewRowSelectionProcess && (this.props.hoveredCellIndex === this.props.colIndex || isFocused);
+      
+      const newRowSelectionStyle = this.props.allowNewRowSelectionProcess ? {
+        margin: '5px 0px 5px 0px',
+        width: this.calculateInputWidth(this.state.currentValue),
+        border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+        background: 'transparent',
+        cursor: 'text',
+      } : {
+        margin: '0',
+      };
+
+      const newRowSelectionStyleWithMinimalWidth = this.props.allowNewRowSelectionProcess ? {
+        minHeight: '20px',
+        minWidth: '20px',
+        ...newRowSelectionStyle,
+      } : {};
+
       switch (type) {
         case "textarea": {
           if (isFocused) {
             return (
               <Textarea
-                className={`InputField ${customColumnClass}`}
+                className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
                 style={{
                   resize: "none",
-                  padding: 0,
+                  ...newRowSelectionStyle
                 }}
                 ref={(input) => {
                   this.input = input;
@@ -263,11 +299,11 @@ class InputField extends React.Component {
               />
             );
           } else {
+            const compressedClass = `Text ${customColumnClass} ${compressLongText ? "compress-row" : ""}` 
             return (
               <p
-                className={`Text ${customColumnClass} ${
-                  compressLongText ? "compress-row" : ""
-                }`}
+                className={this.props.allowNewRowSelectionProcess ? `Text ${customColumnClass}` : compressedClass}
+                style={newRowSelectionStyleWithMinimalWidth}
                 tabIndex={tabIndex}
                 onClick={(e) => this.onCreateTextArea(e)}
                 onFocus={(e) => {
@@ -288,12 +324,13 @@ class InputField extends React.Component {
               ref={(input) => {
                 this.input = input;
               }}
-              className={`InputField ${customColumnClass}`}
+              className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
               type="text"
               value={this.state.currentValue}
               onChange={this.onChange}
               onBlur={this.onBlur}
               tabIndex={tabIndex}
+              style={newRowSelectionStyleWithMinimalWidth}
               onKeyDown={(e) => {
                 this.onKeyDown(e);
                 if (this.props.onKeyDownHotKeys) {
@@ -373,13 +410,14 @@ class InputField extends React.Component {
               ref={(input) => {
                 this.input = input;
               }}
-              className={`InputField ${customColumnClass}`}
+              className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
               type="text"
               value={this.state.currentValue}
               onChange={this.onChange}
               onBlur={this.onBlur}
               onFocus={this.onFocus}
               tabIndex={tabIndex}
+              style={newRowSelectionStyleWithMinimalWidth}
               onKeyDown={(e) => {
                 this.onKeyDown(e);
                 if (this.props.onKeyDownHotKeys) {
@@ -405,12 +443,13 @@ class InputField extends React.Component {
         case "currency": {
           return (
             <Cleave
-              className={`InputField ${customColumnClass}`}
+              className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
               value={this.state.currentValue}
               htmlRef={(input) => {
                 this.input = input;
               }}
               tabIndex={tabIndex}
+              style={newRowSelectionStyleWithMinimalWidth}
               onChange={(e) => {
                 const value = e.target.rawValue;
                 let isValid = true;
@@ -463,12 +502,13 @@ class InputField extends React.Component {
         case "percentage": {
           return (
             <Cleave
-              className={`InputField ${customColumnClass}`}
+              className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
               value={this.state.currentValue || "0"}
               htmlRef={(input) => {
                 this.input = input;
               }}
               tabIndex={tabIndex}
+              style={newRowSelectionStyleWithMinimalWidth}
               onChange={(e) => {
                 let value = e.target.rawValue;
 
@@ -534,10 +574,11 @@ class InputField extends React.Component {
               getInputRef={(input) => {
                 this.input = input;
               }}
-              className={`InputField ${customColumnClass}`}
+              className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
               value={this.state.currentValue}
               onBlur={this.onBlur}
               tabIndex={tabIndex}
+              style={newRowSelectionStyleWithMinimalWidth}
               onValueChange={(values) => {
                 const { value } = values;
                 // formattedValue = $2,223
@@ -579,7 +620,7 @@ class InputField extends React.Component {
         case "text": {
           return isFocused ? (
             <input
-              className={`InputField ${customColumnClass}`}
+              className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
               ref={(input) => {
                 this.input = input;
               }}
@@ -589,6 +630,10 @@ class InputField extends React.Component {
               onBlur={this.onBlur}
               maxLength={limit}
               tabIndex={tabIndex}
+              style={{
+                ...(this.props.allowNewRowSelectionProcess && { boxSizing: 'border-box' }),
+                ...newRowSelectionStyleWithMinimalWidth,
+              }}
               onPaste={(e) => {
                 if (onPaste) {
                   onPaste(e);
@@ -617,7 +662,7 @@ class InputField extends React.Component {
             />
           ) : (
             <div
-              className={`left-align-flex value ${customColumnClass} expanded-column`}
+              className={this.props.allowNewRowSelectionProcess ? `left-align-flex value ${customColumnClass}` : `left-align-flex value ${customColumnClass} expanded-column`}
               tabIndex={tabIndex}
               onClick={this.onFocus}
               onFocus={(e) => {
@@ -625,7 +670,11 @@ class InputField extends React.Component {
                   this.props.onFocus();
                 }
               }}
-              style={{ outline: 'none', cursor: 'text' }}
+              style={{
+                outline: 'none',
+                cursor: 'text',
+                ...newRowSelectionStyleWithMinimalWidth,
+              }}
             >
               <span className={`${compressLongText ? "compress-row" : ""}`}>
                 {this.state.currentValue}
@@ -647,12 +696,13 @@ class InputField extends React.Component {
             <select
               defaultValue={defaultValue}
               value={value}
-              className={`InputField ${customColumnClass}`}
+              className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
               placeholder={placeholder}
               onChange={this.onChange}
               onBlur={this.onBlur}
               onFocus={this.onFocus}
               tabIndex={tabIndex}
+              style={newRowSelectionStyleWithMinimalWidth}
             >
               {options.map(({ value, key, text }, index) => (
                 <option value={value} key={key ? key : index}>
@@ -753,6 +803,8 @@ class InputField extends React.Component {
              resetValue={this.resetValue}
              value={this.state.currentValue}
              tabIndex={tabIndex}
+             allowNewRowSelectionProcess={this.props.allowNewRowSelectionProcess}
+             customStyle={this.props.customStyle}
            />
          );
          }

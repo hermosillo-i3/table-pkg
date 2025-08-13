@@ -19,6 +19,8 @@ const InputFieldSearch = (props) => {
       placeholder = "Buscar...",
       resetValue,
       onUpdate,
+      allowNewRowSelectionProcess,
+      customStyle,
     } = props;
 
     const [isLoading, setIsLoading] = useState(initialState.isLoading);
@@ -103,13 +105,15 @@ const InputFieldSearch = (props) => {
                  onKeyDown={handleKeyDown}
                  results={results}
                  value={value}
+                 style={customStyle}
                />
              </React.Fragment>
            );
          }else{
              return (
                <div
-                 className={`left-align-flex value ${customColumnClass} expanded-column`}
+                 className={allowNewRowSelectionProcess ? `left-align-flex value ${customColumnClass}` : `left-align-flex value ${customColumnClass} expanded-column`}
+                 style={customStyle}
                >
                  <span className={`${compressLongText ? "compress-row" : ""}`}>
                    {value ? (

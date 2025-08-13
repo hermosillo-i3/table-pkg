@@ -1746,6 +1746,22 @@ class Table extends React.Component {
                <div
                   ref={(div) => { this.mainTableDiv = div; }}
                   style={droppableStyle}
+                  onClick={(e) => {
+                     // Clear the active InputField when clicking outside the table
+                     const isClickOnTableBackground = e.target === e.currentTarget || 
+                           e.target.classList.contains('the-table-header') ||
+                           e.target.classList.contains('the-table') ||
+                           e.target.tagName === 'TBODY' ||
+                           e.target.tagName === 'TABLE';
+                     if (isClickOnTableBackground) {
+                        this.setState({
+                           cellActive: {
+                              row: undefined,
+                              cell: undefined
+                           }
+                        });
+                     }
+                  }}
                >
                   {!isTableHeaderHidden && <TableHeader
                      tableHeaderOptions={tableHeaderOptions}

@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.1
+Date: Aug 12, 2025
+* [UPDATE]
+  * Update the styles for the InputField when allowNewRowSelectionProcess is true. Now the field aligns to the left instead of the right
+
 ## V 1.17.0
 Date: Aug 11, 2025
 * [UPDATE]

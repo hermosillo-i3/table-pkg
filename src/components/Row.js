@@ -307,78 +307,59 @@ const rowFunctionComponent = (props) => {
             const is_editable = isColumnEditable(column, row);
             if (is_editable) {
                return (
-                  // Cell Container
-                  <div style={{
-                     display: 'flex',
-                     alignItems: 'center',
-                     justifyContent: 'center',
-                     width: '100%',
-                     height: '100%',
-                     boxSizing: 'border-box',
-                     flex: 1,
-                     cursor: allowNewRowSelectionProcess ? 'pointer' : 'default'
-                  }}
-                     onMouseEnter={() => {
-                        if (allowNewRowSelectionProcess) {
-                           setHoveredCellIndex(colIndex)
-                        }
-                     }}
-                     onMouseLeave={() => {
-                        if (allowNewRowSelectionProcess) {
-                           setHoveredCellIndex(null)
-                        }
-                     }}
+                  <div
+                     onMouseEnter={() => setHoveredCellIndex(colIndex)}
+                     onMouseLeave={() => setHoveredCellIndex(null)}
                      onClick={(e) => {
-                        if (allowNewRowSelectionProcess && props.onRowSelect) {
+                        // Only prevent row selection if clicking directly on input elements
+                        const isDirectInputClick = e.target.matches('input, textarea, select') || 
+                                                  e.target.closest('.InputField, .react-datepicker-wrapper, .cleave-input');
+                        if (isDirectInputClick) {
+                           e.stopPropagation();
+                        } else if (allowNewRowSelectionProcess && props.onRowSelect) {
                            e.stopPropagation();
                            props.onRowSelect(row, e.ctrlKey || e.metaKey);
                         }
                      }}
+                     style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        paddingLeft: allowNewRowSelectionProcess ? '0.5rem' : '0rem',
+                        paddingRight: allowNewRowSelectionProcess ? '1rem' : '0rem',
+                        height: allowNewRowSelectionProcess ? 'auto' : '100%',
+                     }}
                   >
-                     {/* Input Container */}
-                     <div
-                        style={{
-                           width: '80%',
-                           height: '100%',
-                           margin: '0 auto',
-                           border: (hoveredCellIndex === colIndex && allowNewRowSelectionProcess) && '2px solid #1f76b7',
-                           cursor: allowNewRowSelectionProcess ? 'text' : 'default'
+                     <InputField
+                        isItem={row.is_item}
+                        onFocus={() => onFocus(colIndex)}
+                        isFocused={isCellActive}
+                        format={format}
+                        value={value}
+                        limit={column.limit}
+                        onKeyDown={(e, options) => {
+                           const { value, resetValue } = options;
+                           props.onKeyDown(e, { column, row, value, resetValue })
                         }}
-
-                        onClick={(e) => {
-                           if (allowNewRowSelectionProcess && props.onRowSelect) {
-                              e.stopPropagation();
-                              props.onRowSelect({}, e.ctrlKey || e.metaKey);
+                        onKeyDownHotKeys={props.onKeyDownHotKeys}
+                        onUpdate={props.onUpdateRow ? (value, resetValue) => {
+                           props.onUpdateRow(column, row, value, resetValue)
+                        } : undefined}
+                        onPaste={(e) => {
+                           if (props.onPaste) {
+                              props.onPaste(e, column, row);
                            }
                         }}
-                     >
-                        <InputField
-                           isItem={row.is_item}
-                           onFocus={() => onFocus(colIndex)}
-                           isFocused={isCellActive}
-                           format={format}
-                           value={value}
-                           limit={column.limit}
-                           onKeyDown={(e, options) => {
-                              const { value, resetValue } = options;
-                              props.onKeyDown(e, { column, row, value, resetValue })
-                           }}
-                           onKeyDownHotKeys={props.onKeyDownHotKeys}
-                           onUpdate={props.onUpdateRow ? (value, resetValue) => {
-                              props.onUpdateRow(column, row, value, resetValue)
-                           } : undefined}
-                           onPaste={(e) => {
-                              if (props.onPaste) {
-                                 props.onPaste(e, column, row);
-                              }
-                           }}
-                           customProps={column.customProps}
-                           customColumnClass={column.customColumnClass}
-                           compressLongText={column.compressLongText}
-                           tabIndex={props.getTabIndex ? props.getTabIndex(row, colIndex) : -1}
-                           filter_hermosillo_non_working_days={props.filter_hermosillo_non_working_days}
-                        />
-                     </div>
+                        customProps={column.customProps}
+                        customColumnClass={column.customColumnClass}
+                        compressLongText={column.compressLongText}
+                        tabIndex={props.getTabIndex ? props.getTabIndex(row, colIndex) : -1}
+                        filter_hermosillo_non_working_days={props.filter_hermosillo_non_working_days}
+                        allowNewRowSelectionProcess={allowNewRowSelectionProcess}
+                        colIndex={colIndex}
+                        hoveredCellIndex={hoveredCellIndex}
+                     />
                   </div>
                )
             } else {
