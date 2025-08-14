@@ -847,7 +847,6 @@ class Table extends React.Component {
       }
 
       let shouldAdd = !selected_rows.includes(row.id);
-
       if (this.props.onRowSelect) {
          this.removePasteEvent();
          this.addPasteEvent();

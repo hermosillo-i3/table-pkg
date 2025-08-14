@@ -222,6 +222,7 @@ const rowFunctionComponent = (props) => {
       if (props.onRowExpand) {
          return (e) => {
             props.onRowExpand(row, e)
+            e.stopPropagation();
          }
       }
    }
@@ -243,6 +244,9 @@ const rowFunctionComponent = (props) => {
       });
       if (props.onCellClick) {
          props.onCellClick(column, row, colIndex, rowIndex)
+         if (props.allowNewRowSelectionProcess) {
+            props.onRowSelect(row, e.ctrlKey || e.metaKey)
+         }
       }
    };
 
@@ -313,12 +317,12 @@ const rowFunctionComponent = (props) => {
                      onClick={(e) => {
                         // Only prevent row selection if clicking directly on input elements
                         const isDirectInputClick = e.target.matches('input, textarea, select') || 
-                                                  e.target.closest('.InputField, .react-datepicker-wrapper, .cleave-input');
+                           e.target.closest('.InputField, .react-datepicker-wrapper, .cleave-input');
                         if (isDirectInputClick) {
                            e.stopPropagation();
                         } else if (allowNewRowSelectionProcess && props.onRowSelect) {
-                           e.stopPropagation();
                            props.onRowSelect(row, e.ctrlKey || e.metaKey);
+                           e.stopPropagation();
                         }
                      }}
                      style={{
@@ -338,6 +342,8 @@ const rowFunctionComponent = (props) => {
                         format={format}
                         value={value}
                         limit={column.limit}
+                        columnWidth={column.width}
+                        hasExpandIcon={!row.is_item && colIndex === expandCollapseColumnIndex && hasChildren}
                         onKeyDown={(e, options) => {
                            const { value, resetValue } = options;
                            props.onKeyDown(e, { column, row, value, resetValue })
@@ -381,7 +387,7 @@ const rowFunctionComponent = (props) => {
                return <div
                   className={`left-align-flex value ${column.customColumnClass}`}
                   style={{
-                     cursor: allowNewRowSelectionProcess ? 'pointer' : 'default'
+                     cursor: allowNewRowSelectionProcess ? 'pointer' : 'default',
                   }}
                   onClick={(e) => {
                      if (allowNewRowSelectionProcess && props.onRowSelect) {
@@ -413,7 +419,7 @@ const rowFunctionComponent = (props) => {
             return <div
                className={`left-align-flex value ${column.customColumnClass} expanded-column`}
                style={{
-                  cursor: allowNewRowSelectionProcess ? 'pointer' : 'default'
+                  cursor: allowNewRowSelectionProcess ? 'pointer' : 'default',
                }}
                onClick={(e) => {
                   if (allowNewRowSelectionProcess && props.onRowSelect) {
@@ -490,7 +496,7 @@ const rowFunctionComponent = (props) => {
                      width: col.width,
                      flex: `${col.width} 0 auto`,
                      maxWidth: col.width,
-                     overflow: col.overflow ? col.overflow : 'inherit'
+                     overflow: col.overflow ? col.overflow : 'inherit',
                   }}
                   className={`cell ${customColumnClass} ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >

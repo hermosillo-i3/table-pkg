@@ -35,7 +35,7 @@ class InputField extends React.Component {
   /*
     This function is used to calculate the width of the InputField depending on it's contents
     This is used to avoid the input shriking when not using 100% of the width of the parent cell */
-  calculateInputWidth = (text) => {
+  calculateInputWidth = (text, maxWidth = null) => {
       const textLength = text?.toString().length || 0;
       
       // Empty InputFields should take up 50% of the cell width. No matter if the user is hovering or focusing the input
@@ -44,8 +44,24 @@ class InputField extends React.Component {
       }
 
       const charWidth = 5;
-      const padding = 32;
+      const padding = 40;
+      // Reduce available width by 50px if expand icon is present
+      const iconWidth = this.props.hasExpandIcon ? 50 : 0;
       const contentWidth = (textLength * charWidth) + padding;
+      
+      // If maxWidth is provided and the cell has an expand icon, reduce the available width by 20px
+      if (maxWidth && this.props.hasExpandIcon) {
+        if (contentWidth + iconWidth > (maxWidth - iconWidth)) {
+          /* Remove the icon width twice
+            1- To return the */
+          return `${maxWidth - iconWidth}px`;
+        }
+      }
+
+      // If maxWidth is provided and content would exceed it, return maxWidth instead
+      if (maxWidth && contentWidth > maxWidth) {
+        return `${maxWidth}px`;
+      }
       
       return `${contentWidth}px`;
   }
@@ -620,7 +636,7 @@ class InputField extends React.Component {
         case "text": {
           return isFocused ? (
             <input
-              className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
+              className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
               ref={(input) => {
                 this.input = input;
               }}
@@ -633,6 +649,7 @@ class InputField extends React.Component {
               style={{
                 ...(this.props.allowNewRowSelectionProcess && { boxSizing: 'border-box' }),
                 ...newRowSelectionStyleWithMinimalWidth,
+                width: this.calculateInputWidth(this.state.currentValue, this.props.columnWidth),
               }}
               onPaste={(e) => {
                 if (onPaste) {
@@ -662,7 +679,7 @@ class InputField extends React.Component {
             />
           ) : (
             <div
-              className={this.props.allowNewRowSelectionProcess ? `left-align-flex value ${customColumnClass}` : `left-align-flex value ${customColumnClass} expanded-column`}
+              className={this.props.allowNewRowSelectionProcess ? `` : `left-align-flex value ${customColumnClass} expanded-column`}
               tabIndex={tabIndex}
               onClick={this.onFocus}
               onFocus={(e) => {
@@ -673,7 +690,17 @@ class InputField extends React.Component {
               style={{
                 outline: 'none',
                 cursor: 'text',
-                ...newRowSelectionStyleWithMinimalWidth,
+                color: isItem ? 'black' : 'white',
+                minHeight: '20px',
+                minWidth: '20px',
+                width: this.calculateInputWidth(this.state.currentValue, this.props.columnWidth),
+                margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
+                border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+                background: 'transparent',
+                // Allow text to wrap when it overflows
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                whiteSpace: 'normal',
               }}
             >
               <span className={`${compressLongText ? "compress-row" : ""}`}>
@@ -692,25 +719,54 @@ class InputField extends React.Component {
                 ? defaultValue
                 : this.state.currentValue;
           }
-          return (
-            <select
-              defaultValue={defaultValue}
-              value={value}
+          return isFocused ? (
+              <select
+                defaultValue={defaultValue}
+                value={value}
+                className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
+                placeholder={placeholder}
+                onChur={this.onBlur}
+                onFocus={this.onFocus}
+                tabIange={this.onChange}
+                onBlndex={tabIndex}
+                style={{
+                  width: '80%',
+                  border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+                }}
+              >
+                {options.map(({ value, key, text }, index) => (
+                  <option value={value} key={key ? key : index}>
+                    {text}
+                  </option>
+                ))}
+              </select>
+          ) : (
+            <div
               className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
-              placeholder={placeholder}
-              onChange={this.onChange}
-              onBlur={this.onBlur}
-              onFocus={this.onFocus}
-              tabIndex={tabIndex}
-              style={newRowSelectionStyleWithMinimalWidth}
+              onMouseEnter={this.onFocus}
+              onMouseLeave={this.onBlur}
+              onFocus={() => {
+                if (this.props.onFocus) {
+                  this.props.onFocus();
+                }
+              }}
+              style={{
+                outline: 'none',
+                cursor: 'pointer',
+                color: isItem ? 'black' : 'white',
+                minHeight: '20px',
+                minWidth: '20px',
+                border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+                margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
+                background: 'transparent',
+              }}
             >
-              {options.map(({ value, key, text }, index) => (
-                <option value={value} key={key ? key : index}>
-                  {text}
-                </option>
-              ))}
-            </select>
-          );
+              {
+                options.find((option) => option.key === this.state.currentValue)?.text || this.state.currentValue
+              }
+            </div>
+          )
+
         }
 
         case "date": {
@@ -751,12 +807,24 @@ class InputField extends React.Component {
         }
 
         case "boolean": {
+          const booleanStyle = {
+            ...newRowSelectionStyleWithMinimalWidth,
+            width: '20px',
+            height: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            margin: this.props.allowNewRowSelectionProcess ? '5px auto' : 'auto'
+          };
+
           return (
             <React.Fragment>
               {this.state.currentValue ? (
                 <div
-                  className={`InputField-Boolean ${customColumnClass}`}
+                  className={this.props.allowNewRowSelectionProcess ? `InputField-Boolean ${customColumnClass}` : `InputField-Boolean ${customColumnClass}`}
                   tabIndex={tabIndex}
+                  style={booleanStyle}
                   onClick={() => {
                     this.props.onUpdate(
                       !this.state.currentValue,
@@ -778,8 +846,9 @@ class InputField extends React.Component {
                 </div>
               ) : (
                 <div
-                  className={`InputField-Boolean ${customColumnClass}`}
+                  className={this.props.allowNewRowSelectionProcess ? `InputField-Boolean ${customColumnClass}` : `InputField-Boolean ${customColumnClass}`}
                   tabIndex={tabIndex}
+                  style={booleanStyle}
                   onClick={() => {
                     this.props.onUpdate(
                       !this.state.currentValue,
