@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Textarea from 'react-textarea-autosize';
-import { Icon, Progress } from "semantic-ui-react";
+import { Dropdown, Icon, Progress, Select } from "semantic-ui-react";
 import Cleave from 'cleave.js/react';
 import {NumericFormat} from 'react-number-format';
 import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
@@ -25,6 +25,7 @@ class InputField extends React.Component {
          previousValue: this.props.value,
          caretPos: 0,
          isTextAreaMultiLineActive: false,
+         selectExpanded: false,
       };
       this.onChange = this.onChange.bind(this);
       this.onChangeDate = this.onChangeDate.bind(this);
@@ -251,7 +252,7 @@ class InputField extends React.Component {
    render() {
 
       const {isFocused, format, limit, customProps = {}, onPaste, maxValue, customColumnClass, compressLongText, isItem, tabIndex, onFocus} = this.props;
-      const {currentValue, isTextAreaMultiLineActive} = this.state;
+      const {currentValue, isTextAreaMultiLineActive, selectExpanded} = this.state;
       const type = typeof format === 'string' ? format : format.type;
       const decimals = typeof format === 'string' ? 2 : format.decimals;
 
@@ -721,17 +722,24 @@ class InputField extends React.Component {
           }
           return isFocused ? (
               <select
+                ref={(input) => {
+                  this.input = input;
+                }}
                 defaultValue={defaultValue}
                 value={value}
                 className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
                 placeholder={placeholder}
-                onChur={this.onBlur}
+                onBlur={(e) => {
+                  this.setState({ selectExpanded: false });
+                  this.onBlur(e);
+                }}
                 onFocus={this.onFocus}
-                tabIange={this.onChange}
-                onBlndex={tabIndex}
+                onChange={this.onChange}
+                tabIndex={tabIndex}
                 style={{
-                  width: '80%',
+                  width: '100%',
                   border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+                  height: this.state.selectExpanded ? 'auto' : undefined,
                 }}
               >
                 {options.map(({ value, key, text }, index) => (
@@ -740,11 +748,40 @@ class InputField extends React.Component {
                   </option>
                 ))}
               </select>
+              // <Dropdown
+              //   options={options}
+              //   open={selectExpanded}
+              //   value={value}
+              //   onChange={this.onChange}
+              //   style={{
+              //     border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+              //   }}
+              //   onBlur={(e) => {
+              //     this.setState({ selectExpanded: false });
+              //     this.onBlur(e);
+              //   }}
+              //   onFocus={this.onFocus}
+              //   placeholder={placeholder}
+              //   fluid
+              //   search
+              //   selection
+              //   allowAdditions
+              // />
           ) : (
             <div
               className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
-              onMouseEnter={this.onFocus}
-              onMouseLeave={this.onBlur}
+              onClick={() => {
+                // Focus the InputField component first
+                if (this.props.onFocus) {
+                  this.props.onFocus();
+                }
+                // Then simulate a click on the focused element after a brief delay
+                setTimeout(() => {
+                  if (this.input) {
+                    this.input.showPicker();                      
+                  }
+                }, 50);
+              }}
               onFocus={() => {
                 if (this.props.onFocus) {
                   this.props.onFocus();
@@ -756,6 +793,7 @@ class InputField extends React.Component {
                 color: isItem ? 'black' : 'white',
                 minHeight: '20px',
                 minWidth: '20px',
+                width: '100%',
                 border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
                 margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
                 background: 'transparent',

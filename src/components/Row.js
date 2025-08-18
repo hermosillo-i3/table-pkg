@@ -338,6 +338,12 @@ const rowFunctionComponent = (props) => {
                      <InputField
                         isItem={row.is_item}
                         onFocus={() => onFocus(colIndex)}
+                        onUnfocusOthers={() => {
+                           // Clear focus by calling onFocus with invalid indexes to unfocus current cell
+                           if (props.onUnfocus) {
+                              props.onUnfocus();
+                           }
+                        }}
                         isFocused={isCellActive}
                         format={format}
                         value={value}
@@ -497,6 +503,7 @@ const rowFunctionComponent = (props) => {
                      flex: `${col.width} 0 auto`,
                      maxWidth: col.width,
                      overflow: col.overflow ? col.overflow : 'inherit',
+                     cursor: allowNewRowSelectionProcess ? 'pointer' : 'default',
                   }}
                   className={`cell ${customColumnClass} ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >
