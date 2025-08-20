@@ -1,6 +1,13 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.2
+Date: Aug 19, 2025
+* [FIX]
+  * ScrollTo feature was missing one prop in the useeffect.
+  * expandByDefault feature only work when rows were passed in the first render
+  * Color warnings, remove white
+
 ## V 1.17.1
 Date: Aug 12, 2025
 * [UPDATE]

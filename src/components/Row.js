@@ -101,7 +101,7 @@ const rowFunctionComponent = (props) => {
          rowRef.scrollIntoView({behavior: 'smooth'});
          setHasScrolled(true);
       }
-   }, [row, props.scrollTo]);
+   }, [row, props.scrollTo, rowRef]);
 
    useEffect(() => {
       setHasScrolled(false);
@@ -368,9 +368,9 @@ const rowFunctionComponent = (props) => {
                   if (type === 'boolean') {
                      if (value) {
                         return format.trueIcon ? format.trueIcon({isItem: row.is_item}) : <Icon
-                        style={{margin: 'auto', color: row.is_item ? 'black' : 'white'}}
-                           name={'checkmark'}
-                        />
+                        style={{margin: 'auto', color: row.is_item ? 'black' : 'grey'}}
+                        name={'checkmark'}
+                     />
                      } else {
                         return format.falseIcon ? format.falseIcon({isItem: row.is_item}) : ''
                      }
@@ -400,9 +400,9 @@ const rowFunctionComponent = (props) => {
                if (type === 'boolean') {
                   if (value) {
                      return format.trueIcon ? format.trueIcon({isItem: row.is_item}) : <Icon
-                     style={{margin: 'auto', color: row.is_item ? 'black' : 'white'}}
-                        name={'checkmark'}
-                     />
+                     style={{margin: 'auto', color: row.is_item ? 'black' : 'grey'}}
+                     name={'checkmark'}
+                  />
                   } else {
                      return format.falseIcon ? format.falseIcon({isItem: row.is_item}) : ''
                   }
@@ -465,8 +465,8 @@ const rowFunctionComponent = (props) => {
                   {(!canDrag && shouldShowSelectIcon) && <>
                      {is_selected ?
                         <Icon color = 'black' name={'check square outline'} style={{"marginBottom": '0.63em' }}/> : 
-                        <Icon color = {row.is_item ? 'black' : 'white'} name={'square outline'} style={{"marginBottom": '0.63em' }}/>}
-                  </>}
+                        <Icon color = {row.is_item ? 'black' : 'grey'} name={'square outline'} style={{"marginBottom": '0.63em' }}/>}
+                     </>}
                </div>
             </td>
          )}
