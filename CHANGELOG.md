@@ -1,6 +1,12 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.3
+Date: Aug 20, 2025
+* [FIX]
+  * Remove develop action from workflows
+  * Optimize workflows
+
 ## V 1.17.2
 Date: Aug 19, 2025
 * [FIX]
