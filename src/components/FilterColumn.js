@@ -326,22 +326,25 @@ const FilterColumn = (props) => {
    if (colFormat === 'date') {
       return (
          <Popup
-            on='click'
+            on="click"
             pinned
             content={
                <div className="FilterColumnCurrency">
                   <div className="FilterColumnCurrencyGroup">
-                     <FieldDate 
-                        label='De'
+                     <FieldDate
+                        label="De"
                         value={range.min}
                         disabled={range.equal}
                         onChange={(value) => {
-                           const newRange = { ...range, min: value }
-                           setRange(newRange)
-                           if(value == null){
-                              onSubmit(newRange)
-                           } else if ((newRange.max === null || newRange.max === '') && (newRange.min === null || newRange.min === '')) {
-                              onSubmit('');
+                           const newRange = { ...range, min: value };
+                           setRange(newRange);
+                           if (value == null) {
+                              onSubmit(newRange);
+                           } else if (
+                              (newRange.max === null || newRange.max === "") &&
+                              (newRange.min === null || newRange.min === "")
+                           ) {
+                              onSubmit("");
                            }
                         }}
                      />
@@ -350,47 +353,47 @@ const FilterColumn = (props) => {
                         value={range.max}
                         disabled={range.equal}
                         onChange={(value) => {
-                           const newRange = { ...range, max: value }
+                           const newRange = { ...range, max: value };
                            setRange(newRange);
-                           if(value == null){
-                              onSubmit(newRange)
-                           } else if ((newRange.max === null || newRange.max === '') && (newRange.min === null || newRange.min === '')) {
-                              onSubmit('');
+                           if (value == null) {
+                              onSubmit(newRange);
+                           } else if (
+                              (newRange.max === null || newRange.max === "") &&
+                              (newRange.min === null || newRange.min === "")
+                           ) {
+                              onSubmit("");
                            }
                         }}
                      />
-
                   </div>
-
 
                   <Button
                      // disabled={range.max == null && range.min == null && range.equal == null}
                      size="tiny"
                      icon
-                     labelPosition='left'
+                     labelPosition="left"
                      fluid
                      onClick={() => {
-                        onSubmit(range)
+                        onSubmit(range);
                      }}
                   >
-                     <Icon name='search' style={{"width": '2.9em'}}/>
+                     <Icon name="search" style={{ width: "2.9em" }} />
                      Buscar
                   </Button>
                </div>
-
             }
             trigger={
                <Button
-                  size='mini'
-                  icon='filter'
+                  size="mini"
+                  icon="filter"
                   style={{
-                     padding: '0.4rem'
+                     padding: "0.4rem",
                   }}
-                  {...(hasDateValue ? { color: 'orange' } : {color : 'white'})}
-               />}
+                  {...(hasDateValue ? { color: "orange" } : { color: "grey" })}
+               />
+            }
          />
-
-      )
+      );
    }
    if (colFormat === 'searchSelect') {
       return (
