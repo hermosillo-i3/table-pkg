@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.4
+Date: Aug 21, 2025
+* [FIX]
+  * Fix pasted rows not being separated when a cell didn't end with a new line
+
 ## V 1.17.3
 Date: Aug 20, 2025
 * [FIX]
