@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Input, Popup, Icon, Button, Label, Checkbox } from "semantic-ui-react";
+import { Input, Popup, Icon, Button, Label, Checkbox, Radio } from "semantic-ui-react";
 import PropTypes from 'prop-types'
 import { convertObjectToArray } from "@hermosillo-i3/utils-pkg/src/object";
 import Cleave from 'cleave.js/react';
@@ -34,6 +34,7 @@ const FilterColumn = (props) => {
    })
    const [filterStatus, setFilterStatus] = useState({})
    const [filteredOptions, setFilteredOptions] = useState(filter_options || {})
+   const [selectedNumberRange, setSelectedNumberRange] = useState(null)
 
    const toggleFilter = (filter) => {
       const newFilterOptions = { ...filterStatus }
@@ -80,6 +81,10 @@ const FilterColumn = (props) => {
       return ((range.max !== null && range.max !== "") || (range.min !== null && range.min !== "")) 
    }, [range])
 
+   const hasNumericValue = useMemo(() => {
+      return selectedNumberRange !== null
+   }, [selectedNumberRange])
+
    // it will only contain the values that exists in the rows not all options available to select.
    const filterOptionsInRows = useMemo(() => {
       if(colFormat === 'search'){
@@ -101,6 +106,8 @@ const FilterColumn = (props) => {
             setText(column_extended_value)
          } else if (colFormat === 'currency') {
             setRange(column_extended_value)
+         } else if (colFormat === 'number' || colFormat === 'percentage') {
+            setSelectedNumberRange(column_extended_value)
          } else if(colFormat === 'search' && Array.isArray(column_extended_value) && column_extended_value.length > 0){
             setFilterStatus({
               [column_extended_value[0]]: true,
@@ -389,12 +396,126 @@ const FilterColumn = (props) => {
                   style={{
                      padding: "0.4rem",
                   }}
-                  {...(hasDateValue ? { color: "orange" } : { color: "grey" })}
+                  {...(hasDateValue ? { color: "orange" } : { })}
                />
             }
          />
       );
    }
+
+   if (colFormat === 'number' || colFormat === 'percentage') {
+      // Get ranges from column format or use default ranges based on type
+      const getDefaultRanges = () => {
+         if (colFormat === 'percentage') {
+            return [
+               { start: 0, end: 25, label: '0%-25%' },
+               { start: 26, end: 50, label: '26%-50%' },
+               { start: 51, end: 75, label: '51%-75%' },
+               { start: 76, label: '76%+' }
+            ];
+         } else {
+            return [
+               { start: 0, end: 7, label: '0-7' },
+               { start: 8, end: 15, label: '8-15' },
+               { start: 16, label: '16+' }
+            ];
+         }
+      };
+
+      const ranges = format?.ranges || getDefaultRanges();
+      const isPercentage = colFormat === 'percentage';
+      const titleText = isPercentage ? 'Seleccionar rango de porcentaje' : 'Seleccionar rango';
+      const radioName = isPercentage ? 'percentageRange' : 'numberRange';
+
+      // Generate label based on format type
+      const generateLabel = (rangeOption) => {
+         if (rangeOption.label) return rangeOption.label;
+         
+         if (isPercentage) {
+            return rangeOption.end !== undefined 
+               ? `${rangeOption.start}% - ${rangeOption.end}%` 
+               : `≥ ${rangeOption.start}%`;
+         } else {
+            return rangeOption.end !== undefined 
+               ? `${rangeOption.start} - ${rangeOption.end}` 
+               : `≥ ${rangeOption.start}`;
+         }
+      };
+
+      return (
+         <Popup
+            on="click"
+            pinned
+            position="bottom left"
+            wide="very"
+            content={
+               <div style={{ padding: "12px" }}>
+                  <div style={{ marginBottom: "12px", fontWeight: "bold" }}>{titleText}</div>
+
+                  <div style={{ marginBottom: "12px" }}>
+                     {ranges.map((rangeOption, index) => (
+                        <div key={index} style={{ marginBottom: "8px" }}>
+                           <Radio
+                              label={generateLabel(rangeOption)}
+                              name={radioName}
+                              value={JSON.stringify(rangeOption)}
+                              checked={
+                                 selectedNumberRange &&
+                                 selectedNumberRange.start === rangeOption.start &&
+                                 selectedNumberRange.end === rangeOption.end
+                              }
+                              onChange={(e, { value }) => {
+                                 const parsedRange = JSON.parse(value);
+                                 setSelectedNumberRange(parsedRange);
+                              }}
+                           />
+                        </div>
+                     ))}
+
+                     <div style={{ marginTop: "12px" }}>
+                        <Radio
+                           label="Limpiar filtro"
+                           name={radioName}
+                           value="clear"
+                           checked={selectedNumberRange === null}
+                           onChange={() => {
+                              setSelectedNumberRange(null);
+                              onSubmit("");
+                           }}
+                        />
+                     </div>
+                  </div>
+
+                  <Button
+                     size="tiny"
+                     icon
+                     labelPosition="left"
+                     fluid
+                     disabled={selectedNumberRange === null}
+                     onClick={() => {
+                        onSubmit(selectedNumberRange);
+                     }}
+                  >
+                     <Icon name="search" size="small" />
+                     Buscar
+                  </Button>
+               </div>
+            }
+            trigger={
+               <Button
+                  size="mini"
+                  icon="filter"
+                  style={{
+                     padding: "0.4rem",
+                  }}
+                  type={"button"}
+                  {...(hasNumericValue ? { color: "orange" } : {})}
+               />
+            }
+         />
+      );
+   }
+
    if (colFormat === 'searchSelect') {
       return (
          <Popup
