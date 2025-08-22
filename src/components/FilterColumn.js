@@ -81,11 +81,7 @@ const FilterColumn = (props) => {
       return ((range.max !== null && range.max !== "") || (range.min !== null && range.min !== "")) 
    }, [range])
 
-   const hasNumberValue = useMemo(() => {
-      return selectedNumberRange !== null
-   }, [selectedNumberRange])
-
-   const hasPercentageValue = useMemo(() => {
+   const hasNumericValue = useMemo(() => {
       return selectedNumberRange !== null
    }, [selectedNumberRange])
 
@@ -400,20 +396,51 @@ const FilterColumn = (props) => {
                   style={{
                      padding: "0.4rem",
                   }}
-                  {...(hasDateValue ? { color: "orange" } : { color: "grey" })}
+                  {...(hasDateValue ? { color: "orange" } : { })}
                />
             }
          />
       );
    }
 
-   if (colFormat === 'number') {
-      // Get ranges from column format or use default ranges
-      const numberRanges = format?.ranges || [
-         { start: 0, end: 7, label: '0-7' },
-         { start: 8, end: 15, label: '8-15' },
-         { start: 16, label: '16+' }
-      ];
+   if (colFormat === 'number' || colFormat === 'percentage') {
+      // Get ranges from column format or use default ranges based on type
+      const getDefaultRanges = () => {
+         if (colFormat === 'percentage') {
+            return [
+               { start: 0, end: 25, label: '0%-25%' },
+               { start: 26, end: 50, label: '26%-50%' },
+               { start: 51, end: 75, label: '51%-75%' },
+               { start: 76, label: '76%+' }
+            ];
+         } else {
+            return [
+               { start: 0, end: 7, label: '0-7' },
+               { start: 8, end: 15, label: '8-15' },
+               { start: 16, label: '16+' }
+            ];
+         }
+      };
+
+      const ranges = format?.ranges || getDefaultRanges();
+      const isPercentage = colFormat === 'percentage';
+      const titleText = isPercentage ? 'Seleccionar rango de porcentaje' : 'Seleccionar rango';
+      const radioName = isPercentage ? 'percentageRange' : 'numberRange';
+
+      // Generate label based on format type
+      const generateLabel = (rangeOption) => {
+         if (rangeOption.label) return rangeOption.label;
+         
+         if (isPercentage) {
+            return rangeOption.end !== undefined 
+               ? `${rangeOption.start}% - ${rangeOption.end}%` 
+               : `≥ ${rangeOption.start}%`;
+         } else {
+            return rangeOption.end !== undefined 
+               ? `${rangeOption.start} - ${rangeOption.end}` 
+               : `≥ ${rangeOption.start}`;
+         }
+      };
 
       return (
          <Popup
@@ -423,14 +450,14 @@ const FilterColumn = (props) => {
             wide="very"
             content={
                <div style={{ padding: "12px" }}>
-                  <div style={{ marginBottom: "12px", fontWeight: "bold" }}>Seleccionar rango</div>
+                  <div style={{ marginBottom: "12px", fontWeight: "bold" }}>{titleText}</div>
 
                   <div style={{ marginBottom: "12px" }}>
-                     {numberRanges.map((rangeOption, index) => (
+                     {ranges.map((rangeOption, index) => (
                         <div key={index} style={{ marginBottom: "8px" }}>
                            <Radio
-                              label={rangeOption.label || (rangeOption.end !== undefined ? `${rangeOption.start} - ${rangeOption.end}` : `≥ ${rangeOption.start}`)}
-                              name="numberRange"
+                              label={generateLabel(rangeOption)}
+                              name={radioName}
                               value={JSON.stringify(rangeOption)}
                               checked={
                                  selectedNumberRange &&
@@ -448,7 +475,7 @@ const FilterColumn = (props) => {
                      <div style={{ marginTop: "12px" }}>
                         <Radio
                            label="Limpiar filtro"
-                           name="numberRange"
+                           name={radioName}
                            value="clear"
                            checked={selectedNumberRange === null}
                            onChange={() => {
@@ -482,90 +509,7 @@ const FilterColumn = (props) => {
                      padding: "0.4rem",
                   }}
                   type={"button"}
-                  {...(hasNumberValue ? { color: "orange" } : {})}
-               />
-            }
-         />
-      );
-   }
-
-   if (colFormat === 'percentage') {
-      // Get ranges from column format or use default ranges for percentages
-      const percentageRanges = format?.ranges || [
-         { start: 0, end: 25, label: '0%-25%' },
-         { start: 26, end: 50, label: '26%-50%' },
-         { start: 51, end: 75, label: '51%-75%' },
-         { start: 76, label: '76%+' }
-      ];
-
-      return (
-         <Popup
-            on="click"
-            pinned
-            position="bottom left"
-            wide="very"
-            content={
-               <div style={{ padding: "12px" }}>
-                  <div style={{ marginBottom: "12px", fontWeight: "bold" }}>Seleccionar rango de porcentaje</div>
-
-                  <div style={{ marginBottom: "12px" }}>
-                     {percentageRanges.map((rangeOption, index) => (
-                        <div key={index} style={{ marginBottom: "8px" }}>
-                           <Radio
-                              label={rangeOption.label || (rangeOption.end !== undefined ? `${rangeOption.start}% - ${rangeOption.end}%` : `≥ ${rangeOption.start}%`)}
-                              name="percentageRange"
-                              value={JSON.stringify(rangeOption)}
-                              checked={
-                                 selectedNumberRange &&
-                                 selectedNumberRange.start === rangeOption.start &&
-                                 selectedNumberRange.end === rangeOption.end
-                              }
-                              onChange={(e, { value }) => {
-                                 const parsedRange = JSON.parse(value);
-                                 setSelectedNumberRange(parsedRange);
-                              }}
-                           />
-                        </div>
-                     ))}
-
-                     <div style={{ marginTop: "12px" }}>
-                        <Radio
-                           label="Limpiar filtro"
-                           name="percentageRange"
-                           value="clear"
-                           checked={selectedNumberRange === null}
-                           onChange={() => {
-                              setSelectedNumberRange(null);
-                              onSubmit("");
-                           }}
-                        />
-                     </div>
-                  </div>
-
-                  <Button
-                     size="tiny"
-                     icon
-                     labelPosition="left"
-                     fluid
-                     disabled={selectedNumberRange === null}
-                     onClick={() => {
-                        onSubmit(selectedNumberRange);
-                     }}
-                  >
-                     <Icon name="search" size="small" />
-                     Buscar
-                  </Button>
-               </div>
-            }
-            trigger={
-               <Button
-                  size="mini"
-                  icon="filter"
-                  style={{
-                     padding: "0.4rem",
-                  }}
-                  type={"button"}
-                  {...(hasPercentageValue ? { color: "orange" } : {})}
+                  {...(hasNumericValue ? { color: "orange" } : {})}
                />
             }
          />

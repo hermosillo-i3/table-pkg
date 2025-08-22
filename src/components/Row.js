@@ -278,41 +278,32 @@ const rowFunctionComponent = (props) => {
                         });
                      } else if (colFormat === "search") {
                         filterFunc([row[column.assesor]]);
-                     } else if (colFormat === "number") {
-                        // For number format, find the appropriate range for this value
+                     } else if (colFormat === "number" || colFormat === "percentage") {
+                        // For numeric formats, find the appropriate range for this value
                         const cellValue = row[column.assesor];
-                        const numberRanges = column.format?.ranges || [
-                           { start: 0, end: 7, label: '0-7' },
-                           { start: 8, end: 15, label: '8-15' },
-                           { start: 16, label: '16+' }
-                        ];
                         
-                        // Find the range that contains this value
-                        const matchingRange = numberRanges.find(range => {
-                           if (range.end !== undefined) {
-                              // Standard range with start and end
-                              return cellValue >= range.start && cellValue <= range.end;
+                        // Get default ranges based on format type
+                        const getDefaultRanges = () => {
+                           if (colFormat === 'percentage') {
+                              return [
+                                 { start: 0, end: 25, label: '0%-25%' },
+                                 { start: 26, end: 50, label: '26%-50%' },
+                                 { start: 51, end: 75, label: '51%-75%' },
+                                 { start: 76, label: '76%+' }
+                              ];
                            } else {
-                              // Start-only range (greater than or equal)
-                              return cellValue >= range.start;
+                              return [
+                                 { start: 0, end: 7, label: '0-7' },
+                                 { start: 8, end: 15, label: '8-15' },
+                                 { start: 16, label: '16+' }
+                              ];
                            }
-                        });
+                        };
                         
-                        if (matchingRange) {
-                           filterFunc(matchingRange);
-                        }
-                     } else if (colFormat === "percentage") {
-                        // For percentage format, find the appropriate range for this value
-                        const cellValue = row[column.assesor];
-                        const percentageRanges = column.format?.ranges || [
-                           { start: 0, end: 25, label: '0%-25%' },
-                           { start: 26, end: 50, label: '26%-50%' },
-                           { start: 51, end: 75, label: '51%-75%' },
-                           { start: 76, label: '76%+' }
-                        ];
+                        const ranges = column.format?.ranges || getDefaultRanges();
                         
                         // Find the range that contains this value
-                        const matchingRange = percentageRanges.find(range => {
+                        const matchingRange = ranges.find(range => {
                            if (range.end !== undefined) {
                               // Standard range with start and end
                               return cellValue >= range.start && cellValue <= range.end;
