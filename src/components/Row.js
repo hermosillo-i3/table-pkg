@@ -258,7 +258,7 @@ const rowFunctionComponent = (props) => {
             typeof column.format === "object"
                ? column.format.type
                : column.format;
-         const validFormatsToApplyFilter = ["text", "textarea", "currency", "search"];
+         const validFormatsToApplyFilter = ["text", "textarea", "currency", "search", "number"];
          if (column.filter && validFormatsToApplyFilter.includes(colFormat)) {
             e.preventDefault();
             props.onContextMenu(e.pageX, e.pageY, [
@@ -278,6 +278,29 @@ const rowFunctionComponent = (props) => {
                         });
                      } else if (colFormat === "search") {
                         filterFunc([row[column.assesor]]);
+                     } else if (colFormat === "number") {
+                        // For number format, find the appropriate range for this value
+                        const cellValue = row[column.assesor];
+                        const numberRanges = column.format?.ranges || [
+                           { start: 0, end: 7, label: '0-7' },
+                           { start: 8, end: 15, label: '8-15' },
+                           { start: 16, label: '16+' }
+                        ];
+                        
+                        // Find the range that contains this value
+                        const matchingRange = numberRanges.find(range => {
+                           if (range.end !== undefined) {
+                              // Standard range with start and end
+                              return cellValue >= range.start && cellValue <= range.end;
+                           } else {
+                              // Start-only range (greater than or equal)
+                              return cellValue >= range.start;
+                           }
+                        });
+                        
+                        if (matchingRange) {
+                           filterFunc(matchingRange);
+                        }
                      }
                   },
                },

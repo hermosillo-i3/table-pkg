@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Input, Popup, Icon, Button, Label, Checkbox } from "semantic-ui-react";
+import { Input, Popup, Icon, Button, Label, Checkbox, Radio } from "semantic-ui-react";
 import PropTypes from 'prop-types'
 import { convertObjectToArray } from "@hermosillo-i3/utils-pkg/src/object";
 import Cleave from 'cleave.js/react';
@@ -34,6 +34,7 @@ const FilterColumn = (props) => {
    })
    const [filterStatus, setFilterStatus] = useState({})
    const [filteredOptions, setFilteredOptions] = useState(filter_options || {})
+   const [selectedNumberRange, setSelectedNumberRange] = useState(null)
 
    const toggleFilter = (filter) => {
       const newFilterOptions = { ...filterStatus }
@@ -80,6 +81,10 @@ const FilterColumn = (props) => {
       return ((range.max !== null && range.max !== "") || (range.min !== null && range.min !== "")) 
    }, [range])
 
+   const hasNumberValue = useMemo(() => {
+      return selectedNumberRange !== null
+   }, [selectedNumberRange])
+
    // it will only contain the values that exists in the rows not all options available to select.
    const filterOptionsInRows = useMemo(() => {
       if(colFormat === 'search'){
@@ -101,6 +106,8 @@ const FilterColumn = (props) => {
             setText(column_extended_value)
          } else if (colFormat === 'currency') {
             setRange(column_extended_value)
+         } else if (colFormat === 'number') {
+            setSelectedNumberRange(column_extended_value)
          } else if(colFormat === 'search' && Array.isArray(column_extended_value) && column_extended_value.length > 0){
             setFilterStatus({
               [column_extended_value[0]]: true,
@@ -395,6 +402,89 @@ const FilterColumn = (props) => {
          />
       );
    }
+
+   if (colFormat === 'number') {
+      // Get ranges from column format or use default ranges
+      const numberRanges = format?.ranges || [
+         { start: 0, end: 7, label: '0-7' },
+         { start: 8, end: 15, label: '8-15' },
+         { start: 16, label: '16+' }
+      ];
+
+      return (
+         <Popup
+            on="click"
+            pinned
+            position="bottom left"
+            wide="very"
+            content={
+               <div style={{ padding: "12px" }}>
+                  <div style={{ marginBottom: "12px", fontWeight: "bold" }}>Seleccionar rango</div>
+
+                  <div style={{ marginBottom: "12px" }}>
+                     {numberRanges.map((rangeOption, index) => (
+                        <div key={index} style={{ marginBottom: "8px" }}>
+                           <Radio
+                              label={rangeOption.label || (rangeOption.end !== undefined ? `${rangeOption.start} - ${rangeOption.end}` : `≥ ${rangeOption.start}`)}
+                              name="numberRange"
+                              value={JSON.stringify(rangeOption)}
+                              checked={
+                                 selectedNumberRange &&
+                                 selectedNumberRange.start === rangeOption.start &&
+                                 selectedNumberRange.end === rangeOption.end
+                              }
+                              onChange={(e, { value }) => {
+                                 const parsedRange = JSON.parse(value);
+                                 setSelectedNumberRange(parsedRange);
+                              }}
+                           />
+                        </div>
+                     ))}
+
+                     <div style={{ marginTop: "12px" }}>
+                        <Radio
+                           label="Limpiar filtro"
+                           name="numberRange"
+                           value="clear"
+                           checked={selectedNumberRange === null}
+                           onChange={() => {
+                              setSelectedNumberRange(null);
+                              onSubmit("");
+                           }}
+                        />
+                     </div>
+                  </div>
+
+                  <Button
+                     size="tiny"
+                     icon
+                     labelPosition="left"
+                     fluid
+                     disabled={selectedNumberRange === null}
+                     onClick={() => {
+                        onSubmit(selectedNumberRange);
+                     }}
+                  >
+                     <Icon name="search" size="small" />
+                     Buscar
+                  </Button>
+               </div>
+            }
+            trigger={
+               <Button
+                  size="mini"
+                  icon="filter"
+                  style={{
+                     padding: "0.4rem",
+                  }}
+                  type={"button"}
+                  {...(hasNumberValue ? { color: "orange" } : {})}
+               />
+            }
+         />
+      );
+   }
+
    if (colFormat === 'searchSelect') {
       return (
          <Popup
