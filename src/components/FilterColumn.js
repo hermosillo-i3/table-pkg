@@ -85,6 +85,10 @@ const FilterColumn = (props) => {
       return selectedNumberRange !== null
    }, [selectedNumberRange])
 
+   const hasPercentageValue = useMemo(() => {
+      return selectedNumberRange !== null
+   }, [selectedNumberRange])
+
    // it will only contain the values that exists in the rows not all options available to select.
    const filterOptionsInRows = useMemo(() => {
       if(colFormat === 'search'){
@@ -106,7 +110,7 @@ const FilterColumn = (props) => {
             setText(column_extended_value)
          } else if (colFormat === 'currency') {
             setRange(column_extended_value)
-         } else if (colFormat === 'number') {
+         } else if (colFormat === 'number' || colFormat === 'percentage') {
             setSelectedNumberRange(column_extended_value)
          } else if(colFormat === 'search' && Array.isArray(column_extended_value) && column_extended_value.length > 0){
             setFilterStatus({
@@ -479,6 +483,89 @@ const FilterColumn = (props) => {
                   }}
                   type={"button"}
                   {...(hasNumberValue ? { color: "orange" } : {})}
+               />
+            }
+         />
+      );
+   }
+
+   if (colFormat === 'percentage') {
+      // Get ranges from column format or use default ranges for percentages
+      const percentageRanges = format?.ranges || [
+         { start: 0, end: 25, label: '0%-25%' },
+         { start: 26, end: 50, label: '26%-50%' },
+         { start: 51, end: 75, label: '51%-75%' },
+         { start: 76, label: '76%+' }
+      ];
+
+      return (
+         <Popup
+            on="click"
+            pinned
+            position="bottom left"
+            wide="very"
+            content={
+               <div style={{ padding: "12px" }}>
+                  <div style={{ marginBottom: "12px", fontWeight: "bold" }}>Seleccionar rango de porcentaje</div>
+
+                  <div style={{ marginBottom: "12px" }}>
+                     {percentageRanges.map((rangeOption, index) => (
+                        <div key={index} style={{ marginBottom: "8px" }}>
+                           <Radio
+                              label={rangeOption.label || (rangeOption.end !== undefined ? `${rangeOption.start}% - ${rangeOption.end}%` : `≥ ${rangeOption.start}%`)}
+                              name="percentageRange"
+                              value={JSON.stringify(rangeOption)}
+                              checked={
+                                 selectedNumberRange &&
+                                 selectedNumberRange.start === rangeOption.start &&
+                                 selectedNumberRange.end === rangeOption.end
+                              }
+                              onChange={(e, { value }) => {
+                                 const parsedRange = JSON.parse(value);
+                                 setSelectedNumberRange(parsedRange);
+                              }}
+                           />
+                        </div>
+                     ))}
+
+                     <div style={{ marginTop: "12px" }}>
+                        <Radio
+                           label="Limpiar filtro"
+                           name="percentageRange"
+                           value="clear"
+                           checked={selectedNumberRange === null}
+                           onChange={() => {
+                              setSelectedNumberRange(null);
+                              onSubmit("");
+                           }}
+                        />
+                     </div>
+                  </div>
+
+                  <Button
+                     size="tiny"
+                     icon
+                     labelPosition="left"
+                     fluid
+                     disabled={selectedNumberRange === null}
+                     onClick={() => {
+                        onSubmit(selectedNumberRange);
+                     }}
+                  >
+                     <Icon name="search" size="small" />
+                     Buscar
+                  </Button>
+               </div>
+            }
+            trigger={
+               <Button
+                  size="mini"
+                  icon="filter"
+                  style={{
+                     padding: "0.4rem",
+                  }}
+                  type={"button"}
+                  {...(hasPercentageValue ? { color: "orange" } : {})}
                />
             }
          />

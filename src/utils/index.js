@@ -1026,6 +1026,22 @@ export const applyFilter = (row, column_filters) => {
                        }
                    }
                    return false;
+               case "percentage":
+                   // Handle percentage range filtering (same logic as number)
+                   if (typeof filter.value === 'object' && filter.value.start !== undefined) {
+                       const numericValue = parseFloat(cellValue);
+                       if (isNaN(numericValue)) return false;
+                       
+                       // If end is defined, check range (start <= value <= end)
+                       if (filter.value.end !== undefined) {
+                           return numericValue >= filter.value.start && numericValue <= filter.value.end;
+                       }
+                       // If only start is defined, check greater than or equal (value >= start)
+                       else {
+                           return numericValue >= filter.value.start;
+                       }
+                   }
+                   return false;
                default:
                    if (Array.isArray(filter.value))
                        return cellValue?.trim() !== ""
