@@ -60,6 +60,7 @@ $font-color-header: #ffffff;
   select.InputField {
     border-radius: 0;
     -webkit-appearance: none;
+    appearance: none;
     -webkit-border-radius: 0;
   }
 }
@@ -1116,6 +1117,11 @@ $font-color-header: #ffffff;
 .Table-Row td {
   text-align: left;
   padding: 0;
+  overflow: hidden;
+  max-width: 0;
+  position: relative;
+  word-wrap: break-word;
+  white-space: nowrap;
 }
 
 .Table-Column-Header {
@@ -1212,6 +1218,10 @@ $font-color-header: #ffffff;
   min-height: 100%;
   padding: 0.5rem !important;
   line-height: 1.3rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: break-word;
 }
 
 .InputField {
@@ -1221,6 +1231,9 @@ $font-color-header: #ffffff;
   //transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
   outline: none;
   border: 1px solid transparent;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .InputField-Boolean {
@@ -1572,10 +1585,16 @@ input.InputField {
 
   .cell {
     user-select: text;
+    overflow: hidden;
+    max-width: 100%;
 
     .value {
       border: 1px solid transparent;
       //transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
     }
 
     &.cell-active {
