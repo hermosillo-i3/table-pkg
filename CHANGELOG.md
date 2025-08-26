@@ -11,6 +11,7 @@ Date: Aug 14, 2025
     * When the expand/collapse button is present in the same cell as a InputField, the InputField no longer overflows into the next column
     * Non-editable cells now trigger the onRowSelect handler
     * Fix style issues
+  * Fix fixRowsFromClipboard function to properly remove empty cells from pasted rows
 
 ## V 1.17.5
 Date: Aug 21, 2025
