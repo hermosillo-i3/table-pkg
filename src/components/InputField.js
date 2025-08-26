@@ -260,7 +260,7 @@ class InputField extends React.Component {
       const decimals = typeof format === 'string' ? 2 : format.decimals;
 
       const shouldShowBorder = this.props.allowNewRowSelectionProcess && (this.props.hoveredCellIndex === this.props.colIndex || isFocused);
-      
+
       const newRowSelectionStyle = this.props.allowNewRowSelectionProcess ? {
         margin: '5px 0px 5px 0px',
         width: isItem ? '100%' : (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%'),
@@ -708,7 +708,6 @@ class InputField extends React.Component {
                 color: isItem ? 'black' : 'white',
                 minHeight: '20px',
                 minWidth: '20px',
-                width: isItem ? '100%' : (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%'),
                 maxWidth: '100%',
                 margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
                 border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
