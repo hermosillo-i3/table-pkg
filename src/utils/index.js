@@ -1131,15 +1131,12 @@ export const fixRowsFromClipboard = (rows, pastedRowsValidator) => {
 
       // Add row to appropriate arrays
       if (isValidRow) {
-         // Remove trailing empty cells but preserve the structure
-         const trimmedRow = processedRow.slice();
-         while (trimmedRow.length > 0 && (trimmedRow[trimmedRow.length - 1] === '' || trimmedRow[trimmedRow.length - 1] == null)) {
-            trimmedRow.pop();
-         }
+         // Remove all empty cells from the processed row
+         const filteredRow = processedRow.filter(cell => cell !== '' && cell != null);
          
          // Only add the row if it has at least one non-empty cell
-         if (trimmedRow.length > 0) {
-            newRows.push(trimmedRow);
+         if (filteredRow.length > 0) {
+            newRows.push(filteredRow);
          }
       } else {
          // Create an error row preserving only non-empty cells (trimmed)
