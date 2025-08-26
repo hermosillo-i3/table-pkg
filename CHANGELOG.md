@@ -1,6 +1,18 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.6
+Date: Aug 14, 2025
+* [FIX]
+  * Fix several issues caused by the new allowNewRowSelectionProcess prop when set as true
+    * Bool columns are working again. Also, added a border to show the user the clickable area
+    * Unfocused selects are now rendered as div elements to avoid performance issues
+    * When the expand/collapse button is used, the rows are expanded or collapsed without selecting the parent row
+    * When the expand/collapse button is present in the same cell as a InputField, the InputField no longer overflows into the next column
+    * Non-editable cells now trigger the onRowSelect handler
+    * Fix style issues
+  * Fix fixRowsFromClipboard function to properly remove empty cells from pasted rows
+
 ## V 1.17.5
 Date: Aug 21, 2025
 * [NEW]
