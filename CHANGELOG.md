@@ -1,10 +1,8 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
-## V 1.17.2
+## V 1.17.6
 Date: Aug 14, 2025
-* [UPDATE]
-  * Remove the Github action used to create a hotfix/release PR targeted to the develop 
 * [FIX]
   * Fix several issues caused by the new allowNewRowSelectionProcess prop when set as true
     * Bool columns are working again. Also, added a border to show the user the clickable area
@@ -13,6 +11,29 @@ Date: Aug 14, 2025
     * When the expand/collapse button is present in the same cell as a InputField, the InputField no longer overflows into the next column
     * Non-editable cells now trigger the onRowSelect handler
     * Fix style issues
+
+## V 1.17.5
+Date: Aug 21, 2025
+* [NEW]
+  * Filter ranges for numeric and percentages column types
+  
+## V 1.17.4
+Date: Aug 21, 2025
+* [FIX]
+  * Fix pasted rows not being separated when a cell didn't end with a new line
+
+## V 1.17.3
+Date: Aug 20, 2025
+* [FIX]
+  * Remove develop action from workflows
+  * Optimize workflows
+
+## V 1.17.2
+Date: Aug 19, 2025
+* [FIX]
+  * ScrollTo feature was missing one prop in the useeffect.
+  * expandByDefault feature only work when rows were passed in the first render
+  * Color warnings, remove white
 
 ## V 1.17.1
 Date: Aug 12, 2025

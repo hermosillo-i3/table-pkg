@@ -50,18 +50,21 @@ class InputField extends React.Component {
       const iconWidth = this.props.hasExpandIcon ? 50 : 0;
       const contentWidth = (textLength * charWidth) + padding;
       
-      // If maxWidth is provided and the cell has an expand icon, reduce the available width by 20px
-      if (maxWidth && this.props.hasExpandIcon) {
-        if (contentWidth + iconWidth > (maxWidth - iconWidth)) {
-          /* Remove the icon width twice
-            1- To return the */
-          return `${maxWidth - iconWidth}px`;
+      // Always respect the maximum width to prevent overflow
+      if (maxWidth) {
+        // If maxWidth is provided and the cell has an expand icon, reduce the available width
+        if (this.props.hasExpandIcon) {
+          if (contentWidth + iconWidth > (maxWidth - iconWidth)) {
+            return `${maxWidth - iconWidth}px`;
+          }
         }
-      }
-
-      // If maxWidth is provided and content would exceed it, return maxWidth instead
-      if (maxWidth && contentWidth > maxWidth) {
-        return `${maxWidth}px`;
+        // If maxWidth is provided and content would exceed it, return maxWidth instead
+        if (contentWidth > maxWidth) {
+          return `${maxWidth}px`;
+        }
+      } else {
+        // If no maxWidth is provided, default to 100% to respect cell boundaries
+        return '100%';
       }
       
       return `${contentWidth}px`;
@@ -260,12 +263,22 @@ class InputField extends React.Component {
       
       const newRowSelectionStyle = this.props.allowNewRowSelectionProcess ? {
         margin: '5px 0px 5px 0px',
-        width: this.calculateInputWidth(this.state.currentValue),
+        width: isItem ? '100%' : (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%'),
+        maxWidth: '100%',
         border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
-        background: 'transparent',
         cursor: 'text',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        boxSizing: 'border-box',
       } : {
         margin: '0',
+        maxWidth: '100%',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        boxSizing: 'border-box',
+        width: isItem ? '100%' : 'auto',
       };
 
       const newRowSelectionStyleWithMinimalWidth = this.props.allowNewRowSelectionProcess ? {
@@ -650,7 +663,8 @@ class InputField extends React.Component {
               style={{
                 ...(this.props.allowNewRowSelectionProcess && { boxSizing: 'border-box' }),
                 ...newRowSelectionStyleWithMinimalWidth,
-                width: this.calculateInputWidth(this.state.currentValue, this.props.columnWidth),
+                width: isItem ? '100%' : (this.props.columnWidth ? `${Math.min(this.props.columnWidth - 10, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%'),
+                maxWidth: '100%',
               }}
               onPaste={(e) => {
                 if (onPaste) {
@@ -694,14 +708,14 @@ class InputField extends React.Component {
                 color: isItem ? 'black' : 'white',
                 minHeight: '20px',
                 minWidth: '20px',
-                width: this.calculateInputWidth(this.state.currentValue, this.props.columnWidth),
+                width: isItem ? '100%' : (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%'),
+                maxWidth: '100%',
                 margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
                 border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
-                background: 'transparent',
-                // Allow text to wrap when it overflows
-                wordWrap: 'break-word',
-                overflowWrap: 'break-word',
-                whiteSpace: 'normal',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                boxSizing: 'border-box',
               }}
             >
               <span className={`${compressLongText ? "compress-row" : ""}`}>
@@ -748,25 +762,6 @@ class InputField extends React.Component {
                   </option>
                 ))}
               </select>
-              // <Dropdown
-              //   options={options}
-              //   open={selectExpanded}
-              //   value={value}
-              //   onChange={this.onChange}
-              //   style={{
-              //     border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
-              //   }}
-              //   onBlur={(e) => {
-              //     this.setState({ selectExpanded: false });
-              //     this.onBlur(e);
-              //   }}
-              //   onFocus={this.onFocus}
-              //   placeholder={placeholder}
-              //   fluid
-              //   search
-              //   selection
-              //   allowAdditions
-              // />
           ) : (
             <div
               className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
@@ -796,7 +791,6 @@ class InputField extends React.Component {
                 width: '100%',
                 border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
                 margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
-                background: 'transparent',
               }}
             >
               {

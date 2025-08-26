@@ -101,7 +101,7 @@ const rowFunctionComponent = (props) => {
          rowRef.scrollIntoView({behavior: 'smooth'});
          setHasScrolled(true);
       }
-   }, [row, props.scrollTo]);
+   }, [row, props.scrollTo, rowRef]);
 
    useEffect(() => {
       setHasScrolled(false);
@@ -262,7 +262,7 @@ const rowFunctionComponent = (props) => {
             typeof column.format === "object"
                ? column.format.type
                : column.format;
-         const validFormatsToApplyFilter = ["text", "textarea", "currency", "search"];
+         const validFormatsToApplyFilter = ["text", "textarea", "currency", "search", "number", "percentage"];
          if (column.filter && validFormatsToApplyFilter.includes(colFormat)) {
             e.preventDefault();
             props.onContextMenu(e.pageX, e.pageY, [
@@ -282,6 +282,44 @@ const rowFunctionComponent = (props) => {
                         });
                      } else if (colFormat === "search") {
                         filterFunc([row[column.assesor]]);
+                     } else if (colFormat === "number" || colFormat === "percentage") {
+                        // For numeric formats, find the appropriate range for this value
+                        const cellValue = row[column.assesor];
+                        
+                        // Get default ranges based on format type
+                        const getDefaultRanges = () => {
+                           if (colFormat === 'percentage') {
+                              return [
+                                 { start: 0, end: 25, label: '0%-25%' },
+                                 { start: 26, end: 50, label: '26%-50%' },
+                                 { start: 51, end: 75, label: '51%-75%' },
+                                 { start: 76, label: '76%+' }
+                              ];
+                           } else {
+                              return [
+                                 { start: 0, end: 7, label: '0-7' },
+                                 { start: 8, end: 15, label: '8-15' },
+                                 { start: 16, label: '16+' }
+                              ];
+                           }
+                        };
+                        
+                        const ranges = column.format?.ranges || getDefaultRanges();
+                        
+                        // Find the range that contains this value
+                        const matchingRange = ranges.find(range => {
+                           if (range.end !== undefined) {
+                              // Standard range with start and end
+                              return cellValue >= range.start && cellValue <= range.end;
+                           } else {
+                              // Start-only range (greater than or equal)
+                              return cellValue >= range.start;
+                           }
+                        });
+                        
+                        if (matchingRange) {
+                           filterFunc(matchingRange);
+                        }
                      }
                   },
                },
@@ -380,9 +418,9 @@ const rowFunctionComponent = (props) => {
                   if (type === 'boolean') {
                      if (value) {
                         return format.trueIcon ? format.trueIcon({isItem: row.is_item}) : <Icon
-                        style={{margin: 'auto', color: row.is_item ? 'black' : 'white'}}
-                           name={'checkmark'}
-                        />
+                        style={{margin: 'auto', color: row.is_item ? 'black' : 'grey'}}
+                        name={'checkmark'}
+                     />
                      } else {
                         return format.falseIcon ? format.falseIcon({isItem: row.is_item}) : ''
                      }
@@ -412,9 +450,9 @@ const rowFunctionComponent = (props) => {
                if (type === 'boolean') {
                   if (value) {
                      return format.trueIcon ? format.trueIcon({isItem: row.is_item}) : <Icon
-                     style={{margin: 'auto', color: row.is_item ? 'black' : 'white'}}
-                        name={'checkmark'}
-                     />
+                     style={{margin: 'auto', color: row.is_item ? 'black' : 'grey'}}
+                     name={'checkmark'}
+                  />
                   } else {
                      return format.falseIcon ? format.falseIcon({isItem: row.is_item}) : ''
                   }
@@ -477,8 +515,8 @@ const rowFunctionComponent = (props) => {
                   {(!canDrag && shouldShowSelectIcon) && <>
                      {is_selected ?
                         <Icon color = 'black' name={'check square outline'} style={{"marginBottom": '0.63em' }}/> : 
-                        <Icon color = {row.is_item ? 'black' : 'white'} name={'square outline'} style={{"marginBottom": '0.63em' }}/>}
-                  </>}
+                        <Icon color = {row.is_item ? 'black' : 'grey'} name={'square outline'} style={{"marginBottom": '0.63em' }}/>}
+                     </>}
                </div>
             </td>
          )}

@@ -460,6 +460,14 @@ class Table extends React.Component {
       ) {
          this.generateTableStructure();
          this.onNewRowExpand(prevProps, prevState);
+         
+         // Handle isExpandByDefault when rows are loaded asynchronously
+         // This ensures that rows are expanded when data is loaded after initial mount
+         if (this.props.isExpandByDefault && 
+             Object.keys(prevProps.rows).length === 0 && 
+             Object.keys(this.props.rows).length > 0) {
+            this.expandRows();
+         }
       }
 
       if (JSON.stringify(prevProps.selected_cell) !== JSON.stringify(this.props.selected_cell)) {

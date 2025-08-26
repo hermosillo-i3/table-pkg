@@ -643,6 +643,13 @@ export const getClipboardTextFromExcel = (e) => {
    }
 
    /*
+      Push the final cell if there's content in currentCell
+      This handles the case where the last row doesn't end with a newline */
+   if (currentCell !== '') {
+      pushCell();
+   }
+
+   /*
       Only push the row if it has more than 1 cell or if it has 1 cell and it's not empty
       This avoids pushing empty rows */
    if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
@@ -675,7 +682,39 @@ export const getClipboardTextFromExcel = (e) => {
       }
    }
 
-   return rows;
+   // Additional processing: detect and split rows that contain embedded tab-separated data
+   const processedRows = [];
+   for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      if (row.length > 0) {
+         const firstCell = row[0];
+         // Check if the first cell contains tab-separated data that should be multiple rows
+         if (typeof firstCell === 'string' && firstCell.includes('\t') && firstCell.includes('\r\n')) {
+            // Split by \r\n to get individual sub-rows
+            const subRows = firstCell.split('\r\n');
+            for (let j = 0; j < subRows.length; j++) {
+               const subRow = subRows[j];
+               if (subRow.trim() !== '') {
+                  // Split by tabs to get individual cells
+                  const cells = subRow.split('\t');
+                  
+                  /* If this is the last sub-row and it only has 1 cell
+                     and the original row had more than 1 cell, use the remaining original row data */
+                  if (j === subRows.length - 1 && cells.length === 1 && row.length > 1) {
+                     // Use the first cell data from the split, but take the rest of the cells from the original row
+                     const completeRow = [cells[0], ...row.slice(1)];
+                     processedRows.push(completeRow);
+                  } else {
+                     processedRows.push(cells);
+                  }
+               }
+            }
+         } else {
+            processedRows.push(row);
+         }
+      }
+   }
+   return processedRows;
 };
 
 export const openFileInNewTab = (blobFile) => {
@@ -1010,16 +1049,33 @@ export const applyFilter = (row, column_filters) => {
                    return filter.value.some((value) =>
                        cellValue.toLowerCase().includes(value.toLowerCase())
                    );
+               case "number":
+               case "percentage":
+                   // Handle numeric range filtering (works for both number and percentage)
+                   if (typeof filter.value === 'object' && filter.value.start !== undefined) {
+                       const numericValue = parseFloat(cellValue);
+                       if (isNaN(numericValue)) return false;
+                       
+                       // If end is defined, check range (start <= value <= end)
+                       if (filter.value.end !== undefined) {
+                           return numericValue >= filter.value.start && numericValue <= filter.value.end;
+                       }
+                       // If only start is defined, check greater than or equal (value >= start)
+                       else {
+                           return numericValue >= filter.value.start;
+                       }
+                   }
+                   return false;
                default:
                    if (Array.isArray(filter.value))
-                       return cellValue.trim() !== ""
-                           ? filter.value.includes(cellValue.trim())
+                       return cellValue?.trim() !== ""
+                           ? filter.value.includes(cellValue?.trim())
                            : false;
                    else
-                       return cellValue.trim() !== ""
+                       return cellValue?.trim() !== ""
                            ? cellValue
-                               .toLowerCase()
-                               .includes(filter.value.toLowerCase())
+                               ?.toLowerCase()
+                               ?.includes(filter.value?.toLowerCase())
                            : false;
            }
        } else {
@@ -1037,45 +1093,55 @@ export const applyFilter = (row, column_filters) => {
  */
 export const fixRowsFromClipboard = (rows, pastedRowsValidator) => {
    if (!rows || rows.length === 0) return {newRows: [], errorRows: [], errorRowIndexes: []};
-   let hasCalculatedRowLength = false;
-   let rowLength = 0;
 
-   const plainRows = [];
+
+
+   const newRows = [];
    const errorRows = [];
    const errorRowIndexes = [];
 
    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
       const row = rows[rowIndex];
-      // Calculate the row length only once
-      if (!hasCalculatedRowLength) {
-         rowLength = row.filter(cell => cell != null && cell.toString().trim() !== '').length;
-         hasCalculatedRowLength = true;
-      }
 
       // Validate all cells in the row first
       let isValidRow = true;
-      const validCells = [];
+      const processedRow = [];
+      
       for (let index = 0; index < row.length; index++) {
          const cell = row[index];
          const cellType = pastedRowsValidator[index]?.columnType;
          const cellValue = cell != null ? cell.toString().trim() : '';
 
-         if (cellValue !== '') {
-            const isValidType = validatePastedCellValue(cellValue, cellType);
+         // If cell is empty, keep it as empty but continue processing
+         if (cellValue === '') {
+            processedRow.push('');
+            continue;
+         }
 
-            if (isValidType) {
-               validCells.push(cell);
-            } else {
-               isValidRow = false;
-               break; // Stop checking this row
-            }
+         // Validate non-empty cells
+         const isValidType = validatePastedCellValue(cellValue, cellType);
+
+         if (isValidType) {
+            processedRow.push(cell);
+         } else {
+            isValidRow = false;
+            break; // Stop checking this row
          }
       }
 
-      // Add cells to appropriate arrays
-      if (isValidRow && validCells.length > 0) {
-         validCells.forEach(cell => plainRows.push(cell));
-      } else if (!isValidRow) {
+      // Add row to appropriate arrays
+      if (isValidRow) {
+         // Remove trailing empty cells but preserve the structure
+         const trimmedRow = processedRow.slice();
+         while (trimmedRow.length > 0 && (trimmedRow[trimmedRow.length - 1] === '' || trimmedRow[trimmedRow.length - 1] == null)) {
+            trimmedRow.pop();
+         }
+         
+         // Only add the row if it has at least one non-empty cell
+         if (trimmedRow.length > 0) {
+            newRows.push(trimmedRow);
+         }
+      } else {
          // Create an error row preserving only non-empty cells (trimmed)
          const errorRow = row.filter(cell => cell != null && cell.toString().trim() !== '');
          errorRows.push(errorRow);
@@ -1083,10 +1149,5 @@ export const fixRowsFromClipboard = (rows, pastedRowsValidator) => {
       }
    }
 
-   const newRows = [];
-
-   for (let i = 0; i < plainRows.length; i += rowLength) {
-      newRows.push(plainRows.slice(i, i + rowLength));
-   }
    return {newRows, errorRows, errorRowIndexes};
 };
