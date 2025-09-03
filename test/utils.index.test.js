@@ -298,6 +298,45 @@ describe('applyFilter', () => {
     expect(filterThree).toEqual(false);
     expect(filterFour).toEqual(false);
   });
+
+  it('should apply select filter with multiple values correctly', () => {
+    const selectFilter = [
+      {
+        key: 'labels',
+        value: [{
+          id: '11',
+          value: 'MUROS',
+          key: 'MUROS',
+          text: 'MUROS'
+        }, {
+          id: '12',
+          value: 'DISEÑO',
+          key: 'DISEÑO',
+          text: 'DISEÑO'
+        }],
+        format: 'select',
+        options: [
+          { id: '11', value: 'MUROS', key: 'MUROS', text: 'MUROS' },
+          { id: '12', value: 'DISEÑO', key: 'DISEÑO', text: 'DISEÑO' },
+          { id: '13', value: 'ESTRUCTURAS', key: 'ESTRUCTURAS', text: 'ESTRUCTURAS' },
+        ]
+      }
+    ];
+
+    const rows = [
+      { id: 1, labels: ['MUROS', 'DISEÑO', 'ESTRUCTURAS'], is_item: true },
+      { id: 2, labels: ['MUROS', 'ESTRUCTURAS'], is_item: true },
+      { id: 3, labels: ['ESTRUCTURAS'], is_item: true },
+    ];
+
+    const filterOne = applyFilter(rows[0], selectFilter);
+    const filterTwo = applyFilter(rows[1], selectFilter);
+    const filterThree = applyFilter(rows[2], selectFilter);
+
+    expect(filterOne).toEqual(true);
+    expect(filterTwo).toEqual(true);
+    expect(filterThree).toEqual(false);
+  });
 });
 
 describe('fixRowsFromClipboard', () => {
