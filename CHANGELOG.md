@@ -2,9 +2,11 @@
 This file is used to explain in detail changes made to the Table.
 
 ## V 1.17.7
-Date: Sep 1, 2025
+Date: Sep 3, 2025
 * [UPDATE]
   * Prepare case 'select' in applyFilter to filter cell with array
+* [FIX]
+  * Fix Search component style
 
 ## V 1.17.6
 Date: Aug 14, 2025
