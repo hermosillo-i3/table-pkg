@@ -994,19 +994,29 @@ export const applyFilter = (row, column_filters) => {
        if (cellValue != null || filterFormat === 'date') {
            switch (filterFormat) {
                case "select":
-                  return (row.is_item ? (
-                       cellValue.trim() !== ""
-                           ? filter.value.findIndex(
-                               (element) =>
-                                   cellValue.toLowerCase() ===
-                                   element.text.toLowerCase()
-                           ) != -1 ||
-                           filter.value.findIndex(
-                               (element) =>
-                                   cellValue.toLowerCase() ===
-                                   element.key.toLowerCase()
-                           ) != -1
+                  // Function to check if a single cell value matches any filter element
+                  const cellValueMatchesFilter = (cellVal) => {
+                     return filter.value.findIndex(
+                        (element) =>
+                           cellVal.toLowerCase() === element.text.toLowerCase()
+                     ) != -1 ||
+                     filter.value.findIndex(
+                        (element) =>
+                           cellVal.toLowerCase() === element.key.toLowerCase()
+                     ) != -1;
+                  };
+
+                  if (Array.isArray(cellValue)) {
+                     return (row.is_item ? (
+                        cellValue.length > 0
+                           ? cellValue.some(cell => cellValueMatchesFilter(cell))
                            : false ) : false);
+                  } else {
+                     return (row.is_item ? (
+                          cellValue.trim() !== ""
+                              ? cellValueMatchesFilter(cellValue)
+                              : false ) : false);
+                  }
                   //  return  final : false;
                case "search":
                    if (filter.value?.length === 0) {
