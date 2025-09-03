@@ -59,6 +59,9 @@ const InputFieldSearch = (props) => {
 
       let filteredResults = filter(options, isMatch);
 
+      // add limit to the results of 5
+      filteredResults = filteredResults.slice(0, 5);
+
       setIsLoading(false);
       setResults(filteredResults);
     };
@@ -92,12 +95,12 @@ const InputFieldSearch = (props) => {
            return (
              <React.Fragment>
                <Search
-                 className={`InputField ${customColumnClass}`}
+                 className={`InputFieldSearch ${customColumnClass}`}
                  input={{ ref: searchRef }}
                  placeholder={"Escribe para buscar..."}
                  minCharacters={3}
                  fluid
-                 noResultsMessage="No se encontraton resultados"
+                 noResultsMessage="No se encontraron resultados"
                  loading={isLoading}
                  onResultSelect={handleResultSelect}
                  onSearchChange={handleSearchChange}
