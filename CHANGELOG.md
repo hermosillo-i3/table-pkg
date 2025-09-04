@@ -5,6 +5,7 @@ This file is used to explain in detail changes made to the Table.
 Date: Sep 4, 2025
 * [FIX]
   * Update padding in cell with expand column
+  * Update hover color in Search component
 
 ## V 1.17.7
 Date: Sep 3, 2025
