@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.10
+Date: Sept 5, 2025
+* [FIX]
+  * Fix clickable area on boolean columns
+
 ## V 1.17.9
 Date: Sept 5, 2025
 * [FIX]
