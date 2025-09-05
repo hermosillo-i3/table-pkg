@@ -94,6 +94,7 @@ const rowFunctionComponent = (props) => {
    const [rowRef, setRowRef] = React.useState(null);
    const [className, setClassName] = React.useState('Table-Row');
    const [hoveredCellIndex, setHoveredCellIndex] = React.useState(null);
+   const [isHoveringCell, setIsHoveringCell] = React.useState(false);
 
    useEffect(() => {
       const shouldScroll = props.scrollTo === row.id;
@@ -359,8 +360,13 @@ const rowFunctionComponent = (props) => {
                         if (isDirectInputClick) {
                            e.stopPropagation();
                         } else if (allowNewRowSelectionProcess && props.onRowSelect) {
-                           props.onRowSelect(row, e.ctrlKey || e.metaKey);
-                           e.stopPropagation();
+                           if (onCellClick) {
+                              onCellClick(column, row, colIndex, rowIndex, e);
+                              e.stopPropagation();
+                           } else {
+                              props.onRowSelect(row, e.ctrlKey || e.metaKey);
+                              e.stopPropagation();
+                           }
                         }
                      }}
                      style={{
@@ -459,20 +465,39 @@ const rowFunctionComponent = (props) => {
                }
                value = formatColumn(format, value)
             }
-
             return <div
                className={`left-align-flex value ${column.customColumnClass} expanded-column`}
+               onMouseEnter={e => {
+                  setIsHoveringCell(true);
+               }}
+               onMouseLeave={() => {
+                  setIsHoveringCell(false)
+               }}
                style={{
                   cursor: allowNewRowSelectionProcess ? 'pointer' : 'default',
+                  overflow: 'hidden',
                }}
                onClick={(e) => {
                   if (allowNewRowSelectionProcess && props.onRowSelect) {
-                     e.stopPropagation();
+                     // Remove stopPropagation to allow td click to work
                      props.onRowSelect(row, e.ctrlKey || e.metaKey);
                   }
                }}
             >
-               <span className={`${column.compressLongText ? 'compress-row' : ''}`}>{value}</span></div>;
+               <span
+                  className={`${column.compressLongText ? 'compress-row' : ''}`}
+                  style={{
+                     maxWidth: 'calc(100% - 10px)',
+                     wordWrap: isHoveringCell ? 'break-word' : 'normal',
+                     overflowWrap: isHoveringCell ? 'break-word' : 'normal',
+                     whiteSpace: isHoveringCell ? 'normal' : 'nowrap',
+                     overflow: isHoveringCell ? 'visible' : 'hidden',
+                     textOverflow: isHoveringCell ? 'clip' : 'ellipsis',
+                  }}
+               >
+                  {value}
+               </span>
+            </div>;
          }
       }
 
@@ -563,7 +588,28 @@ const rowFunctionComponent = (props) => {
 
                         </div>
                      }
-                     {<React.Fragment>{cellContent}</React.Fragment>}
+                     <div
+                        onMouseEnter={() => {
+                           setIsHoveringCell(true);
+                        }}
+                        onMouseLeave={() => {
+                           setIsHoveringCell(false)
+                        }}
+                        style={{
+                           width: '100%',
+                           maxWidth: '100%',
+                           wordWrap: isHoveringCell ? 'break-word' : 'normal',
+                           overflowWrap: isHoveringCell ? 'break-word' : 'normal',
+                           whiteSpace: isHoveringCell ? 'normal' : 'nowrap',
+                           overflow: isHoveringCell ? 'visible' : 'hidden',
+                           textOverflow: isHoveringCell ? 'clip' : 'ellipsis',
+                           margin: '0',
+                           padding: '0',
+                           display: 'block',
+                        }}
+                     >
+                        {cellContent}
+                     </div>
                   </div>
                </td>
 
@@ -577,14 +623,14 @@ const rowFunctionComponent = (props) => {
                      width: col.width,
                      flex: `${col.width} 0 auto`,
                      maxWidth: col.width,
-                     overflow: col.overflow ? col.overflow : 'inherit'
+                     overflow: col.overflow ? col.overflow : 'inherit',
                   }}
                   className={`cell ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >
                   <div
                      className={`flex ${readOnlyClass} ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""}`}
                      style={{
-                        cursor: allowNewRowSelectionProcess ? 'pointer' : 'default'
+                        cursor: allowNewRowSelectionProcess ? 'pointer' : 'default',
                      }}
                      onClick={(e) => {
                         if (allowNewRowSelectionProcess && props.onRowSelect) {
