@@ -711,10 +711,13 @@ class InputField extends React.Component {
                 maxWidth: '100%',
                 margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
                 border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                overflow: 'visible',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                whiteSpace: 'normal',
                 boxSizing: 'border-box',
+                display: 'flex',
+                alignItems: 'center',
               }}
             >
               <span className={`${compressLongText ? "compress-row" : ""}`}>

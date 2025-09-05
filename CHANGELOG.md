@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.9
+Date: Sept 5, 2025
+* [FIX]
+  * Revert from using an ellipsis as overflow, to wrapping the text for non-editable text cells
+
 ## V 1.17.8
 Date: Sep 4, 2025
 * [FIX]

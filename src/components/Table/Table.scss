@@ -1636,7 +1636,7 @@ input.InputField {
       //transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
+      white-space: normal;
       max-width: 100%;
     }
 
