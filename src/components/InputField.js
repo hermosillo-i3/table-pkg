@@ -843,7 +843,7 @@ class InputField extends React.Component {
         case "boolean": {
           const booleanStyle = {
             ...newRowSelectionStyleWithMinimalWidth,
-            width: '20px',
+            width: this.props.allowNewRowSelectionProcess ? '20px' : '100%',
             height: '20px',
             display: 'flex',
             alignItems: 'center',
