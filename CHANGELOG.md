@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.11
+Date: Sept 08, 2025
+* [FIX]
+  * Fix text InputFields using an automatic width even when allowNewRowSelectionProcess is false
+
 ## V 1.17.10
 Date: Sept 5, 2025
 * [FIX]

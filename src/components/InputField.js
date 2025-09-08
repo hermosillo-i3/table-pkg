@@ -278,7 +278,7 @@ class InputField extends React.Component {
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         boxSizing: 'border-box',
-        width: isItem ? '100%' : 'auto',
+        width: '100%',
       };
 
       const newRowSelectionStyleWithMinimalWidth = this.props.allowNewRowSelectionProcess ? {
