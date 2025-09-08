@@ -1,6 +1,34 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.11
+Date: Sept 08, 2025
+* [FIX]
+  * Fix text InputFields using an automatic width even when allowNewRowSelectionProcess is false
+
+## V 1.17.10
+Date: Sept 5, 2025
+* [FIX]
+  * Fix clickable area on boolean columns
+
+## V 1.17.9
+Date: Sept 5, 2025
+* [FIX]
+  * Revert from using an ellipsis as overflow, to wrapping the text for non-editable text cells
+
+## V 1.17.8
+Date: Sep 4, 2025
+* [FIX]
+  * Update padding in cell with expand column
+  * Update hover color in Search component
+
+## V 1.17.7
+Date: Sep 3, 2025
+* [UPDATE]
+  * Prepare case 'select' in applyFilter to filter cell with array
+* [FIX]
+  * Fix Search component style
+
 ## V 1.17.6
 Date: Aug 14, 2025
 * [FIX]

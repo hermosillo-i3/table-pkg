@@ -279,6 +279,7 @@ class InputField extends React.Component {
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         boxSizing: 'border-box',
+        width: '100%',
       };
 
       const newRowSelectionStyleWithMinimalWidth = this.props.allowNewRowSelectionProcess ? {
@@ -812,10 +813,13 @@ class InputField extends React.Component {
                 minWidth: '20px',
                 maxWidth: '100%',
                 border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                overflow: 'visible',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                whiteSpace: 'normal',
                 boxSizing: 'border-box',
+                display: 'flex',
+                alignItems: 'center',
               }}
             >
               <span className={`${compressLongText ? "compress-row" : ""}`}>
@@ -945,7 +949,7 @@ class InputField extends React.Component {
         case "boolean": {
           const booleanStyle = {
             ...newRowSelectionStyleWithMinimalWidth,
-            width: '20px',
+            width: this.props.allowNewRowSelectionProcess ? '20px' : '100%',
             height: '20px',
             display: 'flex',
             alignItems: 'center',
