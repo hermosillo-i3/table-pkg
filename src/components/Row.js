@@ -3,7 +3,7 @@ import InputField from "./InputField"
 import {Icon, Popup} from 'semantic-ui-react'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ItemTypes} from './Constants'
-import {formatColumn as formatColumnUtils, isFunction, formatForSelect} from "../utils/Utils";
+import {formatColumn as formatColumnUtils, isFunction, formatForSelect, isNumber, formatCurrency} from "../utils/Utils";
 
 import {
    useDrag,
@@ -245,6 +245,7 @@ const rowFunctionComponent = (props) => {
       });
       if (props.onCellClick) {
          props.onCellClick(column, row, colIndex, rowIndex)
+         // FIXME: BROKEN, TRIGGERS FOCUS ON CELL
          if (props.allowNewRowSelectionProcess) {
             props.onRowSelect(row, e.ctrlKey || e.metaKey)
          }
@@ -355,8 +356,16 @@ const rowFunctionComponent = (props) => {
                      onMouseLeave={() => setHoveredCellIndex(null)}
                      onClick={(e) => {
                         // Only prevent row selection if clicking directly on input elements
-                        const isDirectInputClick = e.target.matches('input, textarea, select') || 
-                           e.target.closest('.InputField, .react-datepicker-wrapper, .cleave-input');
+                        const target = e.target;
+                        const tagName = target.tagName ? target.tagName.toLowerCase() : '';
+                        const isInputElement = tagName === 'input' || tagName === 'textarea' || tagName === 'select';
+                        const hasInputClass = target.closest ? (
+                           !!target.closest('.InputField') || 
+                           !!target.closest('.react-datepicker-wrapper') || 
+                           !!target.closest('.cleave-input')
+                        ) : false;
+                        const isDirectInputClick = isInputElement || hasInputClass;
+                        console.log('isDirectInputClick', isDirectInputClick);
                         if (isDirectInputClick) {
                            e.stopPropagation();
                         } else if (allowNewRowSelectionProcess && props.onRowSelect) {
@@ -467,15 +476,15 @@ const rowFunctionComponent = (props) => {
             }
             return <div
                className={`left-align-flex value ${column.customColumnClass} expanded-column`}
-               onMouseEnter={e => {
-                  setIsHoveringCell(true);
-               }}
-               onMouseLeave={() => {
-                  setIsHoveringCell(false)
-               }}
+               // onMouseEnter={e => {
+               //    setIsHoveringCell(true);
+               // }}
+               // onMouseLeave={() => {
+               //    setIsHoveringCell(false)
+               // }}
                style={{
                   cursor: allowNewRowSelectionProcess ? 'pointer' : 'default',
-                  overflow: 'hidden',
+                  // overflow: 'hidden',
                }}
                onClick={(e) => {
                   if (allowNewRowSelectionProcess && props.onRowSelect) {
@@ -486,14 +495,14 @@ const rowFunctionComponent = (props) => {
             >
                <span
                   className={`${column.compressLongText ? 'compress-row' : ''}`}
-                  style={{
-                     maxWidth: 'calc(100% - 10px)',
-                     wordWrap: isHoveringCell ? 'break-word' : 'normal',
-                     overflowWrap: isHoveringCell ? 'break-word' : 'normal',
-                     whiteSpace: isHoveringCell ? 'normal' : 'nowrap',
-                     overflow: isHoveringCell ? 'visible' : 'hidden',
-                     textOverflow: isHoveringCell ? 'clip' : 'ellipsis',
-                  }}
+                  // style={{
+                  //    maxWidth: 'calc(100% - 10px)',
+                  //    wordWrap: isHoveringCell ? 'break-word' : 'normal',
+                  //    overflowWrap: isHoveringCell ? 'break-word' : 'normal',
+                  //    whiteSpace: isHoveringCell ? 'normal' : 'nowrap',
+                  //    overflow: isHoveringCell ? 'visible' : 'hidden',
+                  //    textOverflow: isHoveringCell ? 'clip' : 'ellipsis',
+                  // }}
                >
                   {value}
                </span>
@@ -589,24 +598,24 @@ const rowFunctionComponent = (props) => {
                         </div>
                      }
                      <div
-                        onMouseEnter={() => {
-                           setIsHoveringCell(true);
-                        }}
-                        onMouseLeave={() => {
-                           setIsHoveringCell(false)
-                        }}
-                        style={{
-                           width: '100%',
-                           maxWidth: '100%',
-                           wordWrap: isHoveringCell ? 'break-word' : 'normal',
-                           overflowWrap: isHoveringCell ? 'break-word' : 'normal',
-                           whiteSpace: isHoveringCell ? 'normal' : 'nowrap',
-                           overflow: isHoveringCell ? 'visible' : 'hidden',
-                           textOverflow: isHoveringCell ? 'clip' : 'ellipsis',
-                           margin: '0',
-                           padding: '0',
-                           display: 'block',
-                        }}
+                        // onMouseEnter={() => {
+                        //    setIsHoveringCell(true);
+                        // }}
+                        // onMouseLeave={() => {
+                        //    setIsHoveringCell(false)
+                        // }}
+                        // style={{
+                        //    width: '100%',
+                        //    maxWidth: '100%',
+                        //    wordWrap: isHoveringCell ? 'break-word' : 'normal',
+                        //    overflowWrap: isHoveringCell ? 'break-word' : 'normal',
+                        //    whiteSpace: isHoveringCell ? 'normal' : 'nowrap',
+                        //    overflow: isHoveringCell ? 'visible' : 'hidden',
+                        //    textOverflow: isHoveringCell ? 'clip' : 'ellipsis',
+                        //    margin: '0',
+                        //    padding: '0',
+                        //    display: 'block',
+                        // }}
                      >
                         {cellContent}
                      </div>
