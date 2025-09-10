@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.12
+Date: Sept 10, 2025
+* [FIX]
+  * Fix select InputFields not using their defaultValues (if existing) on first load
+
 ## V 1.17.11
 Date: Sept 08, 2025
 * [FIX]
