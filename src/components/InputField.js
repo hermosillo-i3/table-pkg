@@ -729,28 +729,31 @@ class InputField extends React.Component {
 
         case "select": {
           const { options, placeholder, defaultValue } = this.props.format;
+          // Use currentValue if it exists, otherwise null (which will show placeholder)
           let value = this.state.currentValue;
-          if (defaultValue != null && defaultValue !== "") {
-            value =
-              this.state.currentValue == null || this.state.currentValue === ""
-                ? defaultValue
-                : this.state.currentValue;
+          
+          // If currentValue is null, use defaultValue
+          if (value == null && defaultValue != null && defaultValue !== "") {
+            value = defaultValue;
           }
           return isFocused ? (
               <select
                 ref={(input) => {
                   this.input = input;
                 }}
-                defaultValue={defaultValue}
                 value={value}
                 className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
-                placeholder={placeholder}
                 onBlur={(e) => {
                   this.setState({ selectExpanded: false });
                   this.onBlur(e);
                 }}
                 onFocus={this.onFocus}
-                onChange={this.onChange}
+                onChange={(e) => {
+                  this.setState({ currentValue: e.target.value });
+                  if (this.props.onUpdate) {
+                    this.props.onUpdate(e.target.value, this.resetValue);
+                  }
+                }}
                 tabIndex={tabIndex}
                 style={{
                   width: '100%',
@@ -758,8 +761,13 @@ class InputField extends React.Component {
                   height: this.state.selectExpanded ? 'auto' : undefined,
                 }}
               >
-                {options.map(({ value, key, text }, index) => (
-                  <option value={value} key={key ? key : index}>
+                {(!value || value === '') && !defaultValue && (
+                  <option value="" disabled>
+                    {placeholder || 'Selecciona una opción'}
+                  </option>
+                )}
+                {options.map(({ value: optionValue, key, text }, index) => (
+                  <option value={optionValue} key={key ? key : index}>
                     {text}
                   </option>
                 ))}
@@ -796,7 +804,7 @@ class InputField extends React.Component {
               }}
             >
               {
-                options.find((option) => option.key === this.state.currentValue)?.text || this.state.currentValue
+                options.find((option) => option.key === (this.state.currentValue || defaultValue))?.text || placeholder || 'Selecciona una opción'
               }
             </div>
           )
