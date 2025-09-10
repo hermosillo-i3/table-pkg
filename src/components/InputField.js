@@ -748,12 +748,7 @@ class InputField extends React.Component {
                   this.onBlur(e);
                 }}
                 onFocus={this.onFocus}
-                onChange={(e) => {
-                  this.setState({ currentValue: e.target.value });
-                  if (this.props.onUpdate) {
-                    this.props.onUpdate(e.target.value, this.resetValue);
-                  }
-                }}
+                onChange={this.onChange}
                 tabIndex={tabIndex}
                 style={{
                   width: '100%',
