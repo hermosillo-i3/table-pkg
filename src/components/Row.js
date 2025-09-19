@@ -3,7 +3,7 @@ import InputField from "./InputField"
 import {Icon, Popup} from 'semantic-ui-react'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ItemTypes} from './Constants'
-import {formatColumn as formatColumnUtils, isFunction, formatForSelect} from "../utils/Utils";
+import {formatColumn as formatColumnUtils, isFunction, formatForSelect, isNumber, formatCurrency, formatPercentage} from "../utils/Utils";
 
 import {
    useDrag,
@@ -94,6 +94,7 @@ const rowFunctionComponent = (props) => {
    const [rowRef, setRowRef] = React.useState(null);
    const [className, setClassName] = React.useState('Table-Row');
    const [hoveredCellIndex, setHoveredCellIndex] = React.useState(null);
+   const [isHoveringCell, setIsHoveringCell] = React.useState(false);
 
    useEffect(() => {
       const shouldScroll = props.scrollTo === row.id;
@@ -374,7 +375,7 @@ const rowFunctionComponent = (props) => {
                      }}
                   >
                      <InputField
-                        isItem={row.is_item}
+                        isItem={row.is_item && !(row.depth === 0 && row.is_item)}
                         onFocus={() => onFocus(colIndex)}
                         onUnfocusOthers={() => {
                            // Clear focus by calling onFocus with invalid indexes to unfocus current cell
@@ -546,7 +547,13 @@ const rowFunctionComponent = (props) => {
                   className={`cell ${customColumnClass} ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >
                   <div
-                     className={`flex ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""} ${readOnlyClass}`}>
+                     className={`flex ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""} ${readOnlyClass}`}
+                        style={{
+                           whiteSpace: 'pre-wrap',
+                           wordBreak: 'break-word',
+                           overflow: 'hidden',
+                        }}
+                     >
                      {!row.is_item && colIndex === expandCollapseColumnIndex &&
                         <div className={`Table-Column-${is_open ? 'Expanded' : 'Contracted'}`}
                            onClick={onRowExpand(row)}>

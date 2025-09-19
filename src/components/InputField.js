@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Textarea from 'react-textarea-autosize';
-import { Dropdown, Icon, Progress, Select } from "semantic-ui-react";
+import {Icon, Progress} from "semantic-ui-react";
 import Cleave from 'cleave.js/react';
 import {NumericFormat} from 'react-number-format';
 import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
@@ -11,6 +11,7 @@ import InputFieldSearch from "./InputFieldSearch";
 import TableDatePicker from "./TableDatePicker";
 
 import { KEY_CODES } from "../utils/index";
+import {formatCurrency} from "../utils/Utils";
 
 class InputField extends React.Component {
 
@@ -263,7 +264,8 @@ class InputField extends React.Component {
 
       const newRowSelectionStyle = this.props.allowNewRowSelectionProcess ? {
         margin: '5px 0px 5px 0px',
-        width: isItem ? '100%' : (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%'),
+        // width: isItem ? '100%' : (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%'),
+        width: 'auto',
         maxWidth: '100%',
         border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
         cursor: 'text',
@@ -274,10 +276,10 @@ class InputField extends React.Component {
       } : {
         margin: '0',
         maxWidth: '100%',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        boxSizing: 'border-box',
+        // overflow: 'hidden',
+        // textOverflow: 'ellipsis',
+        // whiteSpace: 'nowrap',
+        // boxSizing: 'border-box',
         width: '100%',
       };
 
@@ -289,13 +291,23 @@ class InputField extends React.Component {
 
       switch (type) {
         case "textarea": {
+          const customWidth = (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%');
           if (isFocused) {
             return (
               <Textarea
                 className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
                 style={{
                   resize: "none",
-                  ...newRowSelectionStyle
+                  // ...newRowSelectionStyle
+                  margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
+                  maxWidth: '100%',
+                  border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+                  cursor: 'text',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  boxSizing: 'border-box',
+                  width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
                 }}
                 ref={(input) => {
                   this.input = input;
@@ -325,7 +337,15 @@ class InputField extends React.Component {
                 onChange={this.onChange}
                 onBlur={this.onBlur}
                 maxLength={limit}
-                onFocus={this.onFocus}
+                onFocus={(e) => {
+                  this.onFocus(e);
+                  setTimeout(() => {
+                    if (this.input) {
+                      const inputLength = this.input.value.length;
+                      this.input.setSelectionRange(inputLength, inputLength);
+                    }
+                  })
+                }}
               />
             );
           } else {
@@ -333,60 +353,119 @@ class InputField extends React.Component {
             return (
               <p
                 className={this.props.allowNewRowSelectionProcess ? `Text ${customColumnClass}` : compressedClass}
-                style={newRowSelectionStyleWithMinimalWidth}
+                style={{
+                  ...newRowSelectionStyleWithMinimalWidth,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  boxSizing: 'border-box',
+                  border: this.props.allowNewRowSelectionProcess ? '1px solid #ff6b6b' : '1px solid transparent', // Red border for textarea
+                }}
                 tabIndex={tabIndex}
                 onClick={(e) => this.onCreateTextArea(e)}
-                onFocus={(e) => {
+                onFocus={() => {
                   if (onFocus) {
                     onFocus();
                   }
                 }}
+                onMouseEnter={(e) => {
+                  e.target.style.whiteSpace = 'normal';
+                  e.target.style.overflow = 'visible';
+                  e.target.style.textOverflow = 'clip';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.whiteSpace = 'nowrap';
+                  e.target.style.overflow = 'hidden';
+                  e.target.style.textOverflow = 'ellipsis';
+                }}
               >
-                {this.state.currentValue}
+                {String(this.state.currentValue).slice(0, 100)}
               </p>
             );
           }
         }
 
         case "number": {
-          return (
-            <input
-              ref={(input) => {
-                this.input = input;
-              }}
-              className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
-              type="text"
-              value={this.state.currentValue}
-              onChange={this.onChange}
-              onBlur={this.onBlur}
-              tabIndex={tabIndex}
-              style={newRowSelectionStyleWithMinimalWidth}
-              onKeyDown={(e) => {
-                this.onKeyDown(e);
-                if (this.props.onKeyDownHotKeys) {
-                  this.props.onKeyDownHotKeys(e);
-                  if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
-                    this.setState((prevState) => ({
-                      isTextAreaMultiLineActive: true,
-                    }));
-                  } else if (
-                    (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
-                    (!isTextAreaMultiLineActive &&
-                      (e.keyCode === KEY_CODES.ARROW_UP ||
-                        e.keyCode === KEY_CODES.ARROW_DOWN))
-                  ) {
-                    this.onBlur(e);
+          if (isFocused) {
+            const customWidth = this.props.columnWidth ? `${Math.min(this.props.columnWidth - 10, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%';
+            return (
+              <input
+                ref={(input) => {
+                  this.input = input;
+                }}
+                className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
+                type="text"
+                value={this.state.currentValue}
+                onChange={this.onChange}
+                onBlur={this.onBlur}
+                tabIndex={tabIndex}
+                style={{
+                  resize: 'none',
+                  maxWidth: '100%',
+                  border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+                  cursor: 'text',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  boxSizing: 'border-box',
+                  width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
+                }}
+                onKeyDown={(e) => {
+                  this.onKeyDown(e);
+                  if (this.props.onKeyDownHotKeys) {
+                    this.props.onKeyDownHotKeys(e);
+                    if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                      this.setState((prevState) => ({
+                        isTextAreaMultiLineActive: true,
+                      }));
+                    } else if (
+                      (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
+                      (!isTextAreaMultiLineActive &&
+                        (e.keyCode === KEY_CODES.ARROW_UP ||
+                          e.keyCode === KEY_CODES.ARROW_DOWN))
+                    ) {
+                      this.onBlur(e);
+                    }
                   }
-                }
-              }}
-              onPaste={(e) => {
-                if (onPaste) {
-                  onPaste(e);
-                }
-              }}
-              onFocus={this.onFocus}
-            />
-          );
+                }}
+                onPaste={(e) => {
+                  if (onPaste) {
+                    onPaste(e);
+                  }
+                }}
+                onFocus={this.onFocus}
+              />
+            );
+          } else {
+            return (
+              <div
+                className={this.props.allowNewRowSelectionProcess ? '' : `left-align-flex value ${customColumnClass} expanded-column`}
+                tabIndex={tabIndex}
+                onClick={this.onFocus}
+                onFocus={(e) => {
+                  if (this.props.onFocus) {
+                    this.props.onFocus();
+                  }
+                }}
+                style={{
+                  outline: 'none',
+                  cursor: 'text',
+                  color: isItem ? 'black' : 'white',
+                  minHeight: '20px',
+                  minWidth: '20px',
+                  maxWidth: '100%',
+                  border: shouldShowBorder ? '2px solid #1f76b7' : (this.props.allowNewRowSelectionProcess ? '1px solid #4ecdc4' : '2px solid transparent'), // Teal border for number
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  boxSizing: 'border-box',
+                }}
+              >
+                <span className={`${compressLongText ? "compress-row" : ""}`}>
+                  {String(this.state.currentValue) || '0'}
+                </span>
+              </div>
+            );
+          }
         }
 
         case "progress-bar": {
@@ -471,62 +550,92 @@ class InputField extends React.Component {
         }
 
         case "currency": {
-          return (
-            <Cleave
-              className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
-              value={this.state.currentValue}
-              htmlRef={(input) => {
-                this.input = input;
-              }}
-              tabIndex={tabIndex}
-              style={newRowSelectionStyleWithMinimalWidth}
-              onChange={(e) => {
-                const value = e.target.rawValue;
-                let isValid = true;
-                if (maxValue != null) {
-                  const floatValue = parseFloat(value);
-                  isValid = floatValue <= maxValue;
-                }
-
-                if (isValid) {
-                  this.setState((prevState) => ({
-                    currentValue: value,
-                  }));
-                }
-              }}
-              onPaste={(e) => {
-                if (onPaste) {
-                  onPaste(e);
-                }
-              }}
-              onKeyDown={(e) => {
-                this.onKeyDown(e);
-                if (this.props.onKeyDownHotKeys) {
-                  this.props.onKeyDownHotKeys(e);
-                  if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
-                    this.setState((prevState) => ({
-                      isTextAreaMultiLineActive: true,
-                    }));
-                  } else if (
-                    (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
-                    (!isTextAreaMultiLineActive &&
-                      (e.keyCode === KEY_CODES.ARROW_UP ||
-                        e.keyCode === KEY_CODES.ARROW_DOWN))
-                  ) {
-                    this.onBlur(e);
+          if (isFocused) {            
+            return (
+              <Cleave
+                className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
+                value={this.state.currentValue}
+                htmlRef={(input) => {
+                  this.input = input;
+                }}
+                tabIndex={tabIndex}
+                style={{
+                  ...newRowSelectionStyleWithMinimalWidth,
+                  backgroundColor: 'white',
+                  color: 'black',
+                }}
+                onChange={(e) => {
+                  const value = e.target.rawValue;
+                  let isValid = true;
+                  if (maxValue != null) {
+                    const floatValue = parseFloat(value);
+                    isValid = floatValue <= maxValue;
                   }
-                }
-              }}
-              onBlur={this.onBlur}
-              onFocus={this.onFocus}
-              options={{
-                numeral: true,
-                rawValueTrimPrefix: true,
-                numeralDecimalScale: decimals,
-                prefix: "$",
-              }}
-            />
-          );
+  
+                  if (isValid) {
+                    this.setState((prevState) => ({
+                      currentValue: value,
+                    }));
+                  }
+                }}
+                onPaste={(e) => {
+                  if (onPaste) {
+                    onPaste(e);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  this.onKeyDown(e);
+                  if (this.props.onKeyDownHotKeys) {
+                    this.props.onKeyDownHotKeys(e);
+                    if (e.shiftKey && e.keyCode === KEY_CODES.ENTER) {
+                      this.setState((prevState) => ({
+                        isTextAreaMultiLineActive: true,
+                      }));
+                    } else if (
+                      (!e.shiftKey && e.keyCode === KEY_CODES.ENTER) ||
+                      (!isTextAreaMultiLineActive &&
+                        (e.keyCode === KEY_CODES.ARROW_UP ||
+                          e.keyCode === KEY_CODES.ARROW_DOWN))
+                    ) {
+                      this.onBlur(e);
+                    }
+                  }
+                }}
+                onBlur={this.onBlur}
+                onFocus={this.onFocus}
+                options={{
+                  numeral: true,
+                  rawValueTrimPrefix: true,
+                  numeralDecimalScale: decimals,
+                  prefix: "$",
+                }}
+              />
+            );
+          } else {
+            const compressedClass = `Text ${customColumnClass} ${compressLongText ? "compress-row" : ""}` 
+            return (
+              <p
+                className={this.props.allowNewRowSelectionProcess ? `Text ${customColumnClass}` : compressedClass}
+                style={{
+                  ...newRowSelectionStyleWithMinimalWidth,
+                  // backgroundColor: this.props.isItem ? 'white' : 'transparent',
+                  width: isItem ? 'auto' : '100%',
+                  backgroundColor: 'white',
+                  color: 'black',
+                  border: this.props.allowNewRowSelectionProcess ? '1px solid #a55eea' : '1px solid transparent', // Purple border for currency
+                }}
+                tabIndex={tabIndex}
+                onClick={this.onFocus}
+                onFocus={(e) => {
+                  if (this.props.onFocus) {
+                    this.props.onFocus();
+                  }
+                }}
+              >
+                {formatCurrency(this.state.currentValue, decimals)}
+              </p>
+            );
+          }
         }
 
         case "percentage": {
@@ -648,6 +757,7 @@ class InputField extends React.Component {
         }
 
         case "text": {
+          const customWidth = (this.props.columnWidth ? `${Math.min(this.props.columnWidth - 10, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%');
           return isFocused ? (
             <input
               className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
@@ -662,8 +772,19 @@ class InputField extends React.Component {
               tabIndex={tabIndex}
               style={{
                 ...(this.props.allowNewRowSelectionProcess && { boxSizing: 'border-box' }),
-                ...newRowSelectionStyleWithMinimalWidth,
-                width: isItem ? '100%' : (this.props.columnWidth ? `${Math.min(this.props.columnWidth - 10, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%'),
+                // ...newRowSelectionStyleWithMinimalWidth,
+                // width: isItem ? '100%' : (this.props.columnWidth ? `${Math.min(this.props.columnWidth - 10, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%'),
+                width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
+                resize: 'none',
+                margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
+                border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+                cursor: 'text',
+                // overflow: 'hidden',
+                // textOverflow: 'ellipsis',
+                // whiteSpace: 'nowrap',
+                // boxSizing: 'border-box',
+
+                backgroundColor: 'transparent',
                 maxWidth: '100%',
               }}
               onPaste={(e) => {
@@ -709,8 +830,8 @@ class InputField extends React.Component {
                 minHeight: '20px',
                 minWidth: '20px',
                 maxWidth: '100%',
-                margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
-                border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+                border: shouldShowBorder ? '2px solid #1f76b7' : (this.props.allowNewRowSelectionProcess ? '1px solid #96ceb4' : '2px solid transparent'), // Green border for text
+                color: isItem ? 'black' : 'white',
                 overflow: 'visible',
                 wordWrap: 'break-word',
                 overflowWrap: 'break-word',
@@ -721,7 +842,8 @@ class InputField extends React.Component {
               }}
             >
               <span className={`${compressLongText ? "compress-row" : ""}`}>
-                {this.state.currentValue}
+                {/* {this.state.currentValue} */}
+                {String(this.state.currentValue) || ''}
               </span>
             </div>
           );
@@ -792,7 +914,10 @@ class InputField extends React.Component {
                 minWidth: '20px',
                 width: '100%',
                 border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
-                margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                boxSizing: 'border-box',
               }}
             >
               {
@@ -898,19 +1023,58 @@ class InputField extends React.Component {
         }
 
         case "search": {
+          if (isFocused) {
+            return (
+              <InputFieldSearch
+                {...this.props}
+                {...format}
+                resetValue={this.resetValue}
+                value={this.state.currentValue}
+                tabIndex={tabIndex}
+                allowNewRowSelectionProcess={this.props.allowNewRowSelectionProcess}
+                customStyle={this.props.customStyle}
+              />
+            );
+          } else {
+            return (
+              <div
+                className={this.props.allowNewRowSelectionProcess ? 'Color-Light-Grey' : `InputField ${customColumnClass}`}
+                onClick={() => {
+                  if (this.props.onFocus) {
+                    this.props.onFocus();
+                  }
 
-         return (
-           <InputFieldSearch
-             {...this.props}
-             {...format}
-             resetValue={this.resetValue}
-             value={this.state.currentValue}
-             tabIndex={tabIndex}
-             allowNewRowSelectionProcess={this.props.allowNewRowSelectionProcess}
-             customStyle={this.props.customStyle}
-           />
-         );
-         }
+                  // Simulate a click on the focused element to trigger the search
+                  setTimeout(() => {
+                    if (this.input) {
+                      this.input.focus();
+                    }
+                  }, 50);
+                }}
+                onFocus={(e) => {
+                  if (this.props.onFocus) {
+                    this.props.onFocus();
+                  }
+                }}
+                style={{
+                  outline: 'none',
+                  cursor: 'pointer',
+                  minHeight: '20px',
+                  minWidth: '20px',
+                  width: '100%',
+                  border: shouldShowBorder ? '2px solid #1f76b7' : (this.props.allowNewRowSelectionProcess ? '1px solid #ff9ff3' : '2px solid transparent'), // Pink border for search
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  boxSizing: 'border-box',
+                  padding: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
+                }}
+              >
+                {this.state.currentValue ? this.state.currentValue : format.placeholder}
+              </div>
+            );
+          }
+        }
           
         default:
           break;
