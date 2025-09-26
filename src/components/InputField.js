@@ -11,8 +11,6 @@ import InputFieldSearch from "./InputFieldSearch";
 import TableDatePicker from "./TableDatePicker";
 
 import { KEY_CODES } from "../utils/index";
-import {formatCurrency} from "../utils/Utils";
-
 class InputField extends React.Component {
 
    constructor(props) {
@@ -35,8 +33,11 @@ class InputField extends React.Component {
    }
 
   /*
-    This function is used to calculate the width of the InputField depending on it's contents
-    This is used to avoid the input shriking when not using 100% of the width of the parent cell */
+    This function is used to check if the row is a header row */
+  isHeaderRow = () => {
+    return !(this.props.depth >= 1);
+  }
+
   calculateInputWidth = (text, maxWidth = null) => {
       const textLength = text?.toString().length || 0;
       
@@ -45,7 +46,7 @@ class InputField extends React.Component {
         return '50%';
       }
 
-      const charWidth = 5;
+      const charWidth = 6;
       const padding = 40;
       // Reduce available width by 50px if expand icon is present
       const iconWidth = this.props.hasExpandIcon ? 50 : 0;
@@ -264,7 +265,6 @@ class InputField extends React.Component {
 
       const newRowSelectionStyle = this.props.allowNewRowSelectionProcess ? {
         margin: '5px 0px 5px 0px',
-        // width: isItem ? '100%' : (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%'),
         width: 'auto',
         maxWidth: '100%',
         border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
@@ -276,10 +276,6 @@ class InputField extends React.Component {
       } : {
         margin: '0',
         maxWidth: '100%',
-        // overflow: 'hidden',
-        // textOverflow: 'ellipsis',
-        // whiteSpace: 'nowrap',
-        // boxSizing: 'border-box',
         width: '100%',
       };
 
@@ -291,21 +287,24 @@ class InputField extends React.Component {
 
       switch (type) {
         case "textarea": {
-          const customWidth = (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%');
+          // Add 20px to the customWidth to account for the border, paddings, etc. and stop the text from being crammed into the cell
+          const customWidth = (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))+20}px` : '100%');
           if (isFocused) {
             return (
               <Textarea
                 className={this.props.allowNewRowSelectionProcess ? '' : `InputField ${customColumnClass}`}
                 style={{
                   resize: "none",
-                  // ...newRowSelectionStyle
                   margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
                   maxWidth: '100%',
                   border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
                   cursor: 'text',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
+                  overflow: 'visible',
+                  textOverflow: 'clip',
+                  whiteSpace: 'normal',
+                  backgroundColor: 'transparent',
+                  wordWrap: 'break-word',
+                  wordBreak: 'break-word',
                   boxSizing: 'border-box',
                   width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
                 }}
@@ -359,7 +358,6 @@ class InputField extends React.Component {
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   boxSizing: 'border-box',
-                  border: this.props.allowNewRowSelectionProcess ? '1px solid #ff6b6b' : '1px solid transparent', // Red border for textarea
                 }}
                 tabIndex={tabIndex}
                 onClick={(e) => this.onCreateTextArea(e)}
@@ -369,17 +367,21 @@ class InputField extends React.Component {
                   }
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.whiteSpace = 'normal';
+                  e.target.style.whiteSpace = 'pre-wrap';
                   e.target.style.overflow = 'visible';
                   e.target.style.textOverflow = 'clip';
+                  e.target.style.height = 'auto';
+                  e.target.style.maxHeight = 'none';
                 }}
                 onMouseLeave={(e) => {
                   e.target.style.whiteSpace = 'nowrap';
                   e.target.style.overflow = 'hidden';
                   e.target.style.textOverflow = 'ellipsis';
+                  e.target.style.height = '';
+                  e.target.style.maxHeight = '';
                 }}
               >
-                {String(this.state.currentValue).slice(0, 100)}
+                {String(this.state.currentValue)}
               </p>
             );
           }
@@ -454,7 +456,7 @@ class InputField extends React.Component {
                   minHeight: '20px',
                   minWidth: '20px',
                   maxWidth: '100%',
-                  border: shouldShowBorder ? '2px solid #1f76b7' : (this.props.allowNewRowSelectionProcess ? '1px solid #4ecdc4' : '2px solid transparent'), // Teal border for number
+                  border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
                   overflow: 'hidden',
                   whiteSpace: 'nowrap',
                   boxSizing: 'border-box',
@@ -550,10 +552,10 @@ class InputField extends React.Component {
         }
 
         case "currency": {
-          if (isFocused) {            
+            const customWidth = (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%');
             return (
               <Cleave
-                className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
+                className={`InputField ${customColumnClass}`}
                 value={this.state.currentValue}
                 htmlRef={(input) => {
                   this.input = input;
@@ -561,8 +563,9 @@ class InputField extends React.Component {
                 tabIndex={tabIndex}
                 style={{
                   ...newRowSelectionStyleWithMinimalWidth,
-                  backgroundColor: 'white',
+                  backgroundColor: this.isHeaderRow() ? 'white' : 'transparent',
                   color: 'black',
+                  width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
                 }}
                 onChange={(e) => {
                   const value = e.target.rawValue;
@@ -611,31 +614,6 @@ class InputField extends React.Component {
                 }}
               />
             );
-          } else {
-            const compressedClass = `Text ${customColumnClass} ${compressLongText ? "compress-row" : ""}` 
-            return (
-              <p
-                className={this.props.allowNewRowSelectionProcess ? `Text ${customColumnClass}` : compressedClass}
-                style={{
-                  ...newRowSelectionStyleWithMinimalWidth,
-                  // backgroundColor: this.props.isItem ? 'white' : 'transparent',
-                  width: isItem ? 'auto' : '100%',
-                  backgroundColor: 'white',
-                  color: 'black',
-                  border: this.props.allowNewRowSelectionProcess ? '1px solid #a55eea' : '1px solid transparent', // Purple border for currency
-                }}
-                tabIndex={tabIndex}
-                onClick={this.onFocus}
-                onFocus={(e) => {
-                  if (this.props.onFocus) {
-                    this.props.onFocus();
-                  }
-                }}
-              >
-                {formatCurrency(this.state.currentValue, decimals)}
-              </p>
-            );
-          }
         }
 
         case "percentage": {
@@ -772,18 +750,11 @@ class InputField extends React.Component {
               tabIndex={tabIndex}
               style={{
                 ...(this.props.allowNewRowSelectionProcess && { boxSizing: 'border-box' }),
-                // ...newRowSelectionStyleWithMinimalWidth,
-                // width: isItem ? '100%' : (this.props.columnWidth ? `${Math.min(this.props.columnWidth - 10, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%'),
                 width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
                 resize: 'none',
                 margin: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
                 border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
                 cursor: 'text',
-                // overflow: 'hidden',
-                // textOverflow: 'ellipsis',
-                // whiteSpace: 'nowrap',
-                // boxSizing: 'border-box',
-
                 backgroundColor: 'transparent',
                 maxWidth: '100%',
               }}
@@ -815,7 +786,7 @@ class InputField extends React.Component {
             />
           ) : (
             <div
-              className={this.props.allowNewRowSelectionProcess ? `` : `left-align-flex value ${customColumnClass} expanded-column`}
+              className={this.props.allowNewRowSelectionProcess ? `value` : `left-align-flex value ${customColumnClass} expanded-column`}
               tabIndex={tabIndex}
               onClick={this.onFocus}
               onFocus={(e) => {
@@ -826,23 +797,20 @@ class InputField extends React.Component {
               style={{
                 outline: 'none',
                 cursor: 'text',
-                color: isItem ? 'black' : 'white',
                 minHeight: '20px',
                 minWidth: '20px',
                 maxWidth: '100%',
-                border: shouldShowBorder ? '2px solid #1f76b7' : (this.props.allowNewRowSelectionProcess ? '1px solid #96ceb4' : '2px solid transparent'), // Green border for text
-                color: isItem ? 'black' : 'white',
+                border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
                 overflow: 'visible',
                 wordWrap: 'break-word',
-                overflowWrap: 'break-word',
                 whiteSpace: 'normal',
                 boxSizing: 'border-box',
                 display: 'flex',
+                flex: this.props.allowNewRowSelectionProcess ? 'none' : 1,
                 alignItems: 'center',
               }}
             >
               <span className={`${compressLongText ? "compress-row" : ""}`}>
-                {/* {this.state.currentValue} */}
                 {String(this.state.currentValue) || ''}
               </span>
             </div>
@@ -1041,7 +1009,7 @@ class InputField extends React.Component {
           } else {
             return (
               <div
-                className={this.props.allowNewRowSelectionProcess ? 'Color-Light-Grey' : `InputField ${customColumnClass}`}
+                className={`left-align-flex value ${customColumnClass} expanded-column`}
                 onClick={() => {
                   if (this.props.onFocus) {
                     this.props.onFocus();
@@ -1060,6 +1028,7 @@ class InputField extends React.Component {
                   }
                 }}
                 style={{
+                  ...this.props.customStyle,
                   outline: 'none',
                   cursor: 'pointer',
                   minHeight: '20px',
@@ -1073,7 +1042,13 @@ class InputField extends React.Component {
                   padding: this.props.allowNewRowSelectionProcess ? '5px 0px 5px 0px' : '0',
                 }}
               >
-                {this.state.currentValue ? this.state.currentValue : format.placeholder}
+                <span className={`${compressLongText ? "compress-row" : ""}`}>
+                  {this.state.currentValue ? (
+                    this.state.currentValue
+                  ) : (
+                    <span className="Color-Light-Grey">{format.placeholder}</span>
+                  )}
+                </span>
               </div>
             );
           }

@@ -375,7 +375,8 @@ const rowFunctionComponent = (props) => {
                      }}
                   >
                      <InputField
-                        isItem={row.is_item && !(row.depth === 0 && row.is_item)}
+                        isItem={row.is_item}
+                        depth={depth}
                         onFocus={() => onFocus(colIndex)}
                         onUnfocusOthers={() => {
                            // Clear focus by calling onFocus with invalid indexes to unfocus current cell
