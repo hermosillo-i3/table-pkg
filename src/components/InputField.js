@@ -563,8 +563,6 @@ class InputField extends React.Component {
                 tabIndex={tabIndex}
                 style={{
                   ...newRowSelectionStyleWithMinimalWidth,
-                  backgroundColor: this.isHeaderRow() ? 'white' : 'transparent',
-                  color: 'black',
                   width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
                 }}
                 onChange={(e) => {
