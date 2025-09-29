@@ -441,7 +441,7 @@ class InputField extends React.Component {
           } else {
             return (
               <div
-                className={this.props.allowNewRowSelectionProcess ? '' : `left-align-flex value ${customColumnClass} expanded-column`}
+                className={this.props.allowNewRowSelectionProcess ? 'value' : `left-align-flex value ${customColumnClass} expanded-column`}
                 tabIndex={tabIndex}
                 onClick={this.onFocus}
                 onFocus={(e) => {
@@ -452,7 +452,6 @@ class InputField extends React.Component {
                 style={{
                   outline: 'none',
                   cursor: 'text',
-                  color: isItem ? 'black' : 'white',
                   minHeight: '20px',
                   minWidth: '20px',
                   maxWidth: '100%',
@@ -937,7 +936,9 @@ class InputField extends React.Component {
         case "boolean": {
           const booleanStyle = {
             ...newRowSelectionStyleWithMinimalWidth,
-            width: this.props.allowNewRowSelectionProcess ? '20px' : '100%',
+            width: this.props.allowNewRowSelectionProcess
+              ? 'max(20px, 50%)'
+              : '100%',
             height: '20px',
             display: 'flex',
             alignItems: 'center',
@@ -1032,7 +1033,7 @@ class InputField extends React.Component {
                   minHeight: '20px',
                   minWidth: '20px',
                   width: '100%',
-                  border: shouldShowBorder ? '2px solid #1f76b7' : (this.props.allowNewRowSelectionProcess ? '1px solid #ff9ff3' : '2px solid transparent'), // Pink border for search
+                  border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
