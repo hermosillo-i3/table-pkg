@@ -355,7 +355,7 @@ const rowFunctionComponent = (props) => {
                      onClick={(e) => {
                         // Only prevent row selection if clicking directly on input elements
                         const isDirectInputClick = e.target.matches('input, textarea, select') || 
-                           e.target.closest('.InputField, .react-datepicker-wrapper, .table-datepicker-wrapper, .cleave-input');
+                           e.target.closest('.InputField, .react-datepicker-wrapper, .table-datepicker-wrapper, .cleave-input, .InputField-Boolean');
                         if (isDirectInputClick) {
                            e.stopPropagation();
                         } else if (allowNewRowSelectionProcess && props.onRowSelect) {
@@ -595,7 +595,7 @@ const rowFunctionComponent = (props) => {
                      onClick={(e) => {
                         // Only prevent row selection if clicking directly on input elements
                         const isDirectInputClick = e.target.matches('input, textarea, select') || 
-                           e.target.closest('.InputField, .react-datepicker-wrapper, .table-datepicker-wrapper, .cleave-input');
+                           e.target.closest('.InputField, .react-datepicker-wrapper, .table-datepicker-wrapper, .cleave-input, .InputField-Boolean');
                         if (isDirectInputClick) {
                            e.stopPropagation();
                         } else if (allowNewRowSelectionProcess && props.onRowSelect) {

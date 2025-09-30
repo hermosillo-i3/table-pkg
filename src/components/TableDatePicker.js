@@ -13,6 +13,7 @@ const TableDatePicker = ({
   placeholderText = "dd/mm/yyyy",
   onKeyDown,
   className = "",
+  style = {},
   ...props
 }) => {
   
@@ -62,7 +63,7 @@ const TableDatePicker = ({
   const selectedDate = getSelectedDate();
 
   return (
-    <div onClick={handleClick}>
+    <div onClick={handleClick} style={style}>
       <DatePicker
         locale="es"
         selected={selectedDate}

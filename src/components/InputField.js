@@ -433,6 +433,7 @@ class InputField extends React.Component {
               />
             );
           } else {
+            const customWidth = this.props.columnWidth ? `${Math.min(this.props.columnWidth - 10, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%';
             return (
               <div
                 className={this.props.allowNewRowSelectionProcess ? 'value' : `left-align-flex value ${customColumnClass} expanded-column`}
@@ -450,6 +451,7 @@ class InputField extends React.Component {
                   minWidth: '20px',
                   maxWidth: '100%',
                   border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+                  width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
                   overflow: 'hidden',
                   whiteSpace: 'nowrap',
                   boxSizing: 'border-box',
@@ -916,9 +918,17 @@ class InputField extends React.Component {
             return dateFormatter(date).isHermosilloWorkingDay();
           };
 
+          const customWidth = (this.props.columnWidth ? `${Math.min(this.props.columnWidth, parseInt(this.calculateInputWidth(this.state.currentValue, this.props.columnWidth)))}px` : '100%');
+
           return (
             <TableDatePicker
               selected={selected}
+              style={{
+                width: '100%',
+                border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
+                width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
+                minWidth: '70%',
+              }}
               onChange={(date) => {
                 this.onChangeDate({ target: { value: date } });
               }}
@@ -933,9 +943,7 @@ class InputField extends React.Component {
         case "boolean": {
           const booleanStyle = {
             ...newRowSelectionStyleWithMinimalWidth,
-            width: this.props.allowNewRowSelectionProcess
-              ? 'max(20px, 50%)'
-              : '100%',
+            width: '100%',
             height: '20px',
             display: 'flex',
             alignItems: 'center',
