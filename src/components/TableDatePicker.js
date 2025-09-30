@@ -54,24 +54,31 @@ const TableDatePicker = ({
     }
   };
 
+  // Handle click events to prevent row selection
+  const handleClick = (e) => {
+    e.stopPropagation();
+  };
+
   const selectedDate = getSelectedDate();
 
   return (
-    <DatePicker
-      locale="es"
-      selected={selectedDate}
-      onChange={handleDateChange}
-      filterDate={filterDate}
-      disabled={disabled}
-      dateFormat={dateFormat}
-      placeholderText={placeholderText}
-      onKeyDown={handleKeyDown}
-      className={`table-datepicker ${className}`}
-      popperClassName="table-datepicker-popper"
-      wrapperClassName="table-datepicker-wrapper"
-      calendarClassName="table-datepicker-calendar"
-      {...props}
-    />
+    <div onClick={handleClick}>
+      <DatePicker
+        locale="es"
+        selected={selectedDate}
+        onChange={handleDateChange}
+        filterDate={filterDate}
+        disabled={disabled}
+        dateFormat={dateFormat}
+        placeholderText={placeholderText}
+        onKeyDown={handleKeyDown}
+        className={`table-datepicker ${className}`}
+        popperClassName="table-datepicker-popper"
+        wrapperClassName="table-datepicker-wrapper"
+        calendarClassName="table-datepicker-calendar"
+        {...props}
+      />
+    </div>
   );
 };
 
