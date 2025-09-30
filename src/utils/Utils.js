@@ -583,48 +583,6 @@ export const validatePastedCellValue = (cellValue, expectedType) => {
    };
 };
 
-/**
- * Formats a number to a currency string, removing unnecessary trailing zeros and adding a dollar sign
- * @param {Number} value 
- * @param {Number} decimals 
- * @returns {String} The formatted currency string
- */
-export const formatCurrency = (value, decimals = 2) => {
-   if (!value && value !== 0) return '$0.00';
-
-   const numValue = parseFloat(value);
-   if (isNaN(numValue)) return '$0.00';
-
-   // Format with at least 2 decimals, but remove unnecessary trailing zeros beyond that
-   const formatted = numValue.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: decimals
-   });
-
-   return '$' + formatted;
-};
-
-/**
- * Formats a number to a percentage string, removing unnecessary trailing zeros and adding a percentage sign
- * @param {Number} value 
- * @param {Number} decimals 
- * @returns {String} The formatted percentage string
- */
-export const formatPercentage = (value, decimals = 2) => {
-   if (!value && value !== 0) return "0.00%";
-
-   const numValue = parseFloat(value);
-   if (isNaN(numValue)) return "0.00%";
-
-   // Format with at least 2 decimals, but remove unnecessary trailing zeros beyond that
-   const formatted = numValue.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: decimals
-   });
-
-   return formatted + '%';
-}
-
 export default {
    isEqual,
    pad,
@@ -646,6 +604,4 @@ export default {
    getAllParents,
    filterRowValues,
    validatePastedCellValue,
-   formatCurrency,
-   formatPercentage,
 }

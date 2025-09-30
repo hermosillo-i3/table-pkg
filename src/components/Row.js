@@ -3,7 +3,7 @@ import InputField from "./InputField"
 import {Icon, Popup} from 'semantic-ui-react'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ItemTypes} from './Constants'
-import {formatColumn as formatColumnUtils, isFunction, formatForSelect, isNumber, formatCurrency, formatPercentage} from "../utils/Utils";
+import {formatColumn as formatColumnUtils, isFunction, formatForSelect} from "../utils/Utils";
 
 import {
    useDrag,
@@ -376,7 +376,6 @@ const rowFunctionComponent = (props) => {
                   >
                      <InputField
                         isItem={row.is_item}
-                        depth={depth}
                         onFocus={() => onFocus(colIndex)}
                         onUnfocusOthers={() => {
                            // Clear focus by calling onFocus with invalid indexes to unfocus current cell

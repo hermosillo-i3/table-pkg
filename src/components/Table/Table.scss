@@ -1874,37 +1874,3 @@ input.InputField {
     background: $font-color-header !important;
   }
 }
-
-// Override for items that should have header styling (is_item=true but should look like headers)
-.force-header-style {
-  background-color: $header_lv_0;
-
-  td {
-    border-bottom: 1px solid #000000;
-    border-right: 1px solid #000000;
-
-    .value,
-    input,
-    i,
-    textarea,
-    p,
-    select {
-      color: $font-color-header !important;
-    }
-  }
-
-  .freeze_horizontal {
-    .value,
-    div,
-    input,
-    textarea,
-    p,
-    select,
-    td.drag-drop-td.on-dragging-available,
-    .flex.expand-column,
-    td.not-drag-drop-row {
-      background-color: $header_lv_0;
-      color: $font-color-header !important;
-    }
-  }
-}
