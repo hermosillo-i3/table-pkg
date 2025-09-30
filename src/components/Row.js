@@ -94,7 +94,6 @@ const rowFunctionComponent = (props) => {
    const [rowRef, setRowRef] = React.useState(null);
    const [className, setClassName] = React.useState('Table-Row');
    const [hoveredCellIndex, setHoveredCellIndex] = React.useState(null);
-   const [isHoveringCell, setIsHoveringCell] = React.useState(false);
 
    useEffect(() => {
       const shouldScroll = props.scrollTo === row.id;

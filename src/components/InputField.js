@@ -837,7 +837,7 @@ class InputField extends React.Component {
                 style={{
                   width: '100%',
                   border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
-                  height: this.state.selectExpanded ? 'auto' : undefined,
+                  height: selectExpanded ? 'auto' : undefined,
                 }}
               >
                 {(!value || value === '') && !defaultValue && (
