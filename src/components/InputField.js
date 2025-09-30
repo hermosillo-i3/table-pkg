@@ -302,7 +302,7 @@ class InputField extends React.Component {
                   boxSizing: 'border-box',
                   width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
                 }}
-                ref={(input) => {ƒ
+                ref={(input) => {
                   this.input = input;
                 }}
                 tabIndex={tabIndex}
@@ -521,7 +521,10 @@ class InputField extends React.Component {
               onBlur={this.onBlur}
               onFocus={this.onFocus}
               tabIndex={tabIndex}
-              style={newRowSelectionStyleWithMinimalWidth}
+              style={{
+                ...newRowSelectionStyleWithMinimalWidth,
+                width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
+              }}
               onKeyDown={(e) => {
                 this.onKeyDown(e);
                 if (this.props.onKeyDownHotKeys) {
