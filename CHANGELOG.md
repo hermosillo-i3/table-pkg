@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.13
+Date: Oct 1, 2025
+* [FIX]
+  * Fix several issues related to the new row selection process, including styles and behaviour of the cells
+
 ## V 1.17.12
 Date: Sept 10, 2025
 * [FIX]
