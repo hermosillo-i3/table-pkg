@@ -355,7 +355,7 @@ const rowFunctionComponent = (props) => {
                      onClick={(e) => {
                         // Only prevent row selection if clicking directly on input elements
                         const isDirectInputClick = e.target.matches('input, textarea, select') || 
-                           e.target.closest('.InputField, .react-datepicker-wrapper, .cleave-input');
+                           e.target.closest('.InputField, .react-datepicker-wrapper, .table-datepicker-wrapper, .cleave-input, .InputField-Boolean');
                         if (isDirectInputClick) {
                            e.stopPropagation();
                         } else if (allowNewRowSelectionProcess && props.onRowSelect) {
@@ -547,7 +547,13 @@ const rowFunctionComponent = (props) => {
                   className={`cell ${customColumnClass} ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >
                   <div
-                     className={`flex ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""} ${readOnlyClass}`}>
+                     className={`flex ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""} ${readOnlyClass}`}
+                        style={{
+                           whiteSpace: 'pre-wrap',
+                           wordBreak: 'break-word',
+                           overflow: 'hidden',
+                        }}
+                     >
                      {!row.is_item && colIndex === expandCollapseColumnIndex &&
                         <div className={`Table-Column-${is_open ? 'Expanded' : 'Contracted'}`}
                            onClick={onRowExpand(row)}>
@@ -588,7 +594,12 @@ const rowFunctionComponent = (props) => {
                         cursor: allowNewRowSelectionProcess ? 'pointer' : 'default'
                      }}
                      onClick={(e) => {
-                        if (allowNewRowSelectionProcess && props.onRowSelect) {
+                        // Only prevent row selection if clicking directly on input elements
+                        const isDirectInputClick = e.target.matches('input, textarea, select') || 
+                           e.target.closest('.InputField, .react-datepicker-wrapper, .table-datepicker-wrapper, .cleave-input, .InputField-Boolean');
+                        if (isDirectInputClick) {
+                           e.stopPropagation();
+                        } else if (allowNewRowSelectionProcess && props.onRowSelect) {
                            e.stopPropagation();
                            props.onRowSelect(row, e.ctrlKey || e.metaKey);
                         }
