@@ -687,7 +687,7 @@ class InputField extends React.Component {
               getInputRef={(input) => {
                 this.input = input;
               }}
-              className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
+              className={`InputField ${customColumnClass}`}
               value={this.state.currentValue}
               onBlur={this.onBlur}
               tabIndex={tabIndex}

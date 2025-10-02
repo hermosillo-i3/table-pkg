@@ -1,6 +1,12 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.14
+Date: Oct 2, 2025
+* [FIX]
+  * Fix the number-format InputField having a white background when unfocused and allowNewRowSelectionProcess == true
+  * Now the font color of the header rows changes to black when they're selected
+
 ## V 1.17.13
 Date: Oct 1, 2025
 * [FIX]
