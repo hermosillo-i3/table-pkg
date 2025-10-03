@@ -244,7 +244,9 @@ const rowFunctionComponent = (props) => {
       });
       if (props.onCellClick) {
          props.onCellClick(column, row, colIndex, rowIndex)
-         if (props.allowNewRowSelectionProcess) {
+         // Check if click is on a Popover
+         const isPopoverClick = e.target.closest('[data-popover], .ui.popup');
+         if (props.allowNewRowSelectionProcess && !isPopoverClick) {
             props.onRowSelect(row, e.ctrlKey || e.metaKey)
          }
       }
