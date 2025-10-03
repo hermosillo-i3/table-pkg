@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.14
+Date: Oct 3, 2025
+* [FIX]
+  * Update header 4 colors for more readable cell data
+
 ## V 1.17.13
 Date: Oct 1, 2025
 * [FIX]
