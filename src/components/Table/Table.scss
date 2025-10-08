@@ -6,17 +6,18 @@ $header_lv_0: #172c33;
 $header_lv_1: #003459;
 $header_lv_2: #005579;
 $header_lv_3: #085f9e;
-$header_lv_4: #d0e8fa;
+$header_lv_4: #027dd5;
 $header_lv_5: #03acea;
 $header_lv_6: #67c3f8;
 $header_lv_7: #80b8df;
 $header_lv_8: #BFD1E5;
+$striped_row: #d0e8fa;
 
 $header_lv_0_disabled: #8F9598;
 $header_lv_1_disabled: #8B99A9;
 $header_lv_2_disabled: #95AAB9;
 $header_lv_3_disabled: #98AECA;
-$header_lv_4_disabled: #c1d2e0;
+$header_lv_4_disabled: #A1BDE4;
 $header_lv_5_disabled: #B0D3EF;
 $header_lv_6_disabled: #C4E0F7;
 $header_lv_7_disabled: #C9DBEB;
@@ -981,7 +982,7 @@ $font-color-header: #ffffff;
 }
 
 .Table-Row--striped {
-  background-color: color.adjust($color: $header_lv_4, $lightness: 5%);
+  background-color: color.adjust($color: $striped_row, $lightness: 5%);
 }
 
 .Table-Row-Empty {

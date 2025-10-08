@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.16
+Date: Oct 8, 2025
+* [FIX]
+  * Fix header 4 colors and add unique color variable for striped table style
+
 ## V 1.17.15
 Date: Oct 3, 2025
 * [FIX]
