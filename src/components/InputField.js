@@ -782,7 +782,7 @@ class InputField extends React.Component {
             />
           ) : (
             <div
-              className={this.props.allowNewRowSelectionProcess ? `value` : `left-align-flex value ${customColumnClass} expanded-column`}
+              className={this.props.allowNewRowSelectionProcess ? `value expanded-column` : `left-align-flex value ${customColumnClass} expanded-column`}
               tabIndex={tabIndex}
               onClick={this.onFocus}
               onFocus={(e) => {
