@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.17
+Date: Oct 8, 2025
+* [FIX]
+  * Fix the code column on the estimate table (InputField of type text) overflowing into the next cell
+
 ## V 1.17.16
 Date: Oct 8, 2025
 * [FIX]
