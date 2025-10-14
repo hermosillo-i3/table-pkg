@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.17.18
+Date: Oct 14, 2025
+* [FIX]
+  * Fix the number input not using the right background color when used in a parent row
+
 ## V 1.17.17
 Date: Oct 8, 2025
 * [FIX]
