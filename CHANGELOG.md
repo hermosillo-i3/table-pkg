@@ -1,8 +1,8 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
-## V 1.17.X
-Date: Oct X, 2025
+## V 1.17.19
+Date: Oct 24, 2025
 * [FIX]
   * Add clear icon in the InputFieldSearch
 
