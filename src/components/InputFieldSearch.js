@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search } from "semantic-ui-react";
+import { Search, Icon } from "semantic-ui-react";
 import deburr from "lodash/deburr";
 import escapeRegExp from "lodash/escapeRegExp";
 import filter from "lodash/filter";
@@ -39,6 +39,16 @@ const InputFieldSearch = (props) => {
       setHasUpdated(true);
       setValue(title);
       onUpdate(result, resetValue);
+    };
+
+    /**
+     * Handles clearing the selected value and resetting the component to initial state
+     */
+    const handleClear = () => {
+      setValue("");
+      setHasUpdated(true);
+      setResults([]);
+      onUpdate(null, resetValue);
     };
 
     const handleSearchChange = (_, { value }) => {
@@ -94,29 +104,46 @@ const InputFieldSearch = (props) => {
     if (isFocused) {
            return (
              <React.Fragment>
-               <Search
-                 className={`InputFieldSearch ${customColumnClass}`}
-                 input={{ ref: searchRef }}
-                 placeholder={"Escribe para buscar..."}
-                 minCharacters={3}
-                 fluid
-                 noResultsMessage="No se encontraron resultados"
-                 loading={isLoading}
-                 onResultSelect={handleResultSelect}
-                 onSearchChange={handleSearchChange}
-                 onBlur={handleBlur}
-                 onKeyDown={handleKeyDown}
-                 results={results}
-                 value={value}
-                 style={customStyle}
-               />
+               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                 <Search
+                   className={`InputFieldSearch ${customColumnClass}`}
+                   input={{ ref: searchRef }}
+                   placeholder={"Escribe para buscar..."}
+                   minCharacters={3}
+                   fluid
+                   noResultsMessage="No se encontraron resultados"
+                   loading={isLoading}
+                   onResultSelect={handleResultSelect}
+                   onSearchChange={handleSearchChange}
+                   onBlur={handleBlur}
+                   onKeyDown={handleKeyDown}
+                   results={results}
+                   value={value}
+                   style={customStyle}
+                 />
+                 {value && (
+                   <Icon
+                     name="times"
+                     className="clear-icon-focused"
+                     style={{
+                       position: 'absolute',
+                       right: '8px',
+                       cursor: 'pointer',
+                       color: '#999',
+                       fontSize: '12px',
+                       zIndex: 10
+                     }}
+                     onClick={handleClear}
+                   />
+                 )}
+               </div>
              </React.Fragment>
            );
          }else{
              return (
                <div
                  className={allowNewRowSelectionProcess ? `left-align-flex value ${customColumnClass}` : `left-align-flex value ${customColumnClass} expanded-column`}
-                 style={customStyle}
+                 style={{...customStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
                >
                  <span className={`${compressLongText ? "compress-row" : ""}`}>
                    {value ? (
@@ -125,6 +152,19 @@ const InputFieldSearch = (props) => {
                      <span className="Color-Light-Grey">{placeholder}</span>
                    )}
                  </span>
+                 {value && (
+                   <Icon
+                     name="times"
+                     className="clear-icon"
+                     style={{
+                       cursor: 'pointer',
+                       marginLeft: '8px',
+                       color: '#999',
+                       fontSize: '12px'
+                     }}
+                     onClick={handleClear}
+                   />
+                 )}
                </div>
              );
           
