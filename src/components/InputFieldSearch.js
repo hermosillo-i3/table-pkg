@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search } from "semantic-ui-react";
+import { Search, Icon } from "semantic-ui-react";
 import deburr from "lodash/deburr";
 import escapeRegExp from "lodash/escapeRegExp";
 import filter from "lodash/filter";
@@ -39,6 +39,16 @@ const InputFieldSearch = (props) => {
       setHasUpdated(true);
       setValue(title);
       onUpdate(result, resetValue);
+    };
+
+    /**
+     * Handles clearing the selected value and resetting the component to initial state
+     */
+    const handleClear = () => {
+      setValue("");
+      setHasUpdated(true);
+      setResults([]);
+      onUpdate(null, resetValue);
     };
 
     const handleSearchChange = (_, { value }) => {
@@ -90,42 +100,59 @@ const InputFieldSearch = (props) => {
         }
         e.stopPropagation();
     };
-
     if (isFocused) {
            return (
-             <React.Fragment>
-               <Search
-                 className={`InputFieldSearch ${customColumnClass}`}
-                 input={{ ref: searchRef }}
-                 placeholder={"Escribe para buscar..."}
-                 minCharacters={3}
-                 fluid
-                 noResultsMessage="No se encontraron resultados"
-                 loading={isLoading}
-                 onResultSelect={handleResultSelect}
-                 onSearchChange={handleSearchChange}
-                 onBlur={handleBlur}
-                 onKeyDown={handleKeyDown}
-                 results={results}
-                 value={value}
-                 style={customStyle}
-               />
-             </React.Fragment>
+              <React.Fragment>
+                 <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                    <Search
+                       className={`InputFieldSearch ${customColumnClass}`}
+                       input={{ ref: searchRef, icon: value ? null : "search" }}
+                       placeholder={"Escribe para buscar..."}
+                       minCharacters={3}
+                       fluid
+                       noResultsMessage="No se encontraron resultados"
+                       loading={isLoading}
+                       onResultSelect={handleResultSelect}
+                       onSearchChange={handleSearchChange}
+                       onBlur={handleBlur}
+                       onKeyDown={handleKeyDown}
+                       results={results}
+                       value={value}
+                       style={customStyle}
+                    />
+                    {value && (
+                       <Icon
+                          name="times"
+                          className="clear-icon-focused"
+                          style={{
+                             position: "absolute",
+                             right: "5px",
+                             top: "7px",
+                             cursor: "pointer",
+                             color: "red",
+                             fontSize: "12px",
+                             zIndex: 10,
+                          }}
+                          onClick={handleClear}
+                       />
+                    )}
+                 </div>
+              </React.Fragment>
            );
          }else{
              return (
-               <div
-                 className={allowNewRowSelectionProcess ? `left-align-flex value ${customColumnClass}` : `left-align-flex value ${customColumnClass} expanded-column`}
-                 style={customStyle}
-               >
-                 <span className={`${compressLongText ? "compress-row" : ""}`}>
-                   {value ? (
-                     value
-                   ) : (
-                     <span className="Color-Light-Grey">{placeholder}</span>
-                   )}
-                 </span>
-               </div>
+                <div
+                   className={
+                      allowNewRowSelectionProcess
+                         ? `left-align-flex value ${customColumnClass}`
+                         : `left-align-flex value ${customColumnClass} expanded-column`
+                   }
+                   style={customStyle}
+                >
+                   <span className={`${compressLongText ? "compress-row" : ""}`}>
+                      {value ? value : <span className="Color-Light-Grey">{placeholder}</span>}
+                   </span>
+                </div>
              );
           
          }
