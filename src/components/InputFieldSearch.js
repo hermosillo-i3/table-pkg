@@ -100,44 +100,44 @@ const InputFieldSearch = (props) => {
         }
         e.stopPropagation();
     };
-
     if (isFocused) {
            return (
-             <React.Fragment>
-               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                 <Search
-                   className={`InputFieldSearch ${customColumnClass}`}
-                   input={{ ref: searchRef }}
-                   placeholder={"Escribe para buscar..."}
-                   minCharacters={3}
-                   fluid
-                   noResultsMessage="No se encontraron resultados"
-                   loading={isLoading}
-                   onResultSelect={handleResultSelect}
-                   onSearchChange={handleSearchChange}
-                   onBlur={handleBlur}
-                   onKeyDown={handleKeyDown}
-                   results={results}
-                   value={value}
-                   style={customStyle}
-                 />
-                 {value && (
-                   <Icon
-                     name="times"
-                     className="clear-icon-focused"
-                     style={{
-                       position: 'absolute',
-                       right: '8px',
-                       cursor: 'pointer',
-                       color: '#999',
-                       fontSize: '12px',
-                       zIndex: 10
-                     }}
-                     onClick={handleClear}
-                   />
-                 )}
-               </div>
-             </React.Fragment>
+              <React.Fragment>
+                 <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                    <Search
+                       className={`InputFieldSearch ${customColumnClass}`}
+                       input={{ ref: searchRef, icon: value ? null : "search" }}
+                       placeholder={"Escribe para buscar..."}
+                       minCharacters={3}
+                       fluid
+                       noResultsMessage="No se encontraron resultados"
+                       loading={isLoading}
+                       onResultSelect={handleResultSelect}
+                       onSearchChange={handleSearchChange}
+                       onBlur={handleBlur}
+                       onKeyDown={handleKeyDown}
+                       results={results}
+                       value={value}
+                       style={customStyle}
+                    />
+                    {value && (
+                       <Icon
+                          name="times"
+                          className="clear-icon-focused"
+                          style={{
+                             position: "absolute",
+                             right: "5px",
+                             top: "7px",
+                             cursor: "pointer",
+                             color: "red",
+                             fontSize: "12px",
+                             zIndex: 10,
+                          }}
+                          onClick={handleClear}
+                       />
+                    )}
+                 </div>
+              </React.Fragment>
            );
          }else{
              return (
@@ -152,19 +152,6 @@ const InputFieldSearch = (props) => {
                      <span className="Color-Light-Grey">{placeholder}</span>
                    )}
                  </span>
-                 {value && (
-                   <Icon
-                     name="times"
-                     className="clear-icon"
-                     style={{
-                       cursor: 'pointer',
-                       marginLeft: '8px',
-                       color: '#999',
-                       fontSize: '12px'
-                     }}
-                     onClick={handleClear}
-                   />
-                 )}
                </div>
              );
           
