@@ -141,18 +141,18 @@ const InputFieldSearch = (props) => {
            );
          }else{
              return (
-               <div
-                 className={allowNewRowSelectionProcess ? `left-align-flex value ${customColumnClass}` : `left-align-flex value ${customColumnClass} expanded-column`}
-                 style={{...customStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
-               >
-                 <span className={`${compressLongText ? "compress-row" : ""}`}>
-                   {value ? (
-                     value
-                   ) : (
-                     <span className="Color-Light-Grey">{placeholder}</span>
-                   )}
-                 </span>
-               </div>
+                <div
+                   className={
+                      allowNewRowSelectionProcess
+                         ? `left-align-flex value ${customColumnClass}`
+                         : `left-align-flex value ${customColumnClass} expanded-column`
+                   }
+                   style={customStyle}
+                >
+                   <span className={`${compressLongText ? "compress-row" : ""}`}>
+                      {value ? value : <span className="Color-Light-Grey">{placeholder}</span>}
+                   </span>
+                </div>
              );
           
          }
