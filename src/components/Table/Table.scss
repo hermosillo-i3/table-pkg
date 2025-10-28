@@ -104,7 +104,7 @@ $font-color-header: #ffffff;
   }
 }
 
-.Table-Parent-Row-Previous-Modified {
+.Table-Row-Error-Light {
   background-color: #f54e4ed2 !important;
 
   // For parent #e93333d2
@@ -148,7 +148,7 @@ $font-color-header: #ffffff;
   }
 }
 
-.Table-Parent-Row-Current-Modified {
+.Table-Row-Approved-Light {
   background-color: #A6DFA1 !important;
 
   // For parent #A6DFA1
@@ -193,7 +193,7 @@ $font-color-header: #ffffff;
   }
 }
 
-.Table-Child-Row-Previous-Modified {
+.Table-Row-Error{
   background-color: #ec3535d2 !important;
 
   // For parent #e93333d2
@@ -237,7 +237,7 @@ $font-color-header: #ffffff;
   }
 }
 
-.Table-Child-Row-Current-Modified {
+.Table-Row-Approved {
   background-color: #8ee963 !important;
 
   // For parent #A6DFA1
@@ -398,7 +398,7 @@ $font-color-header: #ffffff;
   }
 }
 
-.Table-Row-Lib {
+.Table-Row-Approved-Dark {
   background-color: #93c47d !important;
 
   .freeze_horizontal {
