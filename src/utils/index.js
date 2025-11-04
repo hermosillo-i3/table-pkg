@@ -1163,121 +1163,98 @@ export const fixRowsFromClipboard = (rows, pastedRowsValidator) => {
 };
 
 /**
- * Calculate match score for enhanced user searches with ranking by relevance
- * @param {Object} result - The item to match against
- * @param {string} searchValue - The search term
- * @param {Object} options - Search configuration options
- * @param {string} options.titleField - Field name for title (default: 'title')
- * @param {string} options.descriptionField - Field name for description (default: 'description')
- * @param {string} options.searchPropField - Field name for custom search property (default: 'searchProp')
- * @returns {number} - Match score (higher is better, 0 means no match)
+ * Calculate enhanced match score for an item based on search value
+ * @param {Object} item - The item to score
+ * @param {String} searchValue - The search query
+ * @param {Object} options - Search options
+ * @returns {Number} Match score (0 if no match)
  */
-export const calculateEnhancedMatchScore = (result, searchValue, options = {}) => {
+export const calculateEnhancedMatchScore = (item, searchValue, options = {}) => {
    const {
       titleField = 'title',
       descriptionField = 'description',
       searchPropField = 'searchProp'
    } = options;
 
-   const searchTerm = searchValue.toLowerCase().trim();
-   const title = result[titleField]?.toLowerCase() || '';
-   const description = result[descriptionField]?.toLowerCase() || '';
-   const searchProp = result[searchPropField]?.toLowerCase() || '';
-   
-   // Check if searching by email (contains @ symbol)
-   if (searchTerm.includes('@')) {
-      const email = description || searchProp;
-      if (email.includes(searchTerm)) {
-         // Exact email match gets highest score
-         return email === searchTerm ? 1000 : 500;
-      }
+   if (!searchValue || searchValue.length < 1) {
       return 0;
    }
-   
-   // Split search term into individual words
-   const searchWords = searchTerm.split(/\s+/).filter(word => word.length > 0);
-   const titleWords = title.split(/\s+/);
-   
-   let score = 0;
-   let matchedWords = 0;
-   
-   // Calculate score based on how well search words match title words
-   for (const searchWord of searchWords) {
-      let bestWordScore = 0;
-      
-      for (const titleWord of titleWords) {
-         if (titleWord === searchWord) {
-            // Exact word match
-            bestWordScore = Math.max(bestWordScore, 100);
-         } else if (titleWord.startsWith(searchWord)) {
-            // Word starts with search term
-            bestWordScore = Math.max(bestWordScore, 80);
-         } else if (titleWord.includes(searchWord)) {
-            // Word contains search term
-            bestWordScore = Math.max(bestWordScore, 60);
-         } else if (searchWord.length >= 3 && titleWord.includes(searchWord.substring(0, 3))) {
-            // Partial match (first 3 characters)
-            bestWordScore = Math.max(bestWordScore, 30);
+
+   const normalize = (str) => {
+      if (!str) return '';
+      return deburr(String(str).toLowerCase().trim());
+   };
+
+   const normalizedSearch = normalize(searchValue);
+   let totalScore = 0;
+
+   // Get field values
+   const title = normalize(item[titleField] || item.title || item[searchPropField] || '');
+   const description = normalize(item[descriptionField] || item.description || '');
+   const searchProp = normalize(item[searchPropField] || item.searchProp || '');
+
+   // Score calculation function
+   const calculateFieldScore = (fieldValue, fieldWeight = 1) => {
+      if (!fieldValue || fieldValue.length === 0) return 0;
+
+      let score = 0;
+      const searchLen = normalizedSearch.length;
+      const fieldLen = fieldValue.length;
+
+      // Exact match (highest priority)
+      if (fieldValue === normalizedSearch) {
+         score = 1000 * fieldWeight;
+      }
+      // Starts with (high priority)
+      else if (fieldValue.startsWith(normalizedSearch)) {
+         score = 500 * fieldWeight;
+         // Bonus for shorter fields (more specific)
+         score += (fieldLen - searchLen) * 10;
+      }
+      // Contains (medium priority)
+      else if (fieldValue.includes(normalizedSearch)) {
+         score = 100 * fieldWeight;
+         // Bonus for earlier position
+         const position = fieldValue.indexOf(normalizedSearch);
+         score += (fieldLen - position - searchLen) * 5;
+      }
+      // Word boundary match (fuzzy)
+      else {
+         const words = fieldValue.split(/\s+/);
+         const searchWords = normalizedSearch.split(/\s+/);
+         
+         // Check if all search words are present
+         const allWordsMatch = searchWords.every(searchWord => 
+            words.some(word => word.startsWith(searchWord) || word.includes(searchWord))
+         );
+
+         if (allWordsMatch) {
+            score = 50 * fieldWeight;
+            // Count how many words match
+            const matchingWords = searchWords.filter(searchWord =>
+               words.some(word => word.startsWith(searchWord) || word.includes(searchWord))
+            ).length;
+            score += matchingWords * 10;
          }
       }
-      
-      // Also check searchProp field if available
-      if (bestWordScore === 0 && searchProp) {
-         const searchPropWords = searchProp.split(/\s+/);
-         for (const propWord of searchPropWords) {
-            if (propWord === searchWord) {
-               bestWordScore = Math.max(bestWordScore, 90);
-            } else if (propWord.startsWith(searchWord)) {
-               bestWordScore = Math.max(bestWordScore, 70);
-            } else if (propWord.includes(searchWord)) {
-               bestWordScore = Math.max(bestWordScore, 50);
-            }
-         }
-      }
-      
-      if (bestWordScore > 0) {
-         matchedWords++;
-         score += bestWordScore;
-      }
-   }
-   
-   // Bonus for matching all search words
-   if (matchedWords === searchWords.length) {
-      score += 50;
-   }
-   
-   // Bonus for consecutive word matches in order
-   if (searchWords.length > 1) {
-      const titleString = title;
-      const searchPropString = searchProp;
-      const searchString = searchTerm;
-      
-      if (titleString.includes(searchString) || searchPropString.includes(searchString)) {
-         score += 200; // High bonus for exact phrase match
-      }
-   }
-   
-   // Also check description for additional matching
-   if (score === 0) {
-      for (const searchWord of searchWords) {
-         if (description.includes(searchWord)) {
-            score += 20; // Lower score for description matches
-         }
-      }
-   }
-   
-   return score;
+
+      return score;
+   };
+
+   // Calculate scores for each field
+   totalScore += calculateFieldScore(title, 2); // Title has higher weight
+   totalScore += calculateFieldScore(description, 1);
+   totalScore += calculateFieldScore(searchProp, 1.5);
+
+   return totalScore;
 };
 
 /**
- * Filter and sort items using enhanced search logic
- * @param {Array} items - Array of items to search through
- * @param {string} searchValue - The search term
- * @param {Object} options - Search configuration options
- * @param {boolean} options.useEnhancedSearch - Whether to use enhanced search (default: auto-detect based on item structure)
- * @param {number} options.limit - Maximum number of results to return
- * @param {Array} options.filterBy - Array of keys to filter by for fallback search
- * @returns {Array} - Filtered and sorted results
+ * Perform enhanced search with scoring and filtering
+ * @param {Array} items - Items to search through
+ * @param {String} searchValue - Search query
+ * @param {Object} options - Search options
+ * @returns {Array} Filtered and sorted results
  */
 export const performEnhancedSearch = (items, searchValue, options = {}) => {
    const {
