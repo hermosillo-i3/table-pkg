@@ -3,6 +3,9 @@ import {Decimal} from "decimal.js";
 import each from "lodash/each";
 import cloneDeep from "lodash/cloneDeep";
 import isArray from "lodash/isArray";
+import deburr from "lodash/deburr";
+import escapeRegExp from "lodash/escapeRegExp";
+import filter from "lodash/filter";
 
 const cleanText = str => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 
@@ -1157,4 +1160,172 @@ export const fixRowsFromClipboard = (rows, pastedRowsValidator) => {
    }
 
    return {newRows, errorRows, errorRowIndexes};
+};
+
+/**
+ * Calculate match score for enhanced user searches with ranking by relevance
+ * @param {Object} result - The item to match against
+ * @param {string} searchValue - The search term
+ * @param {Object} options - Search configuration options
+ * @param {string} options.titleField - Field name for title (default: 'title')
+ * @param {string} options.descriptionField - Field name for description (default: 'description')
+ * @param {string} options.searchPropField - Field name for custom search property (default: 'searchProp')
+ * @returns {number} - Match score (higher is better, 0 means no match)
+ */
+export const calculateEnhancedMatchScore = (result, searchValue, options = {}) => {
+   const {
+      titleField = 'title',
+      descriptionField = 'description',
+      searchPropField = 'searchProp'
+   } = options;
+
+   const searchTerm = searchValue.toLowerCase().trim();
+   const title = result[titleField]?.toLowerCase() || '';
+   const description = result[descriptionField]?.toLowerCase() || '';
+   const searchProp = result[searchPropField]?.toLowerCase() || '';
+   
+   // Check if searching by email (contains @ symbol)
+   if (searchTerm.includes('@')) {
+      const email = description || searchProp;
+      if (email.includes(searchTerm)) {
+         // Exact email match gets highest score
+         return email === searchTerm ? 1000 : 500;
+      }
+      return 0;
+   }
+   
+   // Split search term into individual words
+   const searchWords = searchTerm.split(/\s+/).filter(word => word.length > 0);
+   const titleWords = title.split(/\s+/);
+   
+   let score = 0;
+   let matchedWords = 0;
+   
+   // Calculate score based on how well search words match title words
+   for (const searchWord of searchWords) {
+      let bestWordScore = 0;
+      
+      for (const titleWord of titleWords) {
+         if (titleWord === searchWord) {
+            // Exact word match
+            bestWordScore = Math.max(bestWordScore, 100);
+         } else if (titleWord.startsWith(searchWord)) {
+            // Word starts with search term
+            bestWordScore = Math.max(bestWordScore, 80);
+         } else if (titleWord.includes(searchWord)) {
+            // Word contains search term
+            bestWordScore = Math.max(bestWordScore, 60);
+         } else if (searchWord.length >= 3 && titleWord.includes(searchWord.substring(0, 3))) {
+            // Partial match (first 3 characters)
+            bestWordScore = Math.max(bestWordScore, 30);
+         }
+      }
+      
+      // Also check searchProp field if available
+      if (bestWordScore === 0 && searchProp) {
+         const searchPropWords = searchProp.split(/\s+/);
+         for (const propWord of searchPropWords) {
+            if (propWord === searchWord) {
+               bestWordScore = Math.max(bestWordScore, 90);
+            } else if (propWord.startsWith(searchWord)) {
+               bestWordScore = Math.max(bestWordScore, 70);
+            } else if (propWord.includes(searchWord)) {
+               bestWordScore = Math.max(bestWordScore, 50);
+            }
+         }
+      }
+      
+      if (bestWordScore > 0) {
+         matchedWords++;
+         score += bestWordScore;
+      }
+   }
+   
+   // Bonus for matching all search words
+   if (matchedWords === searchWords.length) {
+      score += 50;
+   }
+   
+   // Bonus for consecutive word matches in order
+   if (searchWords.length > 1) {
+      const titleString = title;
+      const searchPropString = searchProp;
+      const searchString = searchTerm;
+      
+      if (titleString.includes(searchString) || searchPropString.includes(searchString)) {
+         score += 200; // High bonus for exact phrase match
+      }
+   }
+   
+   // Also check description for additional matching
+   if (score === 0) {
+      for (const searchWord of searchWords) {
+         if (description.includes(searchWord)) {
+            score += 20; // Lower score for description matches
+         }
+      }
+   }
+   
+   return score;
+};
+
+/**
+ * Filter and sort items using enhanced search logic
+ * @param {Array} items - Array of items to search through
+ * @param {string} searchValue - The search term
+ * @param {Object} options - Search configuration options
+ * @param {boolean} options.useEnhancedSearch - Whether to use enhanced search (default: auto-detect based on item structure)
+ * @param {number} options.limit - Maximum number of results to return
+ * @param {Array} options.filterBy - Array of keys to filter by for fallback search
+ * @returns {Array} - Filtered and sorted results
+ */
+export const performEnhancedSearch = (items, searchValue, options = {}) => {
+   const {
+      useEnhancedSearch,
+      limit,
+      filterBy,
+      titleField = 'title',
+      descriptionField = 'description',
+      searchPropField = 'searchProp'
+   } = options;
+
+   if (!searchValue || searchValue.length < 1) {
+      return [];
+   }
+
+   // Auto-detect if we should use enhanced search
+   const shouldUseEnhanced = useEnhancedSearch !== false && 
+      (useEnhancedSearch === true || 
+       (items.length > 0 && (items[0][titleField] && (items[0][descriptionField] || items[0][searchPropField]))));
+
+   let filteredResults;
+
+   if (shouldUseEnhanced) {
+      // Use enhanced search with scoring
+      filteredResults = items
+         .map(item => ({
+            ...item,
+            _matchScore: calculateEnhancedMatchScore(item, searchValue, options)
+         }))
+         .filter(item => item._matchScore > 0)
+         .sort((a, b) => b._matchScore - a._matchScore)
+         .map(({_matchScore, ...item}) => item);
+   } else {
+      // Fallback to original regex-based search
+      const re = new RegExp(escapeRegExp(searchValue), 'i');
+      const isMatch = (result) => {
+         if (filterBy != null) {
+            return filterBy.some((key) => re.test(result[key]));
+         }
+         return re.test(result[titleField] || result[searchPropField] || result.title);
+      };
+      
+      filteredResults = filter(items, isMatch);
+   }
+
+   if (limit != null) {
+      filteredResults = filteredResults.slice(0, limit);
+   }
+
+   return filteredResults;
 };
