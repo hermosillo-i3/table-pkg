@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Search, Icon } from "semantic-ui-react";
-import deburr from "lodash/deburr";
-import escapeRegExp from "lodash/escapeRegExp";
-import filter from "lodash/filter";
 import { getObjectProp } from "@hermosillo-i3/utils-pkg/src/object";
+import { performEnhancedSearch } from "../utils/index";
 
 const initialState = { isLoading: false, results: [], value: "" };
 
@@ -35,9 +33,10 @@ const InputFieldSearch = (props) => {
     }, [isFocused]);
 
     const handleResultSelect = (_, { result }) => {
-      const { title } = result;
+      // Use name if available, otherwise fall back to title
+      const displayValue = result.name || result.title;
       setHasUpdated(true);
-      setValue(title);
+      setValue(displayValue);
       onUpdate(result, resetValue);
     };
 
@@ -56,24 +55,49 @@ const InputFieldSearch = (props) => {
       setIsLoading(true);
       setHasUpdated(false);
 
-      const re = new RegExp(escapeRegExp(value), "i");
-      
-      const isMatch = (result) => {
-        const searchValue =
-          typeof searchAttribute === "function"
-            ? searchAttribute(result)
-            : getObjectProp(result, searchAttribute);
-
-        return re.test(deburr(searchValue));
+      // Use enhanced search for better matching and scoring
+      const searchOptions = {
+        useEnhancedSearch: true,
+        limit: 5,
+        titleField: searchAttribute,
+        searchPropField: searchAttribute,
+        // If searchAttribute is a function, we'll need to handle it differently
+        // For now, we'll use the enhanced search which will auto-detect field structure
       };
 
-      let filteredResults = filter(options, isMatch);
+      // If searchAttribute is a function, we need to transform the options
+      // to include the computed search value in a standard field
+      let itemsToSearch = options;
+      if (typeof searchAttribute === "function") {
+        itemsToSearch = options.map(item => ({
+          ...item,
+          title: searchAttribute(item), // Used for search matching (e.g., "name - email")
+        }));
+        searchOptions.titleField = 'title';
+        searchOptions.searchPropField = 'title';
+      }
 
-      // add limit to the results of 5
-      filteredResults = filteredResults.slice(0, 5);
+      let filteredResults = performEnhancedSearch(itemsToSearch, value, searchOptions);
+
+      // Format results for display: show only name as title, email as description
+      const formattedResults = filteredResults.map(result => {
+        const formattedResult = { ...result };
+        
+        // If the original item has name, use it as title; otherwise keep existing title
+        if (result.name) {
+          formattedResult.title = result.name;
+        }
+        
+        // If the original item has email, use it as description
+        if (result.email) {
+          formattedResult.description = result.email;
+        }
+        
+        return formattedResult;
+      });
 
       setIsLoading(false);
-      setResults(filteredResults);
+      setResults(formattedResults);
     };
 
     const handleBlur = () => {
@@ -107,7 +131,7 @@ const InputFieldSearch = (props) => {
                     <Search
                        className={`InputFieldSearch ${customColumnClass}`}
                        input={{ ref: searchRef, icon: value ? null : "search" }}
-                       placeholder={"Escribe para buscar..."}
+                       placeholder={placeholder}
                        minCharacters={3}
                        fluid
                        noResultsMessage="No se encontraron resultados"

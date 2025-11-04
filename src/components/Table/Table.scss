@@ -142,7 +142,7 @@ $font-color-header: #ffffff;
     select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
-    td.not-drag-drop-row {
+    td.not-drag-drop-row, .fixed.freeze_horizontal {
       background-color: #ffafafd2 !important;
     }
   }
@@ -1002,16 +1002,28 @@ $font-color-header: #ffffff;
 .Table-Row-Item {
   background: white;
 
-  .custom-column-non-editable {
+  // Example: Add styling for custom row class based on prop
+  &.Table-Row-ReadOnly {
+    .custom-column-non-editable, .cell-read-only, .cell-read-only-non-editable, .drag-drop-td, .not-drag-drop-row, .flex.cell-read-only {
+      background-color: #efefefbe ; 
 
-    &.null-value {
-      background-color: #e0dfdf; 
-      color: #a9a9a9; 
+      &.null-value {
+        background-color: #efefefbe; 
+      }
+      &.cell{
+        background-color: #efefefbe; 
+      }
     }
-    &.cell{
-      background-color: #e0dfdf; 
-    color: #a9a9a9; 
-  }
+    &:hover {
+      td {
+        border-right: 1px solid #f2f2f2;
+        border-bottom: 1px solid #f2f2f2;
+      }
+      
+      .custom-column-non-editable, .cell-read-only, .cell-read-only-non-editable, .drag-drop-td, .not-drag-drop-row, .flex.cell-read-only, .flex {
+        background-color: #dddddd;
+      }
+    }
   }
 
   &.dragging-row {
@@ -1874,6 +1886,11 @@ input.InputField {
   * {
     background-color: #F9FAFB  !important;
   }
+  
+  // Keep description (email) light grey on hover
+  .description {
+    color: #999 !important;
+  }
 }
 
 // Search results background color always white
@@ -1884,5 +1901,10 @@ input.InputField {
   .content,
   * {
     background: $font-color-header !important;
+  }
+  
+  // Make description (email) always light grey
+  .description {
+    color: #999 !important;
   }
 }

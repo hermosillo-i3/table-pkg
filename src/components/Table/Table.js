@@ -1055,6 +1055,21 @@ class Table extends React.Component {
    };
 
 
+   // Helper method to combine customRowClass
+   getCombinedRowClass = (row) => {
+      let classes = [];
+      
+      // Add customRowClass if provided
+      if (this.props.customRowClass) {
+         const customClass = this.props.customRowClass(row);
+         if (customClass) {
+            classes.push(customClass);
+         }
+      }
+      
+      return classes.join(' ');
+   };
+
    initGenerateRows = () => {
       let rendered_rows = [];
       let object_rows = []
@@ -1116,7 +1131,7 @@ class Table extends React.Component {
                      onRowSelect={this.onRowSelect}
                      onPaste={this.props.onPasteCell}
                      type={this.props.type}
-                     customRowClass={this.props.customRowClass}
+                     customRowClass={this.getCombinedRowClass}
                      ignoreItemStyle={this.props.ignoreItemStyle}
                      canDrop={this.props.canDropInRow}
                      canDrag={this.props.canDragRow}
@@ -1136,6 +1151,7 @@ class Table extends React.Component {
                      getTabIndex={this.calculateTabIndex}
                      rowId={row.id}
                      allowNewRowSelectionProcess={this.props.allowNewRowSelectionProcess}
+                     addReadOnlyStyle={this.props.addReadOnlyStyle}
                   />
                )
                object_rows.push(row)
@@ -1169,8 +1185,9 @@ class Table extends React.Component {
                cellActive={-1}
                onPaste={this.props.onPasteCell}
                type={this.props.type}
-               customRowClass={this.props.customRowClass}
+               customRowClass={this.getCombinedRowClass}
                ignoreItemStyle={this.props.ignoreItemStyle}
+               addReadOnlyStyle={this.props.addReadOnlyStyle}
             />
          )
       } else if (this.props.totalRowColumns) {
@@ -1192,8 +1209,9 @@ class Table extends React.Component {
                cellActive={-1}
                onPaste={this.props.onPasteCell}
                type={this.props.type}
-               customRowClass={this.props.customRowClass}
+               customRowClass={this.getCombinedRowClass}
                ignoreItemStyle={this.props.ignoreItemStyle}
+               addReadOnlyStyle={this.props.addReadOnlyStyle}
             />
          )
       }
@@ -1859,8 +1877,9 @@ class Table extends React.Component {
                            cellActive={-1}
                            onPaste={this.props.onPasteCell}
                            type={this.props.type}
-                           customRowClass={this.props.customRowClass}
+                           customRowClass={this.getCombinedRowClass}
                            ignoreItemStyle={this.props.ignoreItemStyle}
+                           addReadOnlyStyle={this.props.addReadOnlyStyle}
                         />}
                      </thead>
                   </table>
@@ -2059,6 +2078,7 @@ Table.propTypes = {
    onDropInRow: PropTypes.func,
    onDropInZone: PropTypes.func,
    customRowClass: PropTypes.func,
+   addReadOnlyStyle: PropTypes.bool, // When true, adds Table-Row-ReadOnly class to all column cells
    isLoading: PropTypes.bool,
 
    noRowsMessage: PropTypes.object,
@@ -2109,6 +2129,7 @@ Table.defaultProps = {
    className: '',
    tableHeaderOptions: {},
    actions: [],
+   addReadOnlyStyle: false,
    expandCollapseColumnIndex: 0,
    isTableHeaderHidden: false,
    isDragColumnVisible: true,
