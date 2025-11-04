@@ -89,6 +89,7 @@ const rowFunctionComponent = (props) => {
       styleTheme,
       is_selected,
       allowNewRowSelectionProcess,
+      addReadOnlyStyle,
    } = props;
    const [hasScrolled, setHasScrolled] = React.useState(false);
    const [rowRef, setRowRef] = React.useState(null);
@@ -175,9 +176,12 @@ const rowFunctionComponent = (props) => {
          classname += ' ' + customRowClass(row)
       }
 
+      if (addReadOnlyStyle && row.is_item) {
+         classname += ' Table-Row-ReadOnly'
+      }
 
       setClassName(classname);
-   }, [props.is_selected, styleTheme, rowIndex, row.is_item, depth, customRowClass, isOver, canDrop]);
+   }, [props.is_selected, styleTheme, rowIndex, row.is_item, depth, customRowClass, isOver, canDrop, addReadOnlyStyle]);
 
    const {
       // cDP, 
@@ -531,6 +535,7 @@ const rowFunctionComponent = (props) => {
             const readOnlyClass = !is_editable ? 'cell-read-only' : '';
             const customColumnClass = col.className ? col.className : '';
             const columnClass = col.columnClass ? isFunction(col.columnClass) ? col.columnClass(col, row) : col.columnClass : '';
+            const readOnlyColumnClass = addReadOnlyStyle ? 'Table-Row-ReadOnly' : '';
             let cellContent = col.Cell ? col.Cell(row) : null;
             let cellToRender = (col.Cell && cellContent !== null && cellContent !== undefined ? (
                <td
@@ -545,7 +550,7 @@ const rowFunctionComponent = (props) => {
                      overflow: col.overflow ? col.overflow : 'inherit',
                      cursor: allowNewRowSelectionProcess ? 'pointer' : 'default',
                   }}
-                  className={`cell ${customColumnClass} ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
+                  className={`cell ${customColumnClass} ${columnClass} ${readOnlyColumnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >
                   <div
                      className={`flex ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""} ${readOnlyClass}`}
@@ -587,7 +592,7 @@ const rowFunctionComponent = (props) => {
                      maxWidth: col.width,
                      overflow: col.overflow ? col.overflow : 'inherit'
                   }}
-                  className={`cell ${columnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
+                  className={`cell ${columnClass} ${readOnlyColumnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >
                   <div
                      className={`flex ${readOnlyClass} ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""}`}
