@@ -1169,6 +1169,8 @@ export const fixRowsFromClipboard = (rows, pastedRowsValidator) => {
  * @param {Object} options - Search options
  * @returns {Number} Match score (0 if no match)
  */
+// TODO: Move enhanced sear to utils-pkg
+// https://app.asana.com/1/527644457818985/project/1209109989396262/task/1211840596719235?focus=true
 export const calculateEnhancedMatchScore = (item, searchValue, options = {}) => {
    const {
       titleField = 'title',
