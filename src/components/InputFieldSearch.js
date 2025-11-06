@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Search, Icon } from "semantic-ui-react";
-import { getObjectProp } from "@hermosillo-i3/utils-pkg/src/object";
-import { performEnhancedSearch } from "../utils/index";
+import { performEnhancedSearch } from "@hermosillo-i3/utils-pkg/src/enhancedSearch";
 
 const initialState = { isLoading: false, results: [], value: "" };
 
