@@ -1,6 +1,12 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.0
+Date: Nov 06, 2025
+* [UPDATE]
+  * Update utils-pkg
+  * Delete enhanced search logic and reference it from the utils-pkg
+
 ## V 1.17.21
 Date: Oct 28, 2025
 * [NEW]
