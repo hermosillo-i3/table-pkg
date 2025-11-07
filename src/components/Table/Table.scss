@@ -578,6 +578,17 @@ $font-color-header: #ffffff;
     }
   }
 
+  &.Table-Row-Item {
+    .custom-column-non-editable {
+      &.null-value {
+        background-color: #e7e5e5be; 
+      }
+      &.cell {
+        background-color: #e7e5e5be; 
+      }
+    }
+  }
+
   td {
     border-bottom: 1px solid #000000;
     border-right: 1px solid #000000;
