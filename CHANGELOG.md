@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.1
+Date: Nov 07, 2025
+* [FIX]
+  * Change color for depth 1 item rows when non editablle
+
 ## V 1.18.0
 Date: Nov 06, 2025
 * [UPDATE]
