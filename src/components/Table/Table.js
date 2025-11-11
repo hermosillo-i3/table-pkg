@@ -1014,22 +1014,16 @@ class Table extends React.Component {
          const last_row_in_props = this.props.rows[Object.keys(this.props.rows)[Object.keys(this.props.rows).length - 1]];
          // If the new row has a parent_id, ensure the parent is expanded
          if (last_row_in_props.parent_id !== null) {
-            const parentId = last_row_in_props.parent_id;
-            const parentExtended = this.state.rows_extended[parentId] || {};
-            if (!parentExtended.is_open) {
-               this.setState(prevState => ({
-                  rows_extended: {
-                     ...prevState.rows_extended,
-                     [parentId]: {
-                        ...parentExtended,
-                        is_open: true,
-                        should_render: true
-                     }
-                  },
-                  // Always set the latest pending focus
-                  pendingFocusRowId: last_row_in_props.id,
-               }));
-               return;
+
+            if (this.props.selected_rows.length === 1) {
+               if (this.state.rows_extended[this.props.selected_rows[0]]) {
+                  const row = this.state.rows_extended[this.props.selected_rows[0]];
+                  if (row.is_open) {
+                     this.onRowExpand(this.props.rows[this.props.selected_rows[0]]);
+                  }
+               } else {
+                  this.onRowExpand(this.props.rows[this.props.selected_rows[0]] ?? this.props.rows[this.props.selected_rows[0].id]);
+               }
             }
          }
          // Always set the latest pending focus

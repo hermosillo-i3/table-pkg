@@ -2505,10 +2505,10 @@
   resolved "https://npm.pkg.github.com/download/@hermosillo-i3/catalogs-pkg/1.4.0/ff2d6608f1901e133c50c341ecfaa940e677e30b#ff2d6608f1901e133c50c341ecfaa940e677e30b"
   integrity sha512-Ed8sQmEVKHhfLR5jxrC76ptIiWl28lFbYo86H+KDfWLq1GYlpCj1frchRvzEnM5xQdALIEd80NGiaeswI2Ly8A==
 
-"@hermosillo-i3/utils-pkg@1.13.1":
-  version "1.13.1"
-  resolved "https://npm.pkg.github.com/download/@hermosillo-i3/utils-pkg/1.13.1/f25ede210ebbdadf1a8b986d9444bbf2dd26061d#f25ede210ebbdadf1a8b986d9444bbf2dd26061d"
-  integrity sha512-e4iYow0TzA1Yjj8m/9XjQFE6MKPnqNQCQQlW+ufo+BJ7dD9ME/u6E80MRr1lHGNnmLjh471EkrzFN6uNl4VDsQ==
+"@hermosillo-i3/utils-pkg@1.18.0":
+  version "1.18.0"
+  resolved "https://npm.pkg.github.com/download/@hermosillo-i3/utils-pkg/1.18.0/a54f0669af680faed1d3a366aeb51ea20c2e0d71#a54f0669af680faed1d3a366aeb51ea20c2e0d71"
+  integrity sha512-qtANATZmP22ZQyPAan4OutU/W4BsvEGo536fRN8VSjgMlOCIPphPcsJsMMUblUlvaQ6tfkzXG6WcBrOJbp24FA==
   dependencies:
     "@hermosillo-i3/catalogs-pkg" "1.4.0"
     dayjs "^1.10.7"
