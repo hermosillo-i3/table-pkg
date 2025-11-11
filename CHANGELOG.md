@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.2
+Date: Nov 11, 2025
+* [FIX]
+  * Fix an issue where adding children to a parent row caused it to expand upon refresh
+
 ## V 1.18.1
 Date: Nov 07, 2025
 * [FIX]
