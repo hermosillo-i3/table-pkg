@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.4
+Date: Nov 12, 2025
+* [FIX]
+  * Increase the width of unfocused text and textArea InputFields when hovering over an empty cell to improve the user experience.
+
 ## V 1.18.3
 Date: Nov 12, 2025
 * [FIX]
