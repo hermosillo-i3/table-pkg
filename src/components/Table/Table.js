@@ -1048,22 +1048,6 @@ class Table extends React.Component {
       return pad(row.order_position, 2);
    };
 
-
-   // Helper method to combine customRowClass
-   getCombinedRowClass = (row) => {
-      let classes = [];
-      
-      // Add customRowClass if provided
-      if (this.props.customRowClass) {
-         const customClass = this.props.customRowClass(row);
-         if (customClass) {
-            classes.push(customClass);
-         }
-      }
-      
-      return classes.join(' ');
-   };
-
    initGenerateRows = () => {
       let rendered_rows = [];
       let object_rows = []
@@ -1125,7 +1109,7 @@ class Table extends React.Component {
                      onRowSelect={this.onRowSelect}
                      onPaste={this.props.onPasteCell}
                      type={this.props.type}
-                     customRowClass={this.getCombinedRowClass}
+                     customRowClass={this.props.customRowClass}
                      ignoreItemStyle={this.props.ignoreItemStyle}
                      canDrop={this.props.canDropInRow}
                      canDrag={this.props.canDragRow}
@@ -1179,7 +1163,7 @@ class Table extends React.Component {
                cellActive={-1}
                onPaste={this.props.onPasteCell}
                type={this.props.type}
-               customRowClass={this.getCombinedRowClass}
+               customRowClass={this.props.customRowClass}
                ignoreItemStyle={this.props.ignoreItemStyle}
                addReadOnlyStyle={this.props.addReadOnlyStyle}
             />
@@ -1203,7 +1187,7 @@ class Table extends React.Component {
                cellActive={-1}
                onPaste={this.props.onPasteCell}
                type={this.props.type}
-               customRowClass={this.getCombinedRowClass}
+               customRowClass={this.props.customRowClass}
                ignoreItemStyle={this.props.ignoreItemStyle}
                addReadOnlyStyle={this.props.addReadOnlyStyle}
             />
@@ -1871,7 +1855,7 @@ class Table extends React.Component {
                            cellActive={-1}
                            onPaste={this.props.onPasteCell}
                            type={this.props.type}
-                           customRowClass={this.getCombinedRowClass}
+                           customRowClass={this.props.customRowClass}
                            ignoreItemStyle={this.props.ignoreItemStyle}
                            addReadOnlyStyle={this.props.addReadOnlyStyle}
                         />}

@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.3
+Date: Nov 12, 2025
+* [FIX]
+  * Delete conflicting getCombinedRowClass function, revert to past assignation of customRowClass
+
 ## V 1.18.2
 Date: Nov 11, 2025
 * [FIX]
