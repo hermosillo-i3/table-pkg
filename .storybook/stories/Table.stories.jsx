@@ -1005,7 +1005,7 @@ CustomColumnClass.args = {
             assesor: 'percentage',
             format: 'percentage',
             columnClass: 'custom-column-2'
-        }
+        } 
     ],
 };
 
@@ -1026,19 +1026,19 @@ RowColors.args = {
         },
         3: {
             id: 3,
-            description: 'Table-Child-Row-Current-Modified',
+            description: 'Table-Row-Approved',
             is_item: true,
             is_current_modified_child: true,
         },
         4: {
             id: 4,
-            description: 'Table-Parent-Row-Current-Modified',
+            description: 'Table-Row-Approved-Dark',
             is_item: true,
             is_current_modified_parent: true,
         },
         5: {
             id: 5,
-            description: 'Table-Row-Lib',
+            description: 'Table-Row-Info',
             is_item: true,
             is_lib: true,
         },
@@ -1050,14 +1050,14 @@ RowColors.args = {
         },
         7: {
             id: 7,
-            description: 'Table-Parent-Row-Previous-Modified',
+            description: 'Table-Row-Error-Light',
             is_item: true,
             is_previous_modified_parent: true,
         },
         8: {
             id: 8,
             parent_id: null,
-            description: 'Table-Child-Row-Previous-Modified',
+            description: 'Table-Row-Error',
             amount: 50,
             is_item: true,
             is_previous_modified_child: true,
@@ -1072,11 +1072,11 @@ RowColors.args = {
     customRowClass:(row) => { 
         return (row.is_close) ? 'Table-Row-Close' :
         (row.is_warning) ? 'Table-Row-Warning' :
-        (row.is_previous_modified_parent) ? 'Table-Parent-Row-Previous-Modified' :
-        (row.is_previous_modified_child) ? 'Table-Child-Row-Previous-Modified' :
-        (row.is_current_modified_parent) ? 'Table-Parent-Row-Current-Modified' :
-        (row.is_current_modified_child) ? 'Table-Child-Row-Current-Modified' :
-        (row.is_lib) ? 'Table-Row-Lib' :
+        (row.is_previous_modified_parent) ? 'Table-Row-Error-Light' :
+        (row.is_previous_modified_child) ? 'Table-Row-Error' :
+        (row.is_current_modified_parent) ? 'Table-Row-Approved-Dark' :
+        (row.is_current_modified_child) ? 'Table-Row-Approved' :
+        (row.is_lib) ? 'Table-Row-Info' :
         (row.is_close_alt) ? 'Table-Row-Close-Alt' : ''
     },
     isExpandRowsButtonActive: false,
