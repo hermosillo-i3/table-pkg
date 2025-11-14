@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.5
+Date: Nov 14, 2025
+* [FIX]
+  * Fix non-clickable cells showing the pointer cursor
+
 ## V 1.18.4
 Date: Nov 12, 2025
 * [FIX]
@@ -19,7 +24,7 @@ Date: Nov 11, 2025
 ## V 1.18.1
 Date: Nov 07, 2025
 * [FIX]
-  * Change color for depth 1 item rows when non editablle
+  * Change color for depth 1 item rows when non editable
 
 ## V 1.18.0
 Date: Nov 06, 2025
