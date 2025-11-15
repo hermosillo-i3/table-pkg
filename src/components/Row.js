@@ -90,6 +90,7 @@ const rowFunctionComponent = (props) => {
       is_selected,
       allowNewRowSelectionProcess,
       addReadOnlyStyle,
+      isRowSelectable = false,
    } = props;
    const [hasScrolled, setHasScrolled] = React.useState(false);
    const [rowRef, setRowRef] = React.useState(null);
@@ -436,9 +437,6 @@ const rowFunctionComponent = (props) => {
 
                return <div
                   className={`left-align-flex value ${column.customColumnClass}`}
-                  style={{
-                     cursor: allowNewRowSelectionProcess ? 'pointer' : 'default',
-                  }}
                   onClick={(e) => {
                      if (allowNewRowSelectionProcess && props.onRowSelect) {
                         e.stopPropagation();
@@ -469,9 +467,6 @@ const rowFunctionComponent = (props) => {
 
             return <div
                className={`left-align-flex value ${column.customColumnClass} expanded-column`}
-               style={{
-                  cursor: allowNewRowSelectionProcess ? 'pointer' : 'default',
-               }}
                onClick={(e) => {
                   if (allowNewRowSelectionProcess && props.onRowSelect) {
                      e.stopPropagation();
@@ -496,10 +491,13 @@ const rowFunctionComponent = (props) => {
          className={className + ' tr_shaded'}
          onClick={props.onRowClick ? onRowClick(row) : undefined}
          key={rowIndex}
-         style={getItemStyle(
-            isDragging,
-            null
-         )}
+         style={{
+            ...getItemStyle(
+               isDragging,
+               null
+            ),
+            cursor: isRowSelectable ? 'pointer' : 'default',
+         }}
       >
          {isDragColumnVisible && cDS(
             <td
@@ -549,7 +547,6 @@ const rowFunctionComponent = (props) => {
                      flex: `${col.width} 0 auto`,
                      maxWidth: col.width,
                      overflow: col.overflow ? col.overflow : 'inherit',
-                     cursor: allowNewRowSelectionProcess ? 'pointer' : 'default',
                   }}
                   className={`cell ${customColumnClass} ${columnClass} ${readOnlyColumnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >
@@ -597,9 +594,6 @@ const rowFunctionComponent = (props) => {
                >
                   <div
                      className={`flex ${readOnlyClass} ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""}`}
-                     style={{
-                        cursor: allowNewRowSelectionProcess ? 'pointer' : 'default'
-                     }}
                      onClick={(e) => {
                         // Only prevent row selection if clicking directly on input elements
                         const isDirectInputClick = e.target.matches('input, textarea, select') || 
