@@ -47,6 +47,10 @@ const KEY_EVENT = {
    13: 'MOVE_DOWN',
 };
 
+// Default empty function for onRowSelect to distinguish between provided and default props
+const defaultOnRowSelect = () => {
+};
+
 const generateRowsToExpand = (expandRows) => {
    // Construct the object to expand the rows
    return expandRows.reduce((acum, row_id) => {
@@ -1107,6 +1111,7 @@ class Table extends React.Component {
                      onUpdateRow={this.onUpdateRow}
                      onRowExpand={this.onRowExpand}
                      onRowSelect={this.onRowSelect}
+                     isRowSelectable={this.props.onRowSelect !== defaultOnRowSelect}
                      onPaste={this.props.onPasteCell}
                      type={this.props.type}
                      customRowClass={this.props.customRowClass}
@@ -2113,8 +2118,7 @@ Table.defaultProps = {
    isDragColumnVisible: true,
    type: 'Undefined',
    selected_rows: [],
-   onRowSelect: () => {
-   },
+   onRowSelect: defaultOnRowSelect,
    onUpdateRow: () => {
    },
    onUpdateColumnProperties: () => {
