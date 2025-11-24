@@ -89,7 +89,7 @@ const rowFunctionComponent = (props) => {
       styleTheme,
       is_selected,
       allowNewRowSelectionProcess,
-      addReadOnlyStyle,
+      addReadOnlyStyle = true,
       isRowSelectable = false,
    } = props;
    const [hasScrolled, setHasScrolled] = React.useState(false);
