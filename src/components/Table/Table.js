@@ -1022,7 +1022,7 @@ class Table extends React.Component {
             if (this.props.selected_rows.length === 1) {
                if (this.state.rows_extended[this.props.selected_rows[0]]) {
                   const row = this.state.rows_extended[this.props.selected_rows[0]];
-                  if (row.is_open) {
+                  if ((!row.hasOwnProperty('is_open') || row.is_open === false)) {
                      this.onRowExpand(this.props.rows[this.props.selected_rows[0]]);
                   }
                } else {

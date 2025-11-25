@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.7
+Date: Nov 25, 2025
+* [FIX]
+  * Fix parent row collapsing when adding a new item
+
 ## V 1.18.6
 Date: Nov 24, 2025
 * [UPDATE]
