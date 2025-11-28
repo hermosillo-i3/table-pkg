@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.8
+Date: Nov 28, 2025
+* [FIX]
+  * Revert addReadOnlyStyle to default false.
+
 ## V 1.18.7
 Date: Nov 25, 2025
 * [FIX]
