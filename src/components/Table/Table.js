@@ -1134,7 +1134,7 @@ class Table extends React.Component {
                      getTabIndex={this.calculateTabIndex}
                      rowId={row.id}
                      allowNewRowSelectionProcess={this.props.allowNewRowSelectionProcess}
-                     addReadOnlyStyle={this.props.addReadOnlyStyle ?? true}
+                     addReadOnlyStyle={this.props.addReadOnlyStyle}
                   />
                )
                object_rows.push(row)
@@ -1170,7 +1170,7 @@ class Table extends React.Component {
                type={this.props.type}
                customRowClass={this.props.customRowClass}
                ignoreItemStyle={this.props.ignoreItemStyle}
-               addReadOnlyStyle={this.props.addReadOnlyStyle ?? true}
+               addReadOnlyStyle={this.props.addReadOnlyStyle}
             />
          )
       } else if (this.props.totalRowColumns) {
@@ -1194,7 +1194,7 @@ class Table extends React.Component {
                type={this.props.type}
                customRowClass={this.props.customRowClass}
                ignoreItemStyle={this.props.ignoreItemStyle}
-               addReadOnlyStyle={this.props.addReadOnlyStyle ?? true}
+               addReadOnlyStyle={this.props.addReadOnlyStyle}
             />
          )
       }
@@ -1862,7 +1862,7 @@ class Table extends React.Component {
                            type={this.props.type}
                            customRowClass={this.props.customRowClass}
                            ignoreItemStyle={this.props.ignoreItemStyle}
-                           addReadOnlyStyle={this.props.addReadOnlyStyle ?? true}
+                           addReadOnlyStyle={this.props.addReadOnlyStyle}
                         />}
                      </thead>
                   </table>
@@ -2112,7 +2112,7 @@ Table.defaultProps = {
    className: '',
    tableHeaderOptions: {},
    actions: [],
-   addReadOnlyStyle: true,
+   addReadOnlyStyle: false,
    expandCollapseColumnIndex: 0,
    isTableHeaderHidden: false,
    isDragColumnVisible: true,
