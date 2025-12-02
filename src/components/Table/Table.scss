@@ -1017,7 +1017,7 @@ $font-color-header: #ffffff;
   &.Table-Row-ReadOnly {
     // Don't apply read-only gray when Table-Row-Close is also present
     &:not(.Table-Row-Close, .Table-Row-Close-Alt, .Table-Row-Approved, .Table-Row-Error, .Table-Row-Approved-Dark, .Table-Row-Error-Light, .Table-Row-Warning, .Table-Row-Info) {
-    .custom-column-non-editable, .cell-read-only, .cell-read-only-non-editable, .drag-drop-td, .flex.cell-read-only {
+    .custom-column-non-editable, .cell-read-only, .cell-read-only-non-editable, .drag-drop-td, .flex.cell-read-only, .not-drag-drop-row {
       background-color: #efefefbe ; 
 
       &.null-value {
