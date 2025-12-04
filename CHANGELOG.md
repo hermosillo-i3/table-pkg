@@ -6,7 +6,6 @@ Date: Dec 04, 2025
 * [FIX]
   * Enhance Table styles for read-only rows
 
-
 ## V 1.18.10
 Date: Dec 02, 2025
 * [FIX]
