@@ -199,78 +199,78 @@ jobs:
           channel-id: '${{ vars.SLACK_PULL_REQUEST_CHANNEL_ID }}'
           payload: |
             {
-              "blocks": [
+               "blocks": [
                   {
-                    "type": "context",
-                    "elements": [
+                     "type": "context",
+                     "elements": [
                         {
-                          "type": "image",
-                          "image_url": "https://avatars.githubusercontent.com/u/${{github.actor_id}}?s=400&u=b81e946713a585cd4895227203a3d2ba5d5b3b46&v=4",
-                          "alt_text": "actor"
+                           "type": "image",
+                           "image_url": "https://avatars.githubusercontent.com/u/${{github.actor_id}}?s=400&u=b81e946713a585cd4895227203a3d2ba5d5b3b46&v=4",
+                           "alt_text": "actor"
                         },
                         {
-                          "type": "mrkdwn",
-                          "text": "<https://github.com/${{github.actor}}|${{github.actor}}>"
+                           "type": "mrkdwn",
+                           "text": "<https://github.com/${{github.actor}}|${{github.actor}}>"
                         }
-                    ]
+                     ]
                   },
                   {
-                    "type": "section",
-                    "text": {
+                     "type": "section",
+                     "text": {
                         "type": "mrkdwn",
                         "text": "<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Workflow # ${{ github.run_id }}>"
-                    }
+                     }
                   },
                   {
-                    "type": "section",
-                    "fields": [
+                     "type": "section",
+                     "fields": [
                         {
-                          "type": "mrkdwn",
-                          "text": "*Repo*"
+                           "type": "mrkdwn",
+                           "text": "*Repo*"
                         },
                         {
-                          "type": "mrkdwn",
-                          "text": "*Pull request*"
+                           "type": "mrkdwn",
+                           "text": "*Pull request*"
                         },
                         {
-                          "type": "mrkdwn",
-                          "text": "<https://github.com/${{ github.repository }}|${{ github.repository }}>"
+                           "type": "mrkdwn",
+                           "text": "<https://github.com/${{ github.repository }}|${{ github.repository }}>"
                         },
                         {
-                          "type": "mrkdwn",
-                          "text": "<${{ github.event.pull_request.html_url }}| Ver PR>"
+                           "type": "mrkdwn",
+                           "text": "<${{ github.event.pull_request.html_url }}| Ver PR>"
                         }
-                    ]
+                     ]
                   },
                   {
-                    "type": "section",
-                    "fields": [
+                     "type": "section",
+                     "fields": [
                         {
-                          "type": "mrkdwn",
-                          "text": "*Target Branch*"
+                           "type": "mrkdwn",
+                           "text": "*Target Branch*"
                         },
                         {
-                          "type": "mrkdwn",
-                          "text": "*PR Author*"
+                           "type": "mrkdwn",
+                           "text": "*PR Author*"
                         },
                         {
-                          "type": "mrkdwn",
-                          "text": "<https://github.com/${{ github.repository }}/tree/${{ github.event.pull_request.head.ref }}|${{ github.event.pull_request.head.ref }}>"
+                           "type": "mrkdwn",
+                           "text": "<https://github.com/${{ github.repository }}/tree/${{ github.event.pull_request.head.ref }}|${{ github.event.pull_request.head.ref }}>"
                         },
                         {
-                          "type": "mrkdwn",
-                          "text": "<@${{ needs.select-reviewer.outputs.pr-author-slack }}>"
+                           "type": "mrkdwn",
+                           "text": "<@${{ needs.select-reviewer.outputs.pr-author-slack }}>"
                         }
-                    ]
+                     ]
                   },
                   {
-                    "type": "section",
-                    "text": {
+                     "type": "section",
+                     "text": {
                         "type": "mrkdwn",
                         "text": "<@${{ needs.select-reviewer.outputs.slack-reviewer }}> Por favor, revisa este pull request :${{ needs.select-reviewer.outputs.random-emoji }}:"
-                    }
+                     }
                   }
-              ]
+               ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
