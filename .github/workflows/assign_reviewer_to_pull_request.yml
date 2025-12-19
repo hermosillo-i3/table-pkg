@@ -3,7 +3,7 @@ name: Assign a reviewer for the PR and post it on slack
 on:
    pull_request:
      branches: [main]
-     types: [opened]
+     types: [opened, reopened]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -27,6 +27,7 @@ jobs:
         id: select-user
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         run: |
             # Obtener al revisor con menos carga para asignarle el PR
             start_date="${{ vars.REVIEW_COUNT_START_DATE }}"
@@ -59,9 +60,24 @@ jobs:
                exit 1
             fi
 
-            # Get all GitHub usernames (keys) from the filtered map
-            github_users=($(echo $filtered_users | jq -r 'keys[]'))
-            
+            # Check the users that have vacations status to filter them out from the list of reviewers
+            slack_users=($(echo $filtered_users | jq -r 'values[]'))
+
+            github_users=()
+            for slack_user in "${slack_users[@]}"; do
+              status=$(
+              curl -s -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+                -H "Content-Type: application/json" \
+                "https://slack.com/api/users.profile.get?user=$slack_user" | \
+                jq -r '.profile.status_emoji // ""')
+              github_user=$(echo $filtered_users | jq -r 'to_entries[] | select(.value=="'$slack_user'") | .key')
+              if [ "$status" == ":palm_tree:" ]; then
+                echo "🌴 $github_user no disponible/está de vacaciones - excluido de la selección de revisores"
+              else
+                github_users+=("$github_user")
+              fi
+            done
+
             # Initialize variables to track the user with minimum reviews
             min_reviews=""
             selected_github_user=""
