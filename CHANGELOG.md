@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.12
+Date: Dec 15, 2025
+* [UPDATE]
+  * Update the assign_reviewer_to_pull_request action to ignore users in vacations
+
 ## V 1.18.11
 Date: Dec 04, 2025
 * [FIX]
