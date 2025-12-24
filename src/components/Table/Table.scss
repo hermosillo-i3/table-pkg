@@ -1017,14 +1017,26 @@ $font-color-header: #ffffff;
   &.Table-Row-ReadOnly {
     // Don't apply read-only gray when Table-Row-Close is also present
     &:not(.Table-Row-Close, .Table-Row-Close-Alt, .Table-Row-Approved, .Table-Row-Error, .Table-Row-Approved-Dark, .Table-Row-Error-Light, .Table-Row-Warning, .Table-Row-Info) {
-    .custom-column-non-editable, .cell-read-only, .cell-read-only-non-editable, .drag-drop-td, .flex.cell-read-only, .not-drag-drop-row {
-      background-color: #efefefbe ; 
+    .custom-column-non-editable, div.fixed ,.cell-read-only, .cell-read-only-non-editable, .drag-drop-td, .flex.cell-read-only, .not-drag-drop-row, td.fixed.freeze_horizontal, td.Table-Row-ReadOnly.fixed.freeze_horizontal {
+      background-color: #efefefbe;
 
       &.null-value {
         background-color: #efefefbe; 
       }
       &.cell{
         background-color: #efefefbe; 
+      }
+    }
+        
+    td.Table-Row-ReadOnly.fixed.freeze_horizontal,
+    td.cell.Table-Row-ReadOnly.fixed.freeze_horizontal {
+      background-color: #efefefbe;
+      
+      .flex,
+      .flex.cell-read-only,
+      .left-align-flex,
+      .expanded-column {
+        background-color: #efefefbe;
       }
     }
     &:hover {
@@ -1034,9 +1046,12 @@ $font-color-header: #ffffff;
       }
       
       .custom-column-non-editable, .cell-read-only, .cell-read-only-non-editable, .drag-drop-td, .not-drag-drop-row, .flex.cell-read-only, .flex {
-        background-color: #dddddd;
+        background-color: #dddddd !important;
+        .value {
+          background-color: #dddddd !important;
         }
       }
+    }
     }
   }
 
