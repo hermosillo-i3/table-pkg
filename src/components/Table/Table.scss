@@ -1677,6 +1677,87 @@ input.InputField {
   font-weight: bold;
 }
 
+// Right alignment - use text-align-right for all right-aligned content
+.text-align-right {
+  text-align: right !important;
+  
+  .value,
+  input,
+  textarea,
+  p,
+  select,
+  .InputField,
+  .left-align-flex {
+    text-align: right !important;
+    padding-right: 0.5rem !important;
+  }
+  
+  .flex {
+    justify-content: flex-end !important;
+    padding-right: 0.5rem !important;
+    
+    // Override inline styles on wrapper divs (especially for date pickers)
+    > div[style*="justify-content"] {
+      justify-content: flex-end !important;
+      padding-left: 0 !important;
+      padding-right: 0.5rem !important;
+    }
+  }
+  
+  .left-align-flex.value {
+    justify-content: flex-end !important;
+  }
+  
+  // Override padding on datepicker input when inside text-align-right
+  .table-datepicker {
+    padding-right: 0.5rem !important;
+  }
+}
+
+.text-align-left {
+  text-align: left !important;
+  
+  .value,
+  input,
+  textarea,
+  p,
+  select,
+  .InputField,
+  .left-align-flex {
+    text-align: left !important;
+    padding-left: 0.5rem !important;
+  }
+  
+  .flex {
+    justify-content: flex-start !important;
+  }
+}
+
+.text-align-center {
+  text-align: center !important;
+  
+  .value,
+  input,
+  textarea,
+  p,
+  select,
+  .InputField,
+  .left-align-flex {
+    text-align: center !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  
+  .flex {
+    justify-content: center !important;
+  }
+  
+  .left-align-flex.value {
+    display: flex !important;
+    justify-content: center !important;
+  }
+}
+
 .table-drag-n-drop {
   // overflow: auto;
 
