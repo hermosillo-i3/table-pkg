@@ -1677,6 +1677,7 @@ input.InputField {
   font-weight: bold;
 }
 
+// Right alignment - use text-align-right for all right-aligned content
 .text-align-right {
   text-align: right !important;
   
@@ -1693,10 +1694,23 @@ input.InputField {
   
   .flex {
     justify-content: flex-end !important;
+    padding-right: 0.5rem !important;
+    
+    // Override inline styles on wrapper divs (especially for date pickers)
+    > div[style*="justify-content"] {
+      justify-content: flex-end !important;
+      padding-left: 0 !important;
+      padding-right: 0.5rem !important;
+    }
   }
   
   .left-align-flex.value {
     justify-content: flex-end !important;
+  }
+  
+  // Override padding on datepicker input when inside text-align-right
+  .table-datepicker {
+    padding-right: 0.5rem !important;
   }
 }
 
@@ -1735,6 +1749,11 @@ input.InputField {
   }
   
   .flex {
+    justify-content: center !important;
+  }
+  
+  .left-align-flex.value {
+    display: flex !important;
     justify-content: center !important;
   }
 }
