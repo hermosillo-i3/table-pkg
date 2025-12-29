@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.13
+Date: Dec 29, 2025
+* [NEW]
+  * Add text-align-right class to number columns by default
+
 ## V 1.18.12
 Date: Dec 15, 2025
 * [UPDATE]
