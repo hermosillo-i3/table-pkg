@@ -2028,6 +2028,7 @@ Table.propTypes = {
       help_info: PropTypes.string,
       freeze: PropTypes.bool,
       compressLongText: PropTypes.bool,
+      textAlign: PropTypes.oneOf(['left', 'center', 'right']), // Text alignment for the column. Defaults to 'right' for currency/number formats
    })).isRequired,
    rows: PropTypes.object.isRequired,
    actions: PropTypes.arrayOf(PropTypes.shape({

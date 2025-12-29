@@ -57,6 +57,34 @@ const shouldRenderCell = (column, row) => {
    return (!!isValueValid && shouldRender)
 };
 
+/**
+ * Determines the text alignment class for a column based on its format.
+ * Numeric and currency formats are right-aligned by default (flush right alignment)
+ * for better value comparison in tables (UI/UX best practice).
+ * @param {Object} column - The column configuration
+ * @returns {string} - CSS class for text alignment
+ */
+const getTextAlignClass = (column) => {
+   // If column has explicit textAlign, use it
+   if (column.textAlign) {
+      return `text-align-${column.textAlign}`;
+   }
+   
+   // Auto-detect alignment based on format type
+   const format = column.format;
+   if (!format) return '';
+   
+   const type = typeof format === 'string' ? format : format.type;
+   
+   // Right-align numeric and currency formats
+   const rightAlignFormats = ['currency', 'number', 'number-format', 'number-with-negative', 'percentage'];
+   if (rightAlignFormats.includes(type)) {
+      return 'text-align-right';
+   }
+   
+   return '';
+};
+
 const getDefaultValue = (format) => {
    switch (format) {
       case 'text':
@@ -534,6 +562,7 @@ const rowFunctionComponent = (props) => {
             const customColumnClass = col.className ? col.className : '';
             const columnClass = col.columnClass ? isFunction(col.columnClass) ? col.columnClass(col, row) : col.columnClass : '';
             const readOnlyColumnClass = (addReadOnlyStyle && !is_editable) ? 'Table-Row-ReadOnly' : '';
+            const textAlignClass = getTextAlignClass(col);
             let cellContent = col.Cell ? col.Cell(row) : null;
             let cellToRender = (col.Cell && cellContent !== null && cellContent !== undefined ? (
                <td
@@ -547,7 +576,7 @@ const rowFunctionComponent = (props) => {
                      maxWidth: col.width,
                      overflow: col.overflow ? col.overflow : 'inherit',
                   }}
-                  className={`cell ${customColumnClass} ${columnClass} ${readOnlyColumnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
+                  className={`cell ${customColumnClass} ${columnClass} ${readOnlyColumnClass} ${textAlignClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >
                   <div
                      className={`flex ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""} ${readOnlyClass}`}
@@ -589,7 +618,7 @@ const rowFunctionComponent = (props) => {
                      maxWidth: col.width,
                      overflow: col.overflow ? col.overflow : 'inherit'
                   }}
-                  className={`cell ${columnClass} ${readOnlyColumnClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
+                  className={`cell ${columnClass} ${readOnlyColumnClass} ${textAlignClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >
                   <div
                      className={`flex ${readOnlyClass} ${colIndex === expandCollapseColumnIndex && hasChildren ? "expand-column" : ""}`}
