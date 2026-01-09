@@ -1735,7 +1735,7 @@ input.InputField {
 
 .text-align-center {
   text-align: center !important;
-  
+
   .value,
   input,
   textarea,
@@ -1744,12 +1744,23 @@ input.InputField {
   .InputField,
   .left-align-flex {
     text-align: center !important;
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
+  }
+  
+  // Ensure .value divs with inline flex styles are centered
+  .value[style*="display: flex"] {
+    justify-content: center !important;
   }
   
   .flex {
     justify-content: center !important;
+    
+    // Override inline styles on all direct child divs
+    > div {
+      justify-content: center !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      
+    }
   }
   
   .left-align-flex.value {
