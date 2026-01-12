@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.14
+Date: Jan 09, 2026
+* [FIX]
+  * Fix text-align-center class
+
 ## V 1.18.13
 Date: Dec 29, 2025
 * [NEW]
