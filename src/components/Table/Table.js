@@ -1134,7 +1134,6 @@ class Table extends React.Component {
                      getTabIndex={this.calculateTabIndex}
                      rowId={row.id}
                      allowNewRowSelectionProcess={this.props.allowNewRowSelectionProcess}
-                     addReadOnlyStyle={this.props.addReadOnlyStyle ?? true}
                   />
                )
                object_rows.push(row)
@@ -1170,7 +1169,6 @@ class Table extends React.Component {
                type={this.props.type}
                customRowClass={this.props.customRowClass}
                ignoreItemStyle={this.props.ignoreItemStyle}
-               addReadOnlyStyle={this.props.addReadOnlyStyle ?? true}
             />
          )
       } else if (this.props.totalRowColumns) {
@@ -1194,7 +1192,6 @@ class Table extends React.Component {
                type={this.props.type}
                customRowClass={this.props.customRowClass}
                ignoreItemStyle={this.props.ignoreItemStyle}
-               addReadOnlyStyle={this.props.addReadOnlyStyle ?? true}
             />
          )
       }
@@ -1862,7 +1859,6 @@ class Table extends React.Component {
                            type={this.props.type}
                            customRowClass={this.props.customRowClass}
                            ignoreItemStyle={this.props.ignoreItemStyle}
-                           addReadOnlyStyle={this.props.addReadOnlyStyle ?? true}
                         />}
                      </thead>
                   </table>
@@ -2062,7 +2058,6 @@ Table.propTypes = {
    onDropInRow: PropTypes.func,
    onDropInZone: PropTypes.func,
    customRowClass: PropTypes.func,
-   addReadOnlyStyle: PropTypes.bool, // When true, adds Table-Row-ReadOnly class to all column cells
    isLoading: PropTypes.bool,
 
    noRowsMessage: PropTypes.object,
@@ -2113,7 +2108,6 @@ Table.defaultProps = {
    className: '',
    tableHeaderOptions: {},
    actions: [],
-   addReadOnlyStyle: true,
    expandCollapseColumnIndex: 0,
    isTableHeaderHidden: false,
    isDragColumnVisible: true,
