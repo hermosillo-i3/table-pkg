@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.15
+Date: Jan 13, 2026
+* [UPDATE]
+  * Delete addReadOnlyStyle as a prop and leave it as a default behaviour
+
 ## V 1.18.14
 Date: Jan 09, 2026
 * [FIX]

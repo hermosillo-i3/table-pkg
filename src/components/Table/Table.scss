@@ -105,7 +105,7 @@ $font-color-header: #ffffff;
 }
 
 .Table-Row-Error-Light {
-  background-color: #f54e4ed2 !important;
+  background-color: #f8d7da !important;
 
   // For parent #e93333d2
   // For child #e91e1ed2
@@ -127,7 +127,7 @@ $font-color-header: #ffffff;
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: #ef7470 !important;
+      background-color: #f8d7da !important;
     }
   }
 
@@ -149,7 +149,7 @@ $font-color-header: #ffffff;
 }
 
 .Table-Row-Approved-Light {
-  background-color: #A6DFA1 !important;
+  background-color: #d4edda !important;
 
   // For parent #A6DFA1
   // For child #7fe64f
@@ -194,10 +194,8 @@ $font-color-header: #ffffff;
 }
 
 .Table-Row-Error{
-  background-color: #ec3535d2 !important;
+  background-color: #f54e4ed2!important;
 
-  // For parent #e93333d2
-  // For child #e91e1ed2
   td {
     .value,
     p,
@@ -216,7 +214,7 @@ $font-color-header: #ffffff;
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
     td.not-drag-drop-row {
-      background-color: #ec3535d2 !important;
+      background-color: #f54e4ed2 !important;
     }
   }
 
@@ -228,6 +226,7 @@ $font-color-header: #ffffff;
     input,
     textarea,
     p,
+    td,
     select,
     td.drag-drop-td.on-dragging-available,
     .flex.expand-column,
@@ -240,10 +239,7 @@ $font-color-header: #ffffff;
 .Table-Row-Approved {
   background-color: #8ee963 !important;
 
-  // For parent #A6DFA1
-  // For child #7fe64f
   td {
-
     .value,
     p,
     select {
@@ -324,8 +320,8 @@ $font-color-header: #ffffff;
   }
 }
 
-.Table-Row-Info {
-  background-color: #fce8ac !important;
+.Table-Row-Warning-Light {
+  background-color: #fff3cd !important;
 
   .freeze_horizontal {
     .value,
@@ -1016,7 +1012,7 @@ $font-color-header: #ffffff;
   // Example: Add styling for custom row class based on prop
   &.Table-Row-ReadOnly {
     // Don't apply read-only gray when Table-Row-Close is also present
-    &:not(.Table-Row-Close, .Table-Row-Close-Alt, .Table-Row-Approved, .Table-Row-Error, .Table-Row-Approved-Dark, .Table-Row-Error-Light, .Table-Row-Warning, .Table-Row-Info) {
+    &:not(.Table-Row-Normal, .Table-Row-Close, .Table-Row-Close-Alt, .Table-Row-Approved, .Table-Row-Error, .Table-Row-Approved-Light, .Table-Row-Approved-Dark, .Table-Row-Error-Light, .Table-Row-Warning, .Table-Row-Warning-Light) {
     .custom-column-non-editable, div.fixed ,.cell-read-only, .cell-read-only-non-editable, .drag-drop-td, .flex.cell-read-only, .not-drag-drop-row, td.fixed.freeze_horizontal, td.Table-Row-ReadOnly.fixed.freeze_horizontal {
       background-color: #efefefbe;
 
@@ -1054,6 +1050,63 @@ $font-color-header: #ffffff;
     }
     }
   }
+
+  &.dragging-row {
+    border-top: 1px solid rgba(224, 224, 224, 1);
+  }
+
+  td {
+    border-right: 1px solid rgba(224, 224, 224, 1);
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
+
+    .value,
+    input,
+    textarea,
+    p,
+    select,
+    i.black.plus.square.outline.icon.icon-expand {
+      color: #333333;
+    }
+
+  }
+
+  .freeze_horizontal {
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background-color: white;
+    }
+  }
+
+  &:hover {
+    cursor: pointer;
+    background: #fff;
+
+    .value,
+    div,
+    input,
+    textarea,
+    p,
+    select,
+    td.drag-drop-td.on-dragging-available,
+    .flex.expand-column,
+    td.not-drag-drop-row {
+      background: #dddddd;
+      color: #000000!important;
+    }
+  }
+}
+
+.Table-Row-Normal {
+  background: white;
+
+  // No Table-Row-ReadOnly variant - this class is used when read-only styles should not be shown
 
   &.dragging-row {
     border-top: 1px solid rgba(224, 224, 224, 1);
