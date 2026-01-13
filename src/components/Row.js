@@ -117,7 +117,6 @@ const rowFunctionComponent = (props) => {
       styleTheme,
       is_selected,
       allowNewRowSelectionProcess,
-      addReadOnlyStyle = true,
       isRowSelectable = false,
    } = props;
    const [hasScrolled, setHasScrolled] = React.useState(false);
@@ -205,12 +204,12 @@ const rowFunctionComponent = (props) => {
          classname += ' ' + customRowClass(row)
       }
 
-      if (addReadOnlyStyle && row.is_item) {
+      if (row.is_item) {
          classname += ' Table-Row-ReadOnly'
       }
 
       setClassName(classname);
-   }, [props.is_selected, styleTheme, rowIndex, row.is_item, depth, customRowClass, isOver, canDrop, addReadOnlyStyle]);
+   }, [props.is_selected, styleTheme, rowIndex, row.is_item, depth, customRowClass, isOver, canDrop]);
 
    const {
       // cDP, 
@@ -561,7 +560,7 @@ const rowFunctionComponent = (props) => {
             const readOnlyClass = !is_editable ? 'cell-read-only' : '';
             const customColumnClass = col.className ? col.className : '';
             const columnClass = col.columnClass ? isFunction(col.columnClass) ? col.columnClass(col, row) : col.columnClass : '';
-            const readOnlyColumnClass = (addReadOnlyStyle && !is_editable) ? 'Table-Row-ReadOnly' : '';
+            const readOnlyColumnClass = !is_editable ? 'Table-Row-ReadOnly' : '';
             const textAlignClass = getTextAlignClass(col);
             let cellContent = col.Cell ? col.Cell(row) : null;
             let cellToRender = (col.Cell && cellContent !== null && cellContent !== undefined ? (
