@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.16
+Date: Jan 14, 2026
+* [FIX]
+  * Fix right align for expanded value columns
+
 ## V 1.18.15
 Date: Jan 13, 2026
 * [UPDATE]
