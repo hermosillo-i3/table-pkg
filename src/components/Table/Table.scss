@@ -1757,6 +1757,12 @@ input.InputField {
     }
   }
   
+  // Ensure value divs are right-aligned
+  .value.expanded-column {
+    justify-content: flex-end !important;
+    margin-left: auto;
+  }
+  
   .left-align-flex.value {
     justify-content: flex-end !important;
   }
