@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.17
+Date: Jan 19, 2026
+* [FIX]
+  * Add Table-Row-Error-Dark class
+
 ## V 1.18.16
 Date: Jan 14, 2026
 * [FIX]
