@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.18
+Date: Feb 04, 2026
+* [FIX]
+  * Fix table styles background color for hover in certain elements
+
 ## V 1.18.17
 Date: Jan 19, 2026
 * [FIX]
