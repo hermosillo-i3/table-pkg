@@ -280,6 +280,13 @@ class InputField extends React.Component {
         ...newRowSelectionStyle,
       } : {};
 
+      const iconWrapperStyle = {
+        paddingLeft: '0.5rem',
+        position: 'relative',
+        display: 'inline-block',
+        lineHeight: 1,
+      };
+
       switch (type) {
         case "textarea": {
           // Add 20px to the customWidth to account for the border, paddings, etc. and stop the text from being crammed into the cell
@@ -938,13 +945,20 @@ class InputField extends React.Component {
                   {format.trueIcon ? (
                     format.trueIcon({ isItem })
                   ) : (
-                    <Icon
-                      style={{
-                        margin: "auto",
-                        color: isItem ? "black" : "white",
-                      }}
-                      name={"checkmark"}
-                    />
+                    <span style={iconWrapperStyle}>
+                      <Icon name='square outline' style={{color: '#333333'}} size='large'/>
+                      <Icon 
+                        name='check' 
+                        size='small'
+                        style={{
+                          color: 'black',
+                          position: 'absolute',
+                          top: '50%',
+                          left: '55%',
+                          transform: 'translate(-50%, -50%)',
+                          }}
+                        />
+                      </span>
                   )}
                 </div>
               ) : (
@@ -959,7 +973,11 @@ class InputField extends React.Component {
                     );
                   }}
                 >
-                  {format.falseIcon ? format.falseIcon({ isItem }) : ""}
+                  {format.falseIcon ? format.falseIcon({ isItem }) : (
+                    <span style={iconWrapperStyle}>
+                      <Icon name='square outline' style={{color: '#333333'}} size='large'/>
+                    </span>
+                  )}
                 </div>
               )}
             </React.Fragment>
