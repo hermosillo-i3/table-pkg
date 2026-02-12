@@ -351,6 +351,7 @@ class InputField extends React.Component {
             );
           } else {
             const compressedClass = `Text ${customColumnClass} ${compressLongText ? "compress-row" : ""}` 
+            const textValue = String(this.state.currentValue);
             return (
               <p
                 className={this.props.allowNewRowSelectionProcess ? `Text ${customColumnClass}` : compressedClass}
@@ -383,7 +384,11 @@ class InputField extends React.Component {
                   e.target.style.maxHeight = '';
                 }}
               >
-                {String(this.state.currentValue)}
+                {textValue !== '' ? (
+                  textValue
+                ) : (
+                  <span style={{color: '#999999'}}>{customProps.placeholder || ''}</span>
+                )}
               </p>
             );
           }
