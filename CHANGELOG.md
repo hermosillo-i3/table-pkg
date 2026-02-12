@@ -1,6 +1,12 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.19
+Date: Feb 12, 2026
+  * [UPDATE]
+    * Enhance boolean field in InputField
+    * Add prop to add placeholder in textarea field in InputField
+
 ## V 1.18.18
 Date: Feb 04, 2026
 * [FIX]
