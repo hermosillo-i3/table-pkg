@@ -352,6 +352,7 @@ class InputField extends React.Component {
           } else {
             const compressedClass = `Text ${customColumnClass} ${compressLongText ? "compress-row" : ""}` 
             const textValue = String(this.state.currentValue);
+            const {placeholder = null, placeholderStyle = {}} = customProps;
             return (
               <p
                 className={this.props.allowNewRowSelectionProcess ? `Text ${customColumnClass}` : compressedClass}
@@ -361,6 +362,7 @@ class InputField extends React.Component {
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   boxSizing: 'border-box',
+                  ...(textValue === '' && placeholder ? placeholderStyle : {}),
                 }}
                 tabIndex={tabIndex}
                 onClick={(e) => this.onCreateTextArea(e)}
@@ -387,7 +389,7 @@ class InputField extends React.Component {
                 {textValue !== '' ? (
                   textValue
                 ) : (
-                  <span style={{color: '#999999'}}>{customProps.placeholder || ''}</span>
+                  <span style={{color: '#999999'}}>{placeholder || ''}</span>
                 )}
               </p>
             );
