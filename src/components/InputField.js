@@ -280,6 +280,13 @@ class InputField extends React.Component {
         ...newRowSelectionStyle,
       } : {};
 
+      const iconWrapperStyle = {
+        paddingLeft: '0.5rem',
+        position: 'relative',
+        display: 'inline-block',
+        lineHeight: 1,
+      };
+
       switch (type) {
         case "textarea": {
           // Add 20px to the customWidth to account for the border, paddings, etc. and stop the text from being crammed into the cell
@@ -344,6 +351,8 @@ class InputField extends React.Component {
             );
           } else {
             const compressedClass = `Text ${customColumnClass} ${compressLongText ? "compress-row" : ""}` 
+            const textValue = String(this.state.currentValue);
+            const {placeholder = null, placeholderStyle = {}} = customProps;
             return (
               <p
                 className={this.props.allowNewRowSelectionProcess ? `Text ${customColumnClass}` : compressedClass}
@@ -353,6 +362,7 @@ class InputField extends React.Component {
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   boxSizing: 'border-box',
+                  ...(textValue === '' && placeholder ? placeholderStyle : {}),
                 }}
                 tabIndex={tabIndex}
                 onClick={(e) => this.onCreateTextArea(e)}
@@ -376,7 +386,11 @@ class InputField extends React.Component {
                   e.target.style.maxHeight = '';
                 }}
               >
-                {String(this.state.currentValue)}
+                {textValue !== '' ? (
+                  textValue
+                ) : (
+                  <span style={{color: '#999999'}}>{placeholder || ''}</span>
+                )}
               </p>
             );
           }
@@ -938,13 +952,20 @@ class InputField extends React.Component {
                   {format.trueIcon ? (
                     format.trueIcon({ isItem })
                   ) : (
-                    <Icon
-                      style={{
-                        margin: "auto",
-                        color: isItem ? "black" : "white",
-                      }}
-                      name={"checkmark"}
-                    />
+                    <span style={iconWrapperStyle}>
+                      <Icon name='square outline' style={{color: '#333333'}} size='large'/>
+                      <Icon 
+                        name='check' 
+                        size='small'
+                        style={{
+                          color: 'black',
+                          position: 'absolute',
+                          top: '50%',
+                          left: '55%',
+                          transform: 'translate(-50%, -50%)',
+                          }}
+                        />
+                      </span>
                   )}
                 </div>
               ) : (
@@ -959,7 +980,11 @@ class InputField extends React.Component {
                     );
                   }}
                 >
-                  {format.falseIcon ? format.falseIcon({ isItem }) : ""}
+                  {format.falseIcon ? format.falseIcon({ isItem }) : (
+                    <span style={iconWrapperStyle}>
+                      <Icon name='square outline' style={{color: '#333333'}} size='large'/>
+                    </span>
+                  )}
                 </div>
               )}
             </React.Fragment>
