@@ -1,6 +1,6 @@
 {
   "name": "@hermosillo-i3/table-pkg",
-  "version": "1.18.18",
+  "version": "1.18.19",
   "description": "",
   "main": "src/index.js",
   "scripts": {
