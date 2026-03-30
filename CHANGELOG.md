@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.20
+Date: Mar 30, 2026
+* [TEST]
+  * npm publish test with new token
+
 ## V 1.18.19
 Date: Feb 12, 2026
   * [UPDATE]
