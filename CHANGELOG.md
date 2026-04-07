@@ -1,6 +1,13 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.21
+Date: Mar 31, 2026
+* [NEW]
+  * Add `data-testid` on data cells (`data-cell-{rowIndex}-{colIndex}`) for automated testing
+  * Add `data-testid` on toolbar actions: `table-expand-all-rows-button`, `table-expand-row-button`, `table-collapse-all-rows-button`, `table-collapse-row-button`, `table-download-button`, `table-settings-button`
+  * Pass `rowIndex` into `InputField` from row rendering
+
 ## V 1.18.20
 Date: Mar 30, 2026
 * [TEST]
