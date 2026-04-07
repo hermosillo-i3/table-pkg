@@ -193,7 +193,7 @@ export default class Toolbar extends React.Component {
                return (
                   <Popup
                      trigger={
-                        <Button style={button_style} size={icon_size} icon='angle double down' basic
+                        <Button data-testid="table-expand-all-rows-button" style={button_style} size={icon_size} icon='angle double down' basic
                            onClick={props.expandElements.action} type="button" />
                      }
                      content='Expandir todos los elementos'
@@ -205,7 +205,7 @@ export default class Toolbar extends React.Component {
                   return (
                      <Popup
                         trigger={
-                           <Button style={button_style} size={icon_size} icon='angle down' basic
+                           <Button data-testid="table-expand-row-button" style={button_style} size={icon_size} icon='angle down' basic
                               onClick={props.expandElements.action} type="button" />
                         }
                         content='Expandir elementos seleccionados'
@@ -223,7 +223,7 @@ export default class Toolbar extends React.Component {
                return (
                   <Popup
                      trigger={
-                        <Button style={button_style} size={icon_size} icon='angle double up' basic
+                        <Button data-testid="table-collapse-all-rows-button" style={button_style} size={icon_size} icon='angle double up' basic
                            onClick={props.collapseElements.action} type="button" />
                      }
                      content='Contraer todos los elementos'
@@ -235,7 +235,7 @@ export default class Toolbar extends React.Component {
                   return (
                      <Popup
                         trigger={
-                           <Button style={button_style} size={icon_size} icon='angle up' basic
+                           <Button data-testid="table-collapse-row-button" style={button_style} size={icon_size} icon='angle up' basic
                               onClick={props.collapseElements.action} type="button" />
                         }
                         content='Contraer elementos seleccionados'
@@ -309,6 +309,7 @@ export default class Toolbar extends React.Component {
                         <Popup
                            trigger={
                               <Button
+                                 data-testid="table-download-button"
                                  style={button_style}
                                  size={icon_size}
                                  icon='download'
@@ -324,6 +325,7 @@ export default class Toolbar extends React.Component {
                   {allowToOpenSettings && <Popup
                      trigger={
                         <Button
+                           data-testid="table-settings-button"
                            style={button_style}
                            size={icon_size}
                            icon='setting'
