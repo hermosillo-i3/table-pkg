@@ -442,6 +442,7 @@ const rowFunctionComponent = (props) => {
                         filter_hermosillo_non_working_days={props.filter_hermosillo_non_working_days}
                         allowNewRowSelectionProcess={allowNewRowSelectionProcess}
                         colIndex={colIndex}
+                        rowIndex={rowIndex}
                         hoveredCellIndex={hoveredCellIndex}
                      />
                   </div>
@@ -565,6 +566,7 @@ const rowFunctionComponent = (props) => {
             let cellContent = col.Cell ? col.Cell(row) : null;
             let cellToRender = (col.Cell && cellContent !== null && cellContent !== undefined ? (
                <td
+                  data-testid={`data-cell-${rowIndex}-${colIndex}`}
                   onClick={(e) => onCellClick(col, row, colIndex, rowIndex, e)}
                   onDoubleClick={(e) => onCellDoubleClick(col, row, colIndex, rowIndex, e)}
                   onContextMenu={(e) => onCellContextMenu(col, row, colIndex, rowIndex, e)}
@@ -607,6 +609,7 @@ const rowFunctionComponent = (props) => {
 
             ) : (
                <td
+                  data-testid={`data-cell-${rowIndex}-${colIndex}`}
                   onClick={(e) => onCellClick(col, row, colIndex, rowIndex, e)}
                   onDoubleClick={(e) => onCellDoubleClick(col, row, colIndex, rowIndex, e)}
                   onContextMenu={(e) => onCellContextMenu(col, row, colIndex, rowIndex, e)}
