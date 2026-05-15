@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.22
+Date: May 15, 2026
+* [UPDATE]
+  * Fix freeze column style so the dont shake when scrolling through the table
+
 ## V 1.18.21
 Date: Mar 31, 2026
 * [NEW]
