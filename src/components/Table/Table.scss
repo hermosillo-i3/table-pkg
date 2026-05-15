@@ -1521,6 +1521,33 @@ input.InputField {
   transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
+/* Scroll lives here so header + body tables move together; if only .the-table scrolls, the whole header stays fixed. */
+.the-table-horizontal-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.the-table-horizontal-scroll-inner {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: min-content;
+}
+
+.the-table-horizontal-scroll-inner > .the-table-header {
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.the-table-horizontal-scroll .the-table {
+  height: auto;
+  overflow: visible;
+}
+
 .the-table {
   overflow: auto;
 
@@ -1550,11 +1577,14 @@ input.InputField {
   }
 }
 
-.the-table,
-.the-table-header {
-  td.freeze_horizontal {
-    z-index: 999;
-  }
+/* Sticky freeze: compositor-aligned with scroll: avoid overflow:hidden on body cells breaking sticky. */
+.the-table .Table-Row td.freeze_horizontal {
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.the-table-header .Table-Row-Header td.freeze_horizontal {
+  flex-shrink: 0;
 }
 
 .export-csv-link {

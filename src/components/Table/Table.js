@@ -24,7 +24,7 @@ import {
 } from "../../utils/column";
 
 import "./Table.scss";
-import { addFreezeColumns } from "../../utils/table-utils";
+import { DRAG_COLUMN_WIDTH, getDragFrozenStickyStyle, getFrozenStickyStyles, updateFreezeCells } from "../../utils/table-utils";
 import DragDropContext from '../DragDropContext';
 import {Decimal} from "decimal.js";
 
@@ -107,6 +107,7 @@ class Table extends React.Component {
       this.container = React.createRef();
       this.tableHeader = React.createRef();
       this.tableToolbar = React.createRef();
+      this.horizontalScrollRef = React.createRef();
 
       // Cache for navigable cells performance optimization
       this._tabIndexCache = new Map();
@@ -428,7 +429,7 @@ class Table extends React.Component {
       this.generateTableStructure();
       this.createDefaultValues();
 
-      addFreezeColumns(this.state.name);
+      updateFreezeCells(this.state.name);
 
       document.addEventListener('keydown', this.handleCtrlKeyDown);
       document.addEventListener('keyup', this.handleCtrlKeyUp);
@@ -530,29 +531,6 @@ class Table extends React.Component {
       }
 
 
-      if (this.tableHeader.current && this.container.current) {
-         let isSyncingLeftScroll = false;
-         let isSyncingRightScroll = false;
-         const tableHeader = this.tableHeader.current;
-         const tableBody = this.container.current;
-
-         tableHeader.onscroll = function () {
-            if (!isSyncingLeftScroll) {
-               isSyncingRightScroll = true;
-               tableBody.scrollLeft = this.scrollLeft;
-            }
-            isSyncingLeftScroll = false;
-         };
-
-         tableBody.onscroll = function () {
-            if (!isSyncingRightScroll) {
-               isSyncingLeftScroll = true;
-               tableHeader.scrollLeft = this.scrollLeft;
-            }
-            isSyncingRightScroll = false;
-         }
-      }
-
       if (this.props.expandRows !== prevProps.expandRows) {
 
          this.setState({
@@ -560,7 +538,7 @@ class Table extends React.Component {
          })
       }
 
-      addFreezeColumns(this.state.name);
+      updateFreezeCells(this.state.name);
    };
 
    handleChangeProfile = (id) => {
@@ -836,7 +814,8 @@ class Table extends React.Component {
       const { forceUpdate, column_extended } = options;
       const columnExtended = column_extended ? column_extended : forceUpdate ? this.generateColumnExtended() : state.column_extended;
       const columns = this.getColumns(columnExtended);
-      const offsetWidth = this.container.current.offsetWidth;
+      const widthSource = (this.horizontalScrollRef && this.horizontalScrollRef.current) || this.container.current;
+      const offsetWidth = widthSource ? widthSource.offsetWidth : 0;
       const columns_extended = generateExtraColumnProperties({
          columns,
          current_extended_columns: columnExtended,
@@ -844,7 +823,7 @@ class Table extends React.Component {
       });
       this.setState({
          column_extended: columns_extended,
-         tableWidth: this.container.current.offsetWidth
+         tableWidth: offsetWidth
       }, callback)
    };
 
@@ -1626,30 +1605,24 @@ class Table extends React.Component {
 
       const shouldRenderTitle = selected_rows ? (selected_rows.length > 0 || title) : title;
 
-      let tableOffset = 0;
-      if (this.tableToolbar.current && this.tableHeader.current) {
-         const offSetIKnowWhereItComeFrom = 2;
-         tableOffset = (this.tableToolbar.current.offsetHeight + this.tableHeader.current.offsetHeight) + offSetIKnowWhereItComeFrom;
-      }
-
       const tableStyle = {
          display: 'flex',
          flexDirection: 'column',
          fontSize: '12px',
          borderSpacing: 0,
-         height: `calc(100% - ${tableOffset}px)`
       };
 
       const droppableStyle = {
          height: '100%',
          display: 'flex',
-         flexDirection: 'column'
+         flexDirection: 'column',
+         position: 'relative',
       };
 
       const emptyCellStyle = {
-         width: 24,
-         flex: `25 0 auto`,
-         maxWidth: 24
+         width: DRAG_COLUMN_WIDTH,
+         flex: `${DRAG_COLUMN_WIDTH} 0 auto`,
+         maxWidth: DRAG_COLUMN_WIDTH,
       };
 
       const renderColumns = (columns) => (
@@ -1664,7 +1637,8 @@ class Table extends React.Component {
                   style={{
                      width: col.width,
                      flex: `${col.width} 0 auto`,
-                     maxWidth: col.width
+                     maxWidth: col.width,
+                     ...(getFrozenStickyStyles(columns, index, isDragColumnVisible) || {}),
                   }}
                >
                   <div className={`${col.Header !== '' && col.columns ? 'Table-Column-Header-Groups-Cell' : 'Table-Column-Header-Cell'}`}>
@@ -1756,6 +1730,7 @@ class Table extends React.Component {
                      const isClickOnTableBackground = e.target === e.currentTarget || 
                            e.target.classList.contains('the-table-header') ||
                            e.target.classList.contains('the-table') ||
+                           e.target.classList.contains('the-table-horizontal-scroll') ||
                            e.target.tagName === 'TBODY' ||
                            e.target.tagName === 'TABLE';
                      if (isClickOnTableBackground) {
@@ -1807,123 +1782,130 @@ class Table extends React.Component {
                   />}
 
                   {/* ------------ TABLE ------------*/}
-                  <table className={`the-table-header ${this.state.name}`} ref={this.tableHeader} style={{
-                     display: 'flex',
-                     flexDirection: 'column',
-                  }}>
-                     {groupColumns && groupColumns.length > 0 && (
-                        <thead>
-                           <tr className="Table-Row-Header tr_shaded">
-                              {isDragColumnVisible &&
-                                 <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`}
-                                    style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-
-                              {renderColumns(groupColumns)}
-                           </tr>
-                        </thead>
-                     )}
-                     <thead>
-                        <tr className="Table-Row-Header tr_shaded">
-                           {isDragColumnVisible &&
-                              <td colSpan="1" className={`${columns && columns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}
-                                 {this.props.enableSelectAll && <Button
-                                    size="large"
-                                    compact
-                                    className="select-all-button"
-                                    basic
-                                    icon={selected_rows.length === Object.keys(rows).length && Object.keys(rows).length > 0 ? "check square outline" : "square outline"}
-                                    onClick={() => {
-                                       if (selected_rows.length < Object.keys(rows).length && Object.keys(rows).length) {
-                                          this.selectAllRows(rows);
-                                       } else {
-                                          this.deselectAllRows();
-                                       }
-                                    }} />}
-                              </td>}
-                           {
-                              renderColumns(columns)
-                           }
-                        </tr>
-                        {this?.props?.totalRow?.freeze && <Row
-                           isDragColumnVisible={this.props.isDragColumnVisible}
-                           expandCollapseColumnIndex={this.props.expandCollapseColumnIndex}
-                           key={-1}
-                           index={-1}
-                           row={this.props.totalRow}
-                           is_open={true}
-                           is_selected={false}
-                           columns={this.getVisibleColumns().map(col => ({ ...col, editable: false }))}
-                           depth={-1}
-                           cellActive={-1}
-                           onPaste={this.props.onPasteCell}
-                           type={this.props.type}
-                           customRowClass={this.props.customRowClass}
-                           ignoreItemStyle={this.props.ignoreItemStyle}
-                        />}
-                     </thead>
-                  </table>
-
-                  <table
-                     className={`table-drag-n-drop the-table ${this.props.className} scrolly_table scrolling_table_2 ${this.state.name}`}
-                     style={tableStyle}
-                     ref={(current) => {
-                        this.container = {
-                           current
-                        };
-                        if (this.props.setRef) {
-                           this.props.setRef(current);
-                        }
-                     }}
+                  <div
+                     className="the-table-horizontal-scroll"
+                     ref={this.horizontalScrollRef}
                   >
-                     {groupColumns && groupColumns.length > 0 && (
-                        <thead>
-                           <tr className="Table-Row-Header">
-                              {isDragColumnVisible &&
-                                 <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-
-                              {renderColumns(groupColumns)}
-                           </tr>
-                        </thead>
-                     )}
-                     <thead>
-                        <tr className="Table-Row-Header">
-                           {isDragColumnVisible &&
-                              <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={emptyCellStyle}> {/* Empty Cell to format table*/}</td>}
-
-                           {renderColumns(columns)
-                           }
-                        </tr>
-                     </thead>
-                     <tbody
-
-                        style={{
-                           display: 'table',
-                           padding: paddingBodyTable ? paddingBodyTable : 'none'
+                     <div className="the-table-horizontal-scroll-inner">
+                        <table className={`the-table-header ${this.state.name}`} ref={this.tableHeader} style={{
+                           display: 'flex',
+                           flexDirection: 'column',
                         }}>
-                        {
-                           isEmpty ?
-                              (
-                                 <NoRowsCard
-                                    noRowsMessage={noRowsMessage}
-                                    onDrop={this.props.onDropInZone}
-                                    canDrop={this.props.canDropInZone}
-                                    isCtrlPressed={this.state.isCtrlPressed}
-                                 />
-                              )
-                              :
-                              ([
-                                 <DropZone
-                                    key='dropzone'
-                                    onDrop={this.props.onDropInZone}
-                                    canDrop={this.props.canDropInZone}
-                                    isCtrlPressed={this.state.isCtrlPressed}
-                                 />,
-                                 this.initGenerateRows()
-                              ])
-                        }
+                           {groupColumns && groupColumns.length > 0 && (
+                              <thead>
+                                 <tr className="Table-Row-Header tr_shaded">
+                                    {isDragColumnVisible &&
+                                       <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`}
+                                          style={{ ...emptyCellStyle, ...(getDragFrozenStickyStyle(groupColumns, isDragColumnVisible) || {}) }}> {/* Empty Cell to format table*/}</td>}
 
-                     </tbody>
-                  </table>
+                                    {renderColumns(groupColumns)}
+                                 </tr>
+                              </thead>
+                           )}
+                           <thead>
+                              <tr className="Table-Row-Header tr_shaded">
+                                 {isDragColumnVisible &&
+                                    <td colSpan="1" className={`${columns && columns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={{ ...emptyCellStyle, ...(getDragFrozenStickyStyle(columns, isDragColumnVisible) || {}) }}> {/* Empty Cell to format table*/}
+                                       {this.props.enableSelectAll && <Button
+                                          size="large"
+                                          compact
+                                          className="select-all-button"
+                                          basic
+                                          icon={selected_rows.length === Object.keys(rows).length && Object.keys(rows).length > 0 ? "check square outline" : "square outline"}
+                                          onClick={() => {
+                                             if (selected_rows.length < Object.keys(rows).length && Object.keys(rows).length) {
+                                                this.selectAllRows(rows);
+                                             } else {
+                                                this.deselectAllRows();
+                                             }
+                                          }} />}
+                                    </td>}
+                                 {
+                                    renderColumns(columns)
+                                 }
+                              </tr>
+                              {this?.props?.totalRow?.freeze && <Row
+                                 isDragColumnVisible={this.props.isDragColumnVisible}
+                                 expandCollapseColumnIndex={this.props.expandCollapseColumnIndex}
+                                 key={-1}
+                                 index={-1}
+                                 row={this.props.totalRow}
+                                 is_open={true}
+                                 is_selected={false}
+                                 columns={this.getVisibleColumns().map(col => ({ ...col, editable: false }))}
+                                 depth={-1}
+                                 cellActive={-1}
+                                 onPaste={this.props.onPasteCell}
+                                 type={this.props.type}
+                                 customRowClass={this.props.customRowClass}
+                                 ignoreItemStyle={this.props.ignoreItemStyle}
+                              />}
+                           </thead>
+                        </table>
+
+                        <table
+                           className={`table-drag-n-drop the-table ${this.props.className} scrolly_table scrolling_table_2 ${this.state.name}`}
+                           style={tableStyle}
+                           ref={(current) => {
+                              this.container = {
+                                 current
+                              };
+                              if (this.props.setRef) {
+                                 this.props.setRef(current);
+                              }
+                           }}
+                        >
+                              {groupColumns && groupColumns.length > 0 && (
+                                 <thead>
+                                    <tr className="Table-Row-Header">
+                                       {isDragColumnVisible &&
+                                          <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={{ ...emptyCellStyle, ...(getDragFrozenStickyStyle(groupColumns, isDragColumnVisible) || {}) }}> {/* Empty Cell to format table*/}</td>}
+
+                                       {renderColumns(groupColumns)}
+                                    </tr>
+                                 </thead>
+                              )}
+                              <thead>
+                                 <tr className="Table-Row-Header">
+                                    {isDragColumnVisible &&
+                                       <td colSpan="1" className={`${groupColumns && groupColumns[0]?.freeze ? 'freeze_horizontal' : ''}`} style={{ ...emptyCellStyle, ...(getDragFrozenStickyStyle(groupColumns, isDragColumnVisible) || {}) }}> {/* Empty Cell to format table*/}</td>}
+
+                                    {renderColumns(columns)
+                                    }
+                                 </tr>
+                              </thead>
+                              <tbody
+
+                                 style={{
+                                    display: 'table',
+                                    padding: paddingBodyTable ? paddingBodyTable : 'none'
+                                 }}>
+                                 {
+                                    isEmpty ?
+                                       (
+                                          <NoRowsCard
+                                             noRowsMessage={noRowsMessage}
+                                             onDrop={this.props.onDropInZone}
+                                             canDrop={this.props.canDropInZone}
+                                             isCtrlPressed={this.state.isCtrlPressed}
+                                          />
+                                       )
+                                       :
+                                       ([
+                                          <DropZone
+                                             key='dropzone'
+                                             onDrop={this.props.onDropInZone}
+                                             canDrop={this.props.canDropInZone}
+                                             isCtrlPressed={this.state.isCtrlPressed}
+                                          />,
+                                          this.initGenerateRows()
+                                       ])
+                                 }
+
+                              </tbody>
+                        </table>
+                     </div>
+                  </div>
 
 
                   {/* ------------ EXTRA ------------*/}

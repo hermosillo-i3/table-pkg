@@ -12,6 +12,7 @@ import {
    useDragDropManager,
 } from 'react-dnd'
 import {isColumnEditable} from "../utils/column";
+import {getDragFrozenStickyStyle, getFrozenStickyStyles} from "../utils/table-utils";
 
 const faGripVertical = {
    prefix: 'fas',
@@ -538,6 +539,7 @@ const rowFunctionComponent = (props) => {
                   flex: `25 0 auto`,
                   maxWidth: 25,
                   cursor: canDrag ? 'grab' : 'default',
+                  ...(getDragFrozenStickyStyle(columns, isDragColumnVisible) || {}),
                }}
             >
                <div className="middle-align-flex">
@@ -576,6 +578,7 @@ const rowFunctionComponent = (props) => {
                      flex: `${col.width} 0 auto`,
                      maxWidth: col.width,
                      overflow: col.overflow ? col.overflow : 'inherit',
+                     ...(getFrozenStickyStyles(columns, colIndex, isDragColumnVisible) || {}),
                   }}
                   className={`cell ${customColumnClass} ${columnClass} ${readOnlyColumnClass} ${textAlignClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >
@@ -618,7 +621,8 @@ const rowFunctionComponent = (props) => {
                      width: col.width,
                      flex: `${col.width} 0 auto`,
                      maxWidth: col.width,
-                     overflow: col.overflow ? col.overflow : 'inherit'
+                     overflow: col.overflow ? col.overflow : 'inherit',
+                     ...(getFrozenStickyStyles(columns, colIndex, isDragColumnVisible) || {}),
                   }}
                   className={`cell ${columnClass} ${readOnlyColumnClass} ${textAlignClass} ${cellActive === colIndex ? 'cell-active' : ''} ${col.onDraggingVisible ? "on-dragging-available dragging-td-value" : ""} ${col.freeze ? 'fixed freeze_horizontal' : ''} ${customColumnClass}`}
                >

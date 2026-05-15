@@ -1,30 +1,38 @@
-export const addFreezeColumns = (tableClassName) => {
-   updateFreezeCells(tableClassName);
-// Add event listeners.
+export const DRAG_COLUMN_WIDTH = 25;
 
-   const tables = document.getElementsByClassName(tableClassName);
-   for (let i = 0; i < tables.length; i++) {
-      const tableElement = tables[i];
-      tableElement.addEventListener("scroll", freeze_pane_listener(tableElement, tableClassName));
+/**
+ * Inline styles for frozen columns using position:sticky so the browser keeps
+ * them aligned with horizontal scroll (avoids transform + scroll jitter).
+ */
+export function getFrozenStickyStyles(columns, colIndex, isDragColumnVisible) {
+   const col = columns[colIndex];
+   if (!col || !col.freeze) return null;
+   let left = 0;
+   if (isDragColumnVisible && columns[0]?.freeze) {
+      left += DRAG_COLUMN_WIDTH;
    }
-};
-
-const freeze_pane_listener = (tableElement) => {
-   return function () {
-      let i;
-      const translate_x = "translate(" + tableElement.scrollLeft + "px,0px)";
-
-      const fixed_horizontal_elts = tableElement.getElementsByClassName('freeze_horizontal');
-
-      // The webkitTransforms are for a set of ancient smartphones/browsers,
-      // one of which I have, so I code it for myself:
-      for (i = 0; i < fixed_horizontal_elts.length; i++) {
-         fixed_horizontal_elts[i].style.webkitTransform = translate_x;
-         fixed_horizontal_elts[i].style.transform = translate_x;
+   for (let j = 0; j < colIndex; j++) {
+      if (columns[j]?.freeze) {
+         left += columns[j].width;
       }
    }
+   return {
+      position: 'sticky',
+      left,
+      /* Only stack above adjacent non-sticky cells. */
+      zIndex: 3 + colIndex,
+   };
 }
 
+/** Sticky styles for the drag handle column when the first data column is frozen. */
+export function getDragFrozenStickyStyle(columns, isDragColumnVisible) {
+   if (!isDragColumnVisible || !columns?.[0]?.freeze) return null;
+   return {
+      position: 'sticky',
+      left: 0,
+      zIndex: 2,
+   };
+}
 
 const parent_elt = (wanted_node_name, elt) => {
    // Function to work up the DOM until it reaches
@@ -33,10 +41,10 @@ const parent_elt = (wanted_node_name, elt) => {
 
    const this_parent = elt.parentElement;
    if ((this_parent == null) || (this_parent.nodeName == null)) {
-      // Sad trombone noise.
+            // Sad trombone noise.
       return null;
    } else if (this_parent.nodeName === wanted_node_name) {
-      // Found it:
+            // Found it:
       return this_parent;
    } else {
       // Recurse:
@@ -68,6 +76,5 @@ export const updateFreezeCells = (tableClassName) => {
             item.style.backgroundColor = getElementBackgroundColor(item);
          }
       }
-      freeze_pane_listener(tableElement, tableClassName)();
    }
 }
