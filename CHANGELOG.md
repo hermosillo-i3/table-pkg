@@ -31,7 +31,7 @@ Date: Feb 12, 2026
 
 ## V 1.18.18
 Date: Feb 04, 2026
-* [FIX]'
+* [FIX]
   * Fix table styles background color for hover in certain elements
 
 ## V 1.18.17
