@@ -257,10 +257,11 @@ class InputField extends React.Component {
 
       const shouldShowBorder = this.props.allowNewRowSelectionProcess && (this.props.hoveredCellIndex === this.props.colIndex || isFocused);
       const isHovered = this.props.allowNewRowSelectionProcess && this.props.hoveredCellIndex === this.props.colIndex;
+      const isEmpty = !currentValue || (typeof currentValue === 'string' && currentValue.length === 0);
 
       const newRowSelectionStyle = this.props.allowNewRowSelectionProcess ? {
         margin: '5px 0px 5px 0px',
-        width: isHovered ? '50%' : 'auto',
+        width: (isHovered && isEmpty) ? '50%' : 'auto',
         maxWidth: '100%',
         border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
         cursor: 'text',
@@ -276,7 +277,7 @@ class InputField extends React.Component {
 
       const newRowSelectionStyleWithMinimalWidth = this.props.allowNewRowSelectionProcess ? {
         minHeight: '20px',
-        minWidth: isHovered ? '50%' : '20px',
+        minWidth: (isHovered && isEmpty) ? '50%' : '20px',
         ...newRowSelectionStyle,
       } : {};
 
