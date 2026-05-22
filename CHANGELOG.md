@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.23
+Date: May 22, 2026
+* [FIX]
+  * Fix minWidth for Input cells when hovering filled Inputss.
+
 ## V 1.18.22
 Date: May 15, 2026
 * [UPDATE]
@@ -26,7 +31,7 @@ Date: Feb 12, 2026
 
 ## V 1.18.18
 Date: Feb 04, 2026
-* [FIX]
+* [FIX]'
   * Fix table styles background color for hover in certain elements
 
 ## V 1.18.17
