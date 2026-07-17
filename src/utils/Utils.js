@@ -151,9 +151,9 @@ export const chunk = (str, n) => {
 };
 
 /** Generate a new code for a table row from the current codes in the table following these rules
- * It will the next lowest code posible.
+ * It will the next lowest code posible for the last code in the array.
  * Given an array of codes such as ['1','2']. The next lowest posible code will be '3'
- * Given an array of codes such as ['1','3']. The next lowest posible code will be '2'
+ * Given an array of codes such as ['1','3']. The next lowest posible code will be '4'
  * @param {Array} _array The list of codes that are already in the table
  * @param {Boolean} code_length The length of the new code, EJ. if the code is 1 but length = 2 , the code will be 01
  * @return {String} The generated code
@@ -164,25 +164,10 @@ export const generateCode = (_array, code_length = 2) => {
       // Remove any invalid code
       let array = _array.filter(item => item?.code != null)
       array = _uniqBy(array, 'code').sort(sortByCode());
-      // Get the GAP between codes.
-      let index = 0;
-      let isValid;
-      let prevElement;
-      let currentElement;
 
-      const firstElement = array[0];
-      const increase = firstElement.code === '0'.padStart(code_length, '0') ? 0 : 1;
-      do {
-         prevElement = currentElement
-         currentElement = array[index];
-         const code_array = currentElement.code.split('.');
-         const code = code_array[code_array.length - 1] === '' ? code_array[code_array.length - 2] : code_array[code_array.length - 1]
-         isValid = (index + increase) === parseInt(code)
-         index++;
-      } while (isValid && index < array.length);
-
-      const last = isValid ? currentElement : prevElement;
-      const code_array = last ? last.code.split('.') : ['00'];
+      // Get the last code and get the next code
+      const lastCode = array[array.length - 1];
+      const code_array = lastCode.code.split('.');
       code = code_array[code_array.length - 1] === '' ? code_array[code_array.length - 2] : code_array[code_array.length - 1]
       code = parseInt(code);
       code = (code + 1).toString().padStart(code_length, '0')
