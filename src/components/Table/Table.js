@@ -866,6 +866,12 @@ class Table extends React.Component {
 
    onPaste = (e) => {
       if (this.props.onPasteRows) {
+         // When a cell input is focused, let the browser paste into that field.
+         const isEditingCell = e?.target && (e?.target?.tagName === 'INPUT' || e?.target?.tagName === 'TEXTAREA' || e?.target?.isContentEditable);
+         if (isEditingCell) {
+            return;
+         }
+
          const rows = getClipboardTextFromExcel(e);
          const selected_rows = this.props.selected_rows ? this.props.selected_rows : [];
          const {newRows, errorRows, errorRowIndexes} = fixRowsFromClipboard(rows, this.props.pastedRowsValidator);
