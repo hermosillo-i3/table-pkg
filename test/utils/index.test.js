@@ -1,4 +1,4 @@
-const { applyFilter, fixRowsFromClipboard } = require('../src/utils/index');
+const { applyFilter, fixRowsFromClipboard } = require('../../src/utils/index');
 
 describe('applyFilter', () => {
   it('should apply status filters correctly', () => {
