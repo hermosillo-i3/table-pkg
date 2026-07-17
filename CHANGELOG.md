@@ -1,6 +1,13 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.24
+Date: Jul 17, 2026
+* [NEW]
+  * Add `createActionQueue` utility and optional `queueKey` on toolbar actions to serialize rapid clicks
+* [UPDATE]
+  * Toolbar routes actions through the queue when `queueKey` is set; `custom_button` receives `onClick`, `loading`, and `disabled`
+
 ## V 1.18.23
 Date: May 22, 2026
 * [FIX]
