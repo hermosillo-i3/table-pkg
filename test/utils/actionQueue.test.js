@@ -1,4 +1,4 @@
-const { createActionQueue } = require('../src/utils/actionQueue');
+const { createActionQueue } = require('../../src/utils/actionQueue');
 
 describe('createActionQueue', () => {
   it('should execute an action immediately and return its result', async () => {
