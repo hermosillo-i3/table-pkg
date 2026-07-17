@@ -5,6 +5,7 @@ import Select from "react-select";
 import ModalForm from "../ModalForm";
 import { CSVLink } from "react-csv";
 import { convertTreeStructureToFlatArray, filterRowValues } from "../../utils/Utils";
+import createActionQueue from "../../utils/actionQueue";
 import './Toolbar.scss';
 
 
@@ -51,6 +52,7 @@ export default class Toolbar extends React.Component {
 
    constructor(props) {
       super(props);
+      this.actionQueue = createActionQueue();
       this.state = {
          is_create_profile_modal_open: false
       }
@@ -82,6 +84,19 @@ export default class Toolbar extends React.Component {
       const {rows = []} = this.props;
       const filteredRows = rows.map((row) => filterRowValues(row));
       return convertTreeStructureToFlatArray(filteredRows, 'subrows');
+   }
+
+   handleActionClick = (item) => {
+      const {action, queueKey} = item;
+      if (!action) {
+         return undefined;
+      }
+
+      if (queueKey) {
+         return this.actionQueue.enqueue(queueKey, action);
+      }
+
+      return action();
    }
 
    render() {
@@ -154,9 +169,15 @@ export default class Toolbar extends React.Component {
                </div>
             )
          }
+         const onClick = () => this.handleActionClick(item);
+
          if (item.custom_button)
             return React.cloneElement(
-               item.custom_button(),
+               item.custom_button({
+                  onClick,
+                  loading: item.loading,
+                  disabled: item.disabled,
+               }),
                { key: item.name }
             );
          else
@@ -167,7 +188,7 @@ export default class Toolbar extends React.Component {
                   icon={item.icon !== undefined}
                   size={item.icon ? "large" : "small"}
                   active={item.active}
-                  onClick={item.action}
+                  onClick={onClick}
                   loading={item.loading}
                   disabled={item.disabled}
                   type="button"
