@@ -2015,6 +2015,7 @@ Table.propTypes = {
       subIcon: PropTypes.string,
       subIconPosition: PropTypes.string,
       action: PropTypes.func,
+      queueKey: PropTypes.string,
       position: PropTypes.oneOf(['left', 'right']),
       custom_button: PropTypes.func
    })),
