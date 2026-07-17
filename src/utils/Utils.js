@@ -151,9 +151,9 @@ export const chunk = (str, n) => {
 };
 
 /** Generate a new code for a table row from the current codes in the table following these rules
- * It will the next lowest code posible for the last code in the array.
- * Given an array of codes such as ['1','2']. The next lowest posible code will be '3'
- * Given an array of codes such as ['1','3']. The next lowest posible code will be '4'
+ * Returns the next code after the last (highest) code in the array. 
+ * Given an array of codes such as ['1','2']. The next code will be '3'
+ * Given an array of codes such as ['1','3']. The next code will be '4'
  * @param {Array} _array The list of codes that are already in the table
  * @param {Boolean} code_length The length of the new code, EJ. if the code is 1 but length = 2 , the code will be 01
  * @return {String} The generated code
