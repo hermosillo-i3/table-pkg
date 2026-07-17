@@ -7,6 +7,8 @@ Date: Jul 17, 2026
   * Add `createActionQueue` utility and optional `queueKey` on toolbar actions to serialize rapid clicks
 * [UPDATE]
   * Toolbar routes actions through the queue when `queueKey` is set; `custom_button` receives `onClick`, `loading`, and `disabled`
+  * Remove logic to add code between gap in generateCode function
+  * Allow paste into focused input fields in Table Component
 
 ## V 1.18.23
 Date: May 22, 2026
