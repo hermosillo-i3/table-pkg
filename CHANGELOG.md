@@ -1,6 +1,12 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.25
+Date: Jul 22, 2026
+* [FIX]
+  * Remove unused `createActionQueue` utility and its tests
+  * Remove `queueKey` support and restore prior Toolbar `custom_button` / `onClick` behavior
+
 ## V 1.18.24
 Date: Jul 17, 2026
 * [NEW]
