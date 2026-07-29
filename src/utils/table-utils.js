@@ -13,7 +13,7 @@ export function getFrozenStickyStyles(columns, colIndex, isDragColumnVisible) {
    }
    for (let j = 0; j < colIndex; j++) {
       if (columns[j]?.freeze) {
-         left += columns[j].width;
+         left += Number(columns[j].width) || 0;
       }
    }
    return {
