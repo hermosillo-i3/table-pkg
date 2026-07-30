@@ -141,10 +141,6 @@ const rowFunctionComponent = (props) => {
    // Definimos los hooks useDrag y useDrop
    const [{ isDragging, canDrag }, connectDragSource] = useDrag({
       type: ItemTypes.ROW,
-      item: {
-         row: row,
-         type: props.type,
-      },
       canDrag: (monitor) => {
          return props.canDrag ? props.canDrag(props, monitor) : false;
       },

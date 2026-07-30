@@ -908,7 +908,6 @@ class InputField extends React.Component {
             <TableDatePicker
               selected={selected}
               style={{
-                width: '100%',
                 border: shouldShowBorder ? '2px solid #1f76b7' : '2px solid transparent',
                 width: this.props.allowNewRowSelectionProcess ? customWidth : '100%',
                 minWidth: '70%',
