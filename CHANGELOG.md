@@ -1,6 +1,12 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.26
+Date: Jul 29, 2026
+* [FIX]
+  * Remove duplicated `width` key in the `TableDatePicker` inline style and duplicated `item` key in the row `useDrag` spec, keeping the effective values in both cases
+  * Coerce frozen column widths with `Number(...) || 0` in `getFrozenStickyStyles` so a non-numeric or missing `width` no longer produces a `NaN` sticky offset
+
 ## V 1.18.25
 Date: Jul 22, 2026
 * [FIX]
