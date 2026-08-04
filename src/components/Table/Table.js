@@ -1652,6 +1652,10 @@ class Table extends React.Component {
                         className={is_sortable ? `${col.Header !== '' && col.columns ? 'Table-Column-Header-Groups-Sortable' : 'Table-Column-Header-Sortable'}` : null}
                         style={{ textAlign: 'center' }}
                         onClick={is_sortable ? () => {
+                           const previousDirection = this.state.column_extended[col.assesor]?.sort_directon;
+                           const nextDirection = previousDirection === 'up' ? 'down' : 'up';
+                           const usesServerSort = typeof this.props.onSortChange === 'function';
+
                            this.setState((prevState) => ({
                               column_extended: Object.keys(prevState.column_extended).reduce((acum, key) => {
                                  if (key === col.assesor) {
@@ -1659,7 +1663,7 @@ class Table extends React.Component {
                                        ...acum,
                                        [col.assesor]: {
                                           ...prevState.column_extended[col.assesor],
-                                          sort_directon: prevState.column_extended[col.assesor].sort_directon === 'up' ? 'down' : 'up'
+                                          sort_directon: nextDirection,
                                        }
                                     }
                                  }
@@ -1672,8 +1676,11 @@ class Table extends React.Component {
 
                                  }
                               }, {}),
-                              sortMethod: col.sortMethod ? col.sortMethod : (a, b) => {
-                                 let sortUp = prevState.column_extended[col.assesor].sort_directon === 'up'
+                              // Server-side sort: keep API order via each row's `order_position`
+                              sortMethod: usesServerSort
+                                 ? (a, b) => (a.order_position ?? 0) - (b.order_position ?? 0)
+                                 : (col.sortMethod ? col.sortMethod : (a, b) => {
+                                 let sortUp = previousDirection === 'up'
                                  let clean = str => {
                                     let tmp = replaceAll(str, '\\/', '')
                                     tmp = replaceAll(tmp, '\\.', '')
@@ -1686,8 +1693,15 @@ class Table extends React.Component {
                                  } else {
                                     return clean(a[col.assesor]) > clean(b[col.assesor]) ? (sortUp ? 1 : -1) : (sortUp ? -1 : 1)
                                  }
-                              }
-                           }))
+                              }),
+                           }));
+
+                           if (usesServerSort) {
+                              this.props.onSortChange({
+                                 field: col.assesor,
+                                 direction: nextDirection === 'up' ? 'ASC' : 'DESC',
+                              });
+                           }
                         } : undefined}
                      >
                         {typeof col.Header === 'string' ? col.Header : col.Header()}
@@ -2053,6 +2067,15 @@ Table.propTypes = {
    orderByCode: PropTypes.bool,
    orderByAlphanumericCode: PropTypes.bool,
    sort: PropTypes.func,
+   /**
+    * When provided, column header clicks request server-side sorting instead of
+    * reordering the rows already loaded in the table. While that request is in
+    * flight (and after it returns), the table preserves the loaded page order via
+    * each row's numeric `order_position` field — consumers must set
+    * `order_position` on every row (typically the index in the server page order).
+    * @param {{field: string, direction: 'ASC'|'DESC'}} sort
+    */
+   onSortChange: PropTypes.func,
    expandCollapseColumnIndex: PropTypes.number,
    isDragColumnVisible: PropTypes.bool,
 
