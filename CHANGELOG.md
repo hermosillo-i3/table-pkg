@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.27
+Date: Aug 4, 2026
+* [NEW]
+  * Add optional `onSortChange` prop so column header clicks can request server-side sorting; while active, row order is preserved via each row's `order_position`
+
 ## V 1.18.26
 Date: Jul 29, 2026
 * [FIX]
