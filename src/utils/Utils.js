@@ -1,4 +1,5 @@
 import dateFormatter from "@hermosillo-i3/utils-pkg/src/dateFormatter";
+import {Decimal} from "decimal.js";
 import { sortByCode } from "./index";
 import _uniqBy from "lodash/uniqBy";
 
@@ -483,9 +484,28 @@ export const getAllParents = (item, list_of_items) => {
 
 
 /**
+ * Serializes a value so CSV export keeps primitives and Decimal numbers.
+ * Plain objects, functions and symbols are omitted by the caller.
+ * @param {*} value - Cell value from a table row
+ * @returns {*|null|undefined} Primitive/null to keep, or undefined to drop the key
+ */
+const serializeCsvCellValue = (value) => {
+   if (value == null) {
+      return value;
+   }
+   if (typeof value !== 'object') {
+      return value;
+   }
+   if (Decimal.isDecimal(value)) {
+      return value.toString();
+   }
+   return undefined;
+};
+
+/**
  * Filter object values by its types
  * @param {Object} row Row's object 
- * @returns {Object} Object without function and object values
+ * @returns {Object} Object without function and plain object values (Decimal is kept as string)
  */
 export const filterRowValues = (row) => {
    return Object.entries(row).reduce((accum, [key, value]) => {
@@ -497,13 +517,27 @@ export const filterRowValues = (row) => {
       }
       switch (typeof value) {
          case 'object':
+            if (value == null) {
+               return {
+                  ...accum,
+                  [key]: value,
+               }
+            }
             if (Array.isArray(value)) {
                return {
                   ...accum,
                   [key]: filterArrayObjectValuesRecursively(value).filter((n) => n != null && n != undefined),
                }
-            } else {
-               return accum;
+            }
+            {
+               const serializedValue = serializeCsvCellValue(value);
+               if (serializedValue === undefined) {
+                  return accum;
+               }
+               return {
+                  ...accum,
+                  [key]: serializedValue,
+               }
             }
          case 'function':
             return accum;
@@ -527,10 +561,15 @@ const filterArrayObjectValuesRecursively = (arr) => {
    return arr.map((value) => {
       switch (typeof value) {
          case 'object':
+            if (value == null) {
+               return value;
+            }
             if (Array.isArray(value)) {
                return filterArrayObjectValuesRecursively(value).filter((n) => n != null && n != undefined);
-            } else {
-               return null;
+            }
+            {
+               const serializedValue = serializeCsvCellValue(value);
+               return serializedValue === undefined ? null : serializedValue;
             }
          case 'function':
             return null;
