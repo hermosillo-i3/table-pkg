@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.28
+Date: Aug 12, 2026
+* [FIX]
+  * Keep Decimal (and null) values when exporting CSV via `filterRowValues`, so currency/quantity columns are no longer dropped
+
 ## V 1.18.27
 Date: Aug 4, 2026
 * [NEW]
