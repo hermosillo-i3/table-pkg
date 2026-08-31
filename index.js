@@ -12,6 +12,7 @@ import {
     Toolbar as ToolbarComponent,
     Utils as UtilsComponent,
     DragDropContext as DragDropContextComponent,
+    useTableInfiniteScroll as useTableInfiniteScrollHook,
 } from './src/index'
 
 
@@ -28,4 +29,5 @@ export const Settings = SettingsComponent;
 export const Toolbar = ToolbarComponent;
 export const Utils = UtilsComponent;
 export const DragDropContext = DragDropContextComponent;
+export const useTableInfiniteScroll = useTableInfiniteScrollHook;
 export default Table;

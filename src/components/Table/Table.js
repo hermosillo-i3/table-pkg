@@ -51,6 +51,8 @@ const KEY_EVENT = {
 const defaultOnRowSelect = () => {
 };
 
+const DEFAULT_REACH_BOTTOM_THRESHOLD_PX = 80;
+
 const generateRowsToExpand = (expandRows) => {
    // Construct the object to expand the rows
    return expandRows.reduce((acum, row_id) => {
@@ -332,6 +334,10 @@ class Table extends React.Component {
          return true
       }
 
+      if (this.props.isLoadingMore !== nextProps.isLoadingMore || this.props.hasMore !== nextProps.hasMore) {
+         return true
+      }
+
       if (JSON.stringify(this.state.rows_extended) !== JSON.stringify(nextState.rows_extended)) {
          return true
       }
@@ -423,6 +429,72 @@ class Table extends React.Component {
    }
 
 
+   /**
+    * @description Tells whether the table should request another page from onReachBottom.
+    * @returns {boolean}
+    */
+   canReachBottom = () => (
+      typeof this.props.onReachBottom === 'function' && this.props.hasMore !== false
+   );
+
+   /**
+    * @description Loads the next page when the table scroll is near the bottom.
+    * @param {Event} event Scroll event from the table body container.
+    * @returns {void}
+    */
+   handleReachBottomScroll = (event) => {
+      if (!this.canReachBottom()) {
+         return;
+      }
+      const scrollContainer = event.currentTarget;
+      const thresholdPx = this.props.reachBottomThresholdPx ?? DEFAULT_REACH_BOTTOM_THRESHOLD_PX;
+      const distanceFromBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight;
+      if (distanceFromBottom <= thresholdPx) {
+         this.props.onReachBottom();
+      }
+   };
+
+   /**
+    * @description Wires the optional infinite-scroll listener on the real scroll container.
+    * @returns {void}
+    */
+   bindReachBottomListener = () => {
+      const scrollContainer = this.horizontalScrollRef?.current;
+      if (!scrollContainer || typeof this.props.onReachBottom !== 'function') {
+         return;
+      }
+      scrollContainer.addEventListener('scroll', this.handleReachBottomScroll);
+   };
+
+   /**
+    * @description Removes the optional infinite-scroll listener.
+    * @returns {void}
+    */
+   unbindReachBottomListener = () => {
+      const scrollContainer = this.horizontalScrollRef?.current;
+      if (!scrollContainer) {
+         return;
+      }
+      scrollContainer.removeEventListener('scroll', this.handleReachBottomScroll);
+   };
+
+   /**
+    * @description Requests another page when the first rows do not fill the viewport.
+    * @returns {void}
+    */
+   fillViewportIfNeeded = () => {
+      if (!this.canReachBottom()) {
+         return;
+      }
+      const scrollContainer = this.horizontalScrollRef?.current;
+      if (!scrollContainer) {
+         return;
+      }
+      if (scrollContainer.scrollHeight <= scrollContainer.clientHeight + 4) {
+         this.props.onReachBottom();
+      }
+   };
+
    componentDidMount = () => {
 
       this.updateColumnsWidth();
@@ -438,6 +510,8 @@ class Table extends React.Component {
       if (this.props.isExpandByDefault) {
          this.expandRows()
       }
+      this.bindReachBottomListener();
+      this.fillViewportIfNeeded();
    };
 
    createDefaultValues = () => {
@@ -538,6 +612,15 @@ class Table extends React.Component {
          })
       }
 
+      if (prevProps.onReachBottom !== this.props.onReachBottom) {
+         this.unbindReachBottomListener();
+         this.bindReachBottomListener();
+      }
+
+      if (JSON.stringify(prevProps.rows) !== JSON.stringify(this.props.rows)) {
+         this.fillViewportIfNeeded();
+      }
+
       updateFreezeCells(this.state.name);
    };
 
@@ -564,6 +647,7 @@ class Table extends React.Component {
       window.removeEventListener('keyup', this.handleCtrlKeyUp);
       window.removeEventListener('click', this.onClickOnDocument);
       window.removeEventListener('paste', this.onPaste);
+      this.unbindReachBottomListener();
       // Clear tab index cache to prevent memory leaks
       this._tabIndexCache?.clear();
    }
@@ -1593,6 +1677,7 @@ class Table extends React.Component {
          title,
          rows,
          isLoading,
+         isLoadingMore,
          bottomToolbar,
          noRowsMessage,
          selected_rows = [],
@@ -1602,6 +1687,13 @@ class Table extends React.Component {
          isTableHeaderHidden,
          tableWrapperStyle,
       } = this.props;
+      const loadingMoreToolbar = bottomToolbar != null
+         ? bottomToolbar
+         : (isLoadingMore ? (
+            <div style={{padding: '8px 0', textAlign: 'center'}}>
+               <Loader active inline size="small" content="Cargando más..." />
+            </div>
+         ) : null);
 
       const isEmpty = Object.keys(rows).length === 0 && !isLoading;
 
@@ -1936,7 +2028,7 @@ class Table extends React.Component {
                         <Loader>Cargando</Loader>
                      </Dimmer>
                   }
-                  {bottomToolbar != null && bottomToolbar}
+                  {loadingMoreToolbar}
 
                   <Settings
                      profile={profileSelected}
@@ -2076,6 +2168,23 @@ Table.propTypes = {
     * @param {{field: string, direction: 'ASC'|'DESC'}} sort
     */
    onSortChange: PropTypes.func,
+   /**
+    * Called when the table scroll is near the bottom, or when the loaded rows
+    * do not fill the viewport. Pair with `useTableInfiniteScroll` `loadMore`.
+    */
+   onReachBottom: PropTypes.func,
+   /**
+    * When false, `onReachBottom` is not called. Omit or pass true while a next page exists.
+    */
+   hasMore: PropTypes.bool,
+   /**
+    * Shows a default "Cargando más..." footer when `bottomToolbar` is not provided.
+    */
+   isLoadingMore: PropTypes.bool,
+   /**
+    * Distance from the bottom of the scroll container that triggers `onReachBottom`.
+    */
+   reachBottomThresholdPx: PropTypes.number,
    expandCollapseColumnIndex: PropTypes.number,
    isDragColumnVisible: PropTypes.bool,
 
@@ -2152,6 +2261,8 @@ Table.defaultProps = {
    allowTabNavigationForChildren: false,
    pastedRowsValidator: [],
    allowNewRowSelectionProcess: false,
+   isLoadingMore: false,
+   reachBottomThresholdPx: DEFAULT_REACH_BOTTOM_THRESHOLD_PX,
 };
 
 export default Table;
