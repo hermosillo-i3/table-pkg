@@ -4,7 +4,7 @@ Requisito: `@hermosillo-i3/table-pkg` **≥ 1.18.29**.
 
 ## Cómo funciona
 
-El `Table` de `@hermosillo-i3/table-pkg` no carga todo el listado de golpe. Pide **tandas** (por defecto 40 filas) y, al llegar al final, pide la siguiente.
+El `Table` de `@hermosillo-i3/table-pkg` no carga todo el listado de golpe. Pide **tandas** (por defecto 20 filas) y, al llegar al final, pide la siguiente.
 
 Las piezas son:
 
@@ -29,7 +29,7 @@ El flujo:
 
 ### 1. Backend
 
-1. Haz que el endpoint acepte, además de los filtros de la ruta, `limit` (típicamente 40), `cursor` (`null` en la primera tanda) y `sort.field` / `sort.direction` (`ASC` o `DESC`).
+1. Haz que el endpoint acepte, además de los filtros de la ruta, `limit` (típicamente 20), `cursor` (`null` en la primera tanda) y `sort.field` / `sort.direction` (`ASC` o `DESC`).
 2. Devuelve siempre este contrato. `next_cursor` va en `null` cuando no hay más filas:
 
 ```js
@@ -122,7 +122,7 @@ const {
   applySearch, applySort, loadMore, updateItem, removeItems,
 } = useTableInfiniteScroll({
   fetchPage,
-  pageSize: 40,
+  pageSize: 20,
   initialSort: { field: 'created_at', direction: 'DESC' },
 });
 ```

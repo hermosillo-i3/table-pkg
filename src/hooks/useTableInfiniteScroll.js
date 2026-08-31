@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 
-const DEFAULT_PAGE_SIZE = 40;
+const DEFAULT_PAGE_SIZE = 20;
 const DEFAULT_SORT = {field: 'created_at', direction: 'DESC'};
 
 /**
@@ -10,7 +10,7 @@ const DEFAULT_SORT = {field: 'created_at', direction: 'DESC'};
  * @param {Object} params
  * @param {(args: {cursor: Object|null, limit: number, filters: Object, sort: {field: string, direction: string}}) => Promise<{items: Object, orderedIds?: string[], nextCursor: Object|null, total_count?: number|null}>} params.fetchPage
  *        Fetches one page. `items` is an id-keyed map merged on load-more.
- * @param {number} [params.pageSize=40] - Page size sent to `fetchPage`.
+ * @param {number} [params.pageSize=20] - Page size sent to `fetchPage`.
  * @param {{field: string, direction: string}} [params.initialSort] - Default server sort.
  * @returns {{
  *   items: Object,
