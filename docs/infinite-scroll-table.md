@@ -1,29 +1,36 @@
-# Scroll infinito opt-in en Table
-
-Esta guía explica cómo cablear el `Table` de `@hermosillo-i3/table-pkg` para cargar filas al llegar al final, en **cualquier módulo**. El paquete no conoce modelos, endpoints ni Redux: cada pantalla aporta filtros, fetch y el mapa de columnas ordenables.
+# Scroll infinito en Table
 
 Requisito: `@hermosillo-i3/table-pkg` **≥ 1.18.29**.
 
-## Qué ya está listo (no lo vuelvas a crear)
+## Cómo funciona
 
-- **Table (opt-in):** `onReachBottom`, `hasMore`, `isLoadingMore`, `reachBottomThresholdPx`. Sin esas props el comportamiento no cambia.
-- **Hook:** `useTableInfiniteScroll` — estado de páginas, sort y carga al final.
-- **Sort de servidor en Table:** `onSortChange` (desde 1.18.27). Mientras está activo, el orden de las filas cargadas se preserva con `order_position`.
-- **Backend (recomendado):** `@hermosillo-i3/utils-pkg` `cursorPagination` — `buildCursorWhere`, `buildSortOrder`, `buildNextCursor`.
+El `Table` de `@hermosillo-i3/table-pkg` no carga todo el listado de golpe. Pide **tandas** (por defecto 40 filas) y, al llegar al final, pide la siguiente.
 
-El orden por columna lo resuelve el **servidor**. El front solo muestra lo que llega y pide la siguiente tanda.
+Las piezas son:
+
+- **`Table`:** el componente de tabla. Avisa cuando el scroll llega al final (`onReachBottom`).
+- **`useTableInfiniteScroll`:** el hook de `table-pkg` que guarda las filas ya cargadas, el orden y el cursor. Lo usas en el componente de la ruta (por ejemplo `precalificacion/index.js`).
+- **`fetchPage`:** la función que escribes en ese mismo componente. Habla con la action de Redux / el endpoint y traduce la respuesta.
+- **Endpoint (fivebim-api o el microservicio):** arma la tanda con filtros, sort y cursor, y devuelve `next_cursor`.
+
+El flujo:
+
+1. El componente de la ruta llama `applySearch` (primera carga o filtros) o `applySort` (clic en una columna). `useTableInfiniteScroll` pide la **primera tanda** con `cursor: null` a través de `fetchPage`.
+2. El endpoint responde con esas filas, un `total_count` y un `next_cursor` (o `null` si ya no hay más).
+3. `useTableInfiniteScroll` guarda las filas **por id** y el **orden** que mandó el endpoint. El `Table` las muestra así, sin reordenarlas.
+4. Cuando el usuario llega al final, el `Table` llama `onReachBottom` → `useTableInfiniteScroll` pide la siguiente tanda con ese `next_cursor`.
+5. Las filas nuevas se **agregan** debajo. Un clic en columna vuelve al paso 1 con el nuevo sort: el endpoint reordena **todo** el listado, no solo lo que ya se ve.
+
+`table-pkg` no conoce modelos, Redux ni URLs. Cada ruta aporta filtros, `fetchPage` y el mapa de columnas ordenables.
 
 ---
 
-## 1. Backend: listado por cursor
+## ¿Cómo incluir Scroll Infinito a una Tabla?
 
-El endpoint acepta, además de los filtros del módulo:
+### 1. Backend
 
-- `limit` (típicamente 20)
-- `cursor` (`null` en la primera página; objeto o JSON en las siguientes)
-- `sort.field` + `sort.direction` (`ASC` / `DESC`)
-
-Y responde siempre:
+1. Haz que el endpoint acepte, además de los filtros de la ruta, `limit` (típicamente 40), `cursor` (`null` en la primera tanda) y `sort.field` / `sort.direction` (`ASC` o `DESC`).
+2. Devuelve siempre este contrato. `next_cursor` va en `null` cuando no hay más filas:
 
 ```js
 {
@@ -33,11 +40,11 @@ Y responde siempre:
 }
 ```
 
-`next_cursor` es `null` cuando no hay más filas.
+3. En la action de Redux, reenvía `filters`, `limit`, `cursor` y `sort`. Si el cursor va por query (GET), serialízalo con `JSON.stringify`. Si va en body (POST), mándalo como objeto.
 
-### A. Mapa de columnas ordenables
+#### Mapa de columnas ordenables
 
-Traduce el `field` de la UI a columna o asociación de Sequelize. Cada `field` que el usuario pueda ordenar debe existir aquí.
+4. Crea un mapa `sortFields` en el util del listado: cada `field` que el usuario pueda ordenar se traduce a columna o join de Sequelize.
 
 ```js
 const sortFields = {
@@ -47,16 +54,16 @@ const sortFields = {
 };
 ```
 
-### B. Función de listado (`fetchXForList`)
+#### Función de listado
 
-Crea una función por módulo, por ejemplo `fetchXForList({ filters, limit, cursor, sort })`:
+5. En el util del controller (por ejemplo `fetchReportesForGlobalSearch`), implementa la tanda con `{ filters, limit, cursor, sort }`:
 
-1. Resolver `sortConfig` con el mapa de A (campo desconocido → default, p. ej. `created_at`).
-2. Contar **antes** de aplicar el cursor, para que `total_count` cubra el filtro completo.
-3. Armar el `where` del cursor con `buildCursorWhere({ cursor, sortConfig })` y combinarlo (AND) con los filtros.
-4. Ordenar con `buildSortOrder({ sortConfig })` (siempre incluye `id` como desempate).
-5. `findAll` con `limit`.
-6. Si vinieron `limit` filas: `buildNextCursor({ lastRow, sortConfig })`; si no, `null`.
+   1. Resuelve el sort con el mapa. Si el campo no existe, usa el default (p. ej. `created_at`).
+   2. Cuenta **antes** de aplicar el cursor, para que `total_count` cubra todo el filtro.
+   3. Arma el `where` del cursor con `buildCursorWhere({ cursor, sortConfig })` y combínalo (AND) con los filtros.
+   4. Ordena con `buildSortOrder({ sortConfig })`. Siempre desempata por `id`.
+   5. Haz `findAll` con `limit`.
+   6. Si vinieron `limit` filas, arma `next_cursor` con `buildNextCursor({ lastRow, sortConfig })`. Si no, devuelve `null`.
 
 ```js
 const {
@@ -66,53 +73,28 @@ const {
 } = require('@hermosillo-i3/utils-pkg/src/cursorPagination');
 ```
 
-`buildCursorWhere` incluye filas sin valor cuando el orden es DESC (el caso de estatus “abierto” / `NULL`). El API no conoce la tabla del front: solo filtros, sort y cursor.
+`buildCursorWhere` incluye filas sin valor cuando el orden es DESC (p. ej. estatus abierto / `NULL`).
 
-### C. Columnas especiales (híbrido)
+#### Columnas especiales
 
-Los helpers cubren el camino genérico: **una columna o un join**, desempate por `id`, e inclusión de `NULL` en DESC.
+Usa `cursorPagination` cuando el valor es **una columna o un join** (fecha, código, tipo, UEN, estatus que es una fecha/`NULL`).
 
-Si el valor ordenable **no es una columna comparable** (SQL con `CASE`/JSON, ranking, catálogo), **no** lo metas en `utils-pkg`. El listado sigue con su `where`/`order` local para esa columna y usa los helpers en el resto.
+Si una columna ordena con SQL especial o un valor especifico del modelo (como el nivel de riesgo en los Reportes de Seguridad), deja ese `where`/`order` en el util del listado y usa los helpers en el resto. Fechas ISO del cursor y etiquetas de catálogo también se quedan en ese util.
 
-| Usa `cursorPagination` | Déjalo en el módulo |
-|---|---|
-| Fecha, código, joins a nombre/UEN, estatus que es una fecha/`NULL` | Ranking (p. ej. nivel de riesgo) |
-| Tipo, UEN u otras columnas reales | Nombre o campos leídos de JSON / expresiones SQL |
+Si el valor del cursor vive en una asociación (no en la fila), pásalo a `buildNextCursor` con `value`.
 
-El módulo arma el mapa de `sortFields` y decide por campo. Fechas ISO en el cursor, etiquetas de catálogo y cómo se construye el SQL especial se quedan junto al modelo.
+### 2. Front (fivebim-app)
 
-Al pedir la siguiente página, si el valor vive en una asociación (no en la fila), pásalo a `buildNextCursor` con `value`.
+#### `fetchPage`
 
----
-
-## 2. Action / cliente HTTP
-
-Una action que reciba `{ ...filters, limit, cursor, sort }` y devuelva `{ items, next_cursor, total_count }` (o el nombre de tu recurso).
-
-Si el cursor va por query (GET), serialízalo:
-
-```js
-if (params.cursor != null && typeof params.cursor === 'object') {
-  params.cursor = JSON.stringify(params.cursor);
-}
-```
-
-Si va en body (POST), envíalo como objeto.
-
----
-
-## 3. Vista: `fetchPage` (contrato del hook)
-
-Esta es **la función que sí escribes en cada pantalla**. El hook espera:
+6. En el componente de la ruta, escribe `fetchPage`. `useTableInfiniteScroll` espera:
 
 ```
 { cursor, limit, filters, sort }
   → { items, orderedIds, nextCursor, total_count }
 ```
 
-- `items`: mapa **keyed by id** (`{ [id]: row }`), no un array.
-- `orderedIds`: ids en el orden que devolvió el servidor.
-- `nextCursor`: el `next_cursor` del API.
+`items` es un mapa por id (`{ [id]: row }`), no un array. `orderedIds` es el orden que devolvió el endpoint.
 
 ```js
 const fetchPage = useCallback(async ({ cursor, limit, filters, sort }) => {
@@ -127,32 +109,20 @@ const fetchPage = useCallback(async ({ cursor, limit, filters, sort }) => {
 }, [dispatch]);
 ```
 
-`normalizeToIdMap` es de la pantalla: labels, joins, `is_item: true`, etc.
+#### `useTableInfiniteScroll` y `Table`
 
----
-
-## 4. Enganchar el hook
+7. Importa el `Table` y el hook desde `table-pkg`, y pásale `fetchPage`:
 
 ```js
 import Table, { useTableInfiniteScroll } from '@hermosillo-i3/table-pkg';
-// o: import { Table, useTableInfiniteScroll } from '@hermosillo-i3/table-pkg';
 
 const {
-  items,
-  itemOrder,
-  itemCount,
-  sort: activeSort,
-  isFetching,
-  isLoadingMore,
-  hasMore,
-  applySearch,
-  applySort,
-  loadMore,
-  updateItem,
-  removeItems,
+  items, itemOrder, itemCount, sort: activeSort,
+  isFetching, isLoadingMore, hasMore,
+  applySearch, applySort, loadMore, updateItem, removeItems,
 } = useTableInfiniteScroll({
   fetchPage,
-  pageSize: 20,
+  pageSize: 40,
   initialSort: { field: 'created_at', direction: 'DESC' },
 });
 ```
@@ -161,46 +131,23 @@ const {
 |---|---|
 | Primera carga / filtros | `applySearch(filters)` |
 | Clic en columna | `applySort({ field, direction })` |
-| Llegar al final | `loadMore` (lo dispara el Table) |
-| Editar una fila ya cargada | `updateItem(id, patch)` |
-| Borrar filas | `removeItems([id, …])` |
+| Llegar al final | `loadMore` (el `Table` lo dispara con `onReachBottom`) |
+| Editar o borrar filas ya cargadas | `updateItem` / `removeItems` |
 
-No uses `setRef` ni listeners de scroll en el DOM. El Table cuelga el listener en su contenedor de scroll.
-
-Carga inicial:
-
-```js
-useEffect(() => {
-  applySearch({});
-}, []);
-```
-
----
-
-## 5. Armar `rows` para el Table
-
-El Table busca filas por `id` y **no reordena** lo paginado. El orden viaja en `order_position`:
+8. Arma `rows` keyed by id y pon el orden del endpoint en `order_position`. El `Table` busca por `id` y no reordena lo paginado.
 
 ```js
 const tableRows = useMemo(() => (
   itemOrder.reduce((rows, id, index) => {
     const row = items[id];
-    if (!row) {
-      return rows;
-    }
+    if (!row) return rows;
     rows[id] = { ...row, order_position: index, is_item: true };
     return rows;
   }, {})
 ), [itemOrder, items]);
-
-const preserveServerRowOrder = (left, right) => (
-  (left.order_position ?? 0) - (right.order_position ?? 0)
-);
 ```
 
----
-
-## 6. Cablear el Table
+9. Pasa al `Table` `onReachBottom={loadMore}`, `isLoadingMore` y `hasMore`:
 
 ```jsx
 <Table
@@ -211,81 +158,25 @@ const preserveServerRowOrder = (left, right) => (
   onReachBottom={loadMore}
   isLoadingMore={isLoadingMore}
   hasMore={hasMore}
-  sort={preserveServerRowOrder}
+  sort={(left, right) => (left.order_position ?? 0) - (right.order_position ?? 0)}
 />
 ```
 
-Al llegar al final (o si las filas no llenan la pantalla y `hasMore` es true) se pide la siguiente tanda. El pie “Cargando más…” aparece solo si no pasas `bottomToolbar`.
+10. En un `useEffect` del componente de la ruta, llama `applySearch({})` (o los filtros iniciales) para la primera carga.
 
-Props opt-in:
+El pie “Cargando más…” lo muestra el `Table` si no pasas `bottomToolbar`.
 
-| Prop | Rol |
-|---|---|
-| `onReachBottom` | Se llama cerca del final y cuando el contenido no llena el viewport |
-| `hasMore` | Si es `false`, no dispara `onReachBottom` |
-| `isLoadingMore` | Footer por defecto (“Cargando más…”) si no hay `bottomToolbar` |
-| `reachBottomThresholdPx` | Distancia al fondo; default 80 |
+#### Orden por columna
 
----
+El sort nativo del `Table` solo reordena las filas ya cargadas. El orden tiene que pedirse al endpoint.
 
-## 7. Orden por columna
+11. En rutas nuevas, pasa `onSortChange={applySort}` al `Table`. Recibe `{ field, direction }`; cada `field` debe existir en el mapa del backend.
 
-El sort nativo del Table solo reordena **lo ya cargado** y pelea con el cursor. Usa sort de servidor.
-
-**A. `onSortChange` del Table** (módulos nuevos):
-
-```jsx
-<Table
-  onSortChange={applySort}
-  onReachBottom={loadMore}
-  isLoadingMore={isLoadingMore}
-  hasMore={hasMore}
-  sort={preserveServerRowOrder}
-/>
-```
-
-`applySort` recibe `{ field, direction }`. Cada `field` debe existir en el mapa del backend (paso 1A).
-
-**B. Cabeceras de servidor** (fivebim-app: `buildServerSortColumn` + `resolveNextSortDirection`):
+En fivebim-app también puedes usar `buildServerSortColumn` y `resolveNextSortDirection` de `ServerSortHeader`:
 
 ```js
-const handleServerSort = useCallback((field) => {
-  return applySort({
-    field,
-    direction: resolveNextSortDirection(activeSort, field),
-  });
-}, [activeSort, applySort]);
-
-const getColumns = () => [
-  buildServerSortColumn({
-    label: 'Nombre',
-    field: 'name',
-    activeSort,
-    onSort: handleServerSort,
-  }),
-];
+const handleServerSort = (field) => applySort({
+  field,
+  direction: resolveNextSortDirection(activeSort, field),
+});
 ```
-
-En columnas paginadas deja `sortable: false` (ya lo hace `buildServerSortColumn`).
-
----
-
-## 8. Checklist
-
-1. Endpoint con `limit` + `cursor` + `sort` → `{ lista, next_cursor, total_count }`.
-2. Mapa `sortFields` + `buildCursorWhere` / `buildSortOrder` / `buildNextCursor` en columnas genéricas; sorts especiales (expresión SQL, ranking) se quedan en el módulo.
-3. Action que reenvía filtros, `limit`, `cursor` y `sort`.
-4. `fetchPage` que convierte la respuesta al contrato del hook.
-5. `useTableInfiniteScroll({ fetchPage })`.
-6. `rows` keyed by id + `order_position`.
-7. Table: `onReachBottom` / `hasMore` / `isLoadingMore`.
-8. Sort por servidor (`onSortChange` o cabeceras de servidor).
-9. Filtros → `applySearch`; editar/borrar → `updateItem` / `removeItems`.
-
----
-
-## 9. Fuera de alcance
-
-- No copies el hook ni cuelgues scroll en el DOM.
-- No metas Redux, endpoints ni modelos dentro de `table-pkg`.
-- Aún no cubre abrir un registro desde un enlace directo cuando no está entre los primeros resultados, ni el scroll hacia arriba.
