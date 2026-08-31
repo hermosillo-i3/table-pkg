@@ -478,23 +478,6 @@ class Table extends React.Component {
       scrollContainer.removeEventListener('scroll', this.handleReachBottomScroll);
    };
 
-   /**
-    * @description Requests another page when the first rows do not fill the viewport.
-    * @returns {void}
-    */
-   fillViewportIfNeeded = () => {
-      if (!this.canReachBottom()) {
-         return;
-      }
-      const scrollContainer = this.horizontalScrollRef?.current;
-      if (!scrollContainer) {
-         return;
-      }
-      if (scrollContainer.scrollHeight <= scrollContainer.clientHeight + 4) {
-         this.props.onReachBottom();
-      }
-   };
-
    componentDidMount = () => {
 
       this.updateColumnsWidth();
@@ -511,7 +494,6 @@ class Table extends React.Component {
          this.expandRows()
       }
       this.bindReachBottomListener();
-      this.fillViewportIfNeeded();
    };
 
    createDefaultValues = () => {
@@ -615,10 +597,6 @@ class Table extends React.Component {
       if (prevProps.onReachBottom !== this.props.onReachBottom) {
          this.unbindReachBottomListener();
          this.bindReachBottomListener();
-      }
-
-      if (JSON.stringify(prevProps.rows) !== JSON.stringify(this.props.rows)) {
-         this.fillViewportIfNeeded();
       }
 
       updateFreezeCells(this.state.name);
@@ -2169,8 +2147,7 @@ Table.propTypes = {
     */
    onSortChange: PropTypes.func,
    /**
-    * Called when the table scroll is near the bottom, or when the loaded rows
-    * do not fill the viewport. Pair with `useTableInfiniteScroll` `loadMore`.
+    * Called when the table scroll is near the bottom. Pair with `useTableInfiniteScroll` `loadMore`.
     */
    onReachBottom: PropTypes.func,
    /**
