@@ -68,6 +68,21 @@ const {
 
 `buildCursorWhere` incluye filas sin valor cuando el orden es DESC (el caso de estatus “abierto” / `NULL`). El API no conoce la tabla del front: solo filtros, sort y cursor.
 
+### C. Columnas especiales (híbrido)
+
+Los helpers cubren el camino genérico: **una columna o un join**, desempate por `id`, e inclusión de `NULL` en DESC.
+
+Si el valor ordenable **no es una columna comparable** (SQL con `CASE`/JSON, ranking, catálogo), **no** lo metas en `utils-pkg`. El listado sigue con su `where`/`order` local para esa columna y usa los helpers en el resto.
+
+| Usa `cursorPagination` | Déjalo en el módulo |
+|---|---|
+| Fecha, código, joins a nombre/UEN, estatus que es una fecha/`NULL` | Ranking (p. ej. nivel de riesgo) |
+| Tipo, UEN u otras columnas reales | Nombre o campos leídos de JSON / expresiones SQL |
+
+El módulo arma el mapa de `sortFields` y decide por campo. Fechas ISO en el cursor, etiquetas de catálogo y cómo se construye el SQL especial se quedan junto al modelo.
+
+Al pedir la siguiente página, si el valor vive en una asociación (no en la fila), pásalo a `buildNextCursor` con `value`.
+
 ---
 
 ## 2. Action / cliente HTTP
@@ -258,7 +273,7 @@ En columnas paginadas deja `sortable: false` (ya lo hace `buildServerSortColumn`
 ## 8. Checklist
 
 1. Endpoint con `limit` + `cursor` + `sort` → `{ lista, next_cursor, total_count }`.
-2. Mapa `sortFields` + `buildCursorWhere` / `buildSortOrder` / `buildNextCursor`.
+2. Mapa `sortFields` + `buildCursorWhere` / `buildSortOrder` / `buildNextCursor` en columnas genéricas; sorts especiales (expresión SQL, ranking) se quedan en el módulo.
 3. Action que reenvía filtros, `limit`, `cursor` y `sort`.
 4. `fetchPage` que convierte la respuesta al contrato del hook.
 5. `useTableInfiniteScroll({ fetchPage })`.
