@@ -6,6 +6,7 @@ Date: Aug 30, 2026
 * [NEW]
   * Add optional `onReachBottom`, `hasMore`, `isLoadingMore`, and `reachBottomThresholdPx` so the same Table can opt into infinite scroll
   * Export `useTableInfiniteScroll` for cursor-based page state (`fetchPage`, `loadMore`, `applySort`, `applySearch`)
+  * Document how to opt a module into infinite scroll in `docs/infinite-scroll-table.md`
 
 ## V 1.18.28
 Date: Aug 12, 2026
