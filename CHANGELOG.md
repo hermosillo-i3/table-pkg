@@ -9,6 +9,8 @@ Date: Aug 30, 2026
   * Document how to opt a module into infinite scroll in `docs/infinite-scroll-table.md`, including when to keep special sorts in the module instead of `cursorPagination`
 * [UPDATE]
   * Request the next page only when the user scrolls near the bottom; the Table no longer auto-fetches extra pages to fill empty viewport space
+  * Default `useTableInfiniteScroll` `pageSize` is 50
+  * Ignore layout and horizontal scroll: require user intent, `scrollTop > 0`, and overflow larger than the 80px prefetch margin so a first paint does not look like "already at the bottom"
 
 ## V 1.18.28
 Date: Aug 12, 2026

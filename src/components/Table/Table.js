@@ -52,6 +52,7 @@ const defaultOnRowSelect = () => {
 };
 
 const DEFAULT_REACH_BOTTOM_THRESHOLD_PX = 80;
+const REACH_BOTTOM_VERTICAL_KEYS = new Set(['ArrowDown', 'PageDown', 'End', ' ']);
 
 const generateRowsToExpand = (expandRows) => {
    // Construct the object to expand the rows
@@ -110,6 +111,8 @@ class Table extends React.Component {
       this.tableHeader = React.createRef();
       this.tableToolbar = React.createRef();
       this.horizontalScrollRef = React.createRef();
+      this.hasUserScrollIntent = false;
+      this.lastReachBottomScrollTop = 0;
 
       // Cache for navigable cells performance optimization
       this._tabIndexCache = new Map();
@@ -434,28 +437,100 @@ class Table extends React.Component {
     * @returns {boolean}
     */
    canReachBottom = () => (
-      typeof this.props.onReachBottom === 'function' && this.props.hasMore !== false
+      typeof this.props.onReachBottom === 'function'
+      && this.props.hasMore !== false
+      && !this.props.isLoading
+      && !this.props.isLoadingMore
    );
 
    /**
-    * @description Loads the next page when the table scroll is near the bottom.
-    * @param {Event} event Scroll event from the table body container.
+    * @description Marks that the user moved the table down (wheel, keys, or vertical scrollbar).
     * @returns {void}
     */
-   handleReachBottomScroll = (event) => {
-      if (!this.canReachBottom()) {
+   armReachBottomFromUser = () => {
+      this.hasUserScrollIntent = true;
+   };
+
+   /**
+    * @description Requests the next page only when the list overflows, the user has scrolled down,
+    * and the remaining distance is within the prefetch margin.
+    * @returns {void}
+    */
+   tryReachBottom = () => {
+      if (!this.hasUserScrollIntent || !this.canReachBottom()) {
          return;
       }
-      const scrollContainer = event.currentTarget;
+      const scrollContainer = this.horizontalScrollRef?.current;
+      if (!scrollContainer) {
+         return;
+      }
       const thresholdPx = this.props.reachBottomThresholdPx ?? DEFAULT_REACH_BOTTOM_THRESHOLD_PX;
-      const distanceFromBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight;
+      const overflowPx = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+      // An empty or not-yet-measured body has overflow <= 80px, so "near bottom" is true at scrollTop 0.
+      if (overflowPx <= thresholdPx || scrollContainer.scrollTop <= 0) {
+         return;
+      }
+      const distanceFromBottom = overflowPx - scrollContainer.scrollTop;
       if (distanceFromBottom <= thresholdPx) {
          this.props.onReachBottom();
       }
    };
 
    /**
-    * @description Wires the optional infinite-scroll listener on the real scroll container.
+    * @description Arms reach-bottom when the user wheels down.
+    * @param {WheelEvent} event Wheel event from the table scroll container.
+    * @returns {void}
+    */
+   handleReachBottomWheel = (event) => {
+      if (event.deltaY <= 0) {
+         return;
+      }
+      this.armReachBottomFromUser();
+      this.tryReachBottom();
+   };
+
+   /**
+    * @description Arms reach-bottom when the user presses a vertical scroll key.
+    * @param {KeyboardEvent} event Keydown on the table scroll container.
+    * @returns {void}
+    */
+   handleReachBottomKeyDown = (event) => {
+      if (!REACH_BOTTOM_VERTICAL_KEYS.has(event.key)) {
+         return;
+      }
+      this.armReachBottomFromUser();
+      this.tryReachBottom();
+   };
+
+   /**
+    * @description Arms reach-bottom when the user clicks the vertical scrollbar.
+    * @param {PointerEvent} event Pointer down on the table scroll container.
+    * @returns {void}
+    */
+   handleReachBottomPointerDown = (event) => {
+      const scrollContainer = event.currentTarget;
+      if (event.offsetX >= scrollContainer.clientWidth) {
+         this.armReachBottomFromUser();
+      }
+   };
+
+   /**
+    * @description Checks the bottom edge after a downward vertical scroll. Horizontal-only scroll is ignored.
+    * @param {Event} event Scroll event from the table body container.
+    * @returns {void}
+    */
+   handleReachBottomScroll = (event) => {
+      const scrollTop = event.currentTarget.scrollTop;
+      const scrolledDown = scrollTop > this.lastReachBottomScrollTop;
+      this.lastReachBottomScrollTop = scrollTop;
+      if (!scrolledDown) {
+         return;
+      }
+      this.tryReachBottom();
+   };
+
+   /**
+    * @description Wires the optional infinite-scroll listeners on the real scroll container.
     * @returns {void}
     */
    bindReachBottomListener = () => {
@@ -464,10 +539,13 @@ class Table extends React.Component {
          return;
       }
       scrollContainer.addEventListener('scroll', this.handleReachBottomScroll);
+      scrollContainer.addEventListener('wheel', this.handleReachBottomWheel, {passive: true});
+      scrollContainer.addEventListener('keydown', this.handleReachBottomKeyDown);
+      scrollContainer.addEventListener('pointerdown', this.handleReachBottomPointerDown);
    };
 
    /**
-    * @description Removes the optional infinite-scroll listener.
+    * @description Removes the optional infinite-scroll listeners.
     * @returns {void}
     */
    unbindReachBottomListener = () => {
@@ -476,6 +554,9 @@ class Table extends React.Component {
          return;
       }
       scrollContainer.removeEventListener('scroll', this.handleReachBottomScroll);
+      scrollContainer.removeEventListener('wheel', this.handleReachBottomWheel);
+      scrollContainer.removeEventListener('keydown', this.handleReachBottomKeyDown);
+      scrollContainer.removeEventListener('pointerdown', this.handleReachBottomPointerDown);
    };
 
    componentDidMount = () => {
@@ -592,6 +673,11 @@ class Table extends React.Component {
          this.setState({
             rows_extended: generateRowsToExpand(this.props.expandRows)
          })
+      }
+
+      if (this.props.isLoading && !prevProps.isLoading) {
+         this.hasUserScrollIntent = false;
+         this.lastReachBottomScrollTop = 0;
       }
 
       if (prevProps.onReachBottom !== this.props.onReachBottom) {
@@ -1875,6 +1961,7 @@ class Table extends React.Component {
                   <div
                      className="the-table-horizontal-scroll"
                      ref={this.horizontalScrollRef}
+                     tabIndex={typeof this.props.onReachBottom === 'function' ? 0 : undefined}
                   >
                      <div className="the-table-horizontal-scroll-inner">
                         <table className={`the-table-header ${this.state.name}`} ref={this.tableHeader} style={{
@@ -2147,7 +2234,7 @@ Table.propTypes = {
     */
    onSortChange: PropTypes.func,
    /**
-    * Called when the table scroll is near the bottom. Pair with `useTableInfiniteScroll` `loadMore`.
+    * Called when the user scrolls near the bottom. Pair with `useTableInfiniteScroll` `loadMore`.
     */
    onReachBottom: PropTypes.func,
    /**

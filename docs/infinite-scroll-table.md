@@ -4,7 +4,7 @@ Requisito: `@hermosillo-i3/table-pkg` **≥ 1.18.29**.
 
 ## Cómo funciona
 
-El `Table` de `@hermosillo-i3/table-pkg` no carga todo el listado de golpe. Pide **tandas** (por defecto 20 filas) y, al llegar al final, pide la siguiente.
+El `Table` de `@hermosillo-i3/table-pkg` no carga todo el listado de golpe. Pide **tandas** (por defecto 50 filas) y, al llegar al final, pide la siguiente.
 
 Las piezas son:
 
@@ -18,7 +18,7 @@ El flujo:
 1. El componente de la ruta llama `applySearch` (primera carga o filtros) o `applySort` (clic en una columna). `useTableInfiniteScroll` pide la **primera tanda** con `cursor: null` a través de `fetchPage`.
 2. El endpoint responde con esas filas, un `total_count` y un `next_cursor` (o `null` si ya no hay más).
 3. `useTableInfiniteScroll` guarda las filas **por id** y el **orden** que mandó el endpoint. El `Table` las muestra así, sin reordenarlas.
-4. Cuando el usuario llega al final, el `Table` llama `onReachBottom` → `useTableInfiniteScroll` pide la siguiente tanda con ese `next_cursor`.
+4. Cuando el usuario **baja** (rueda, teclas o scrollbar) y llega al final, el `Table` llama `onReachBottom` → `useTableInfiniteScroll` pide la siguiente tanda. Un `scroll` de layout o solo horizontal no pide otra tanda.
 5. Las filas nuevas se **agregan** debajo. Un clic en columna vuelve al paso 1 con el nuevo sort: el endpoint reordena **todo** el listado, no solo lo que ya se ve.
 
 `table-pkg` no conoce modelos, Redux ni URLs. Cada ruta aporta filtros, `fetchPage` y el mapa de columnas ordenables.
@@ -29,7 +29,7 @@ El flujo:
 
 ### 1. Backend
 
-1. Haz que el endpoint acepte, además de los filtros de la ruta, `limit` (típicamente 20), `cursor` (`null` en la primera tanda) y `sort.field` / `sort.direction` (`ASC` o `DESC`).
+1. Haz que el endpoint acepte, además de los filtros de la ruta, `limit` (típicamente 50), `cursor` (`null` en la primera tanda) y `sort.field` / `sort.direction` (`ASC` o `DESC`).
 2. Devuelve siempre este contrato. `next_cursor` va en `null` cuando no hay más filas:
 
 ```js
@@ -122,7 +122,7 @@ const {
   applySearch, applySort, loadMore, updateItem, removeItems,
 } = useTableInfiniteScroll({
   fetchPage,
-  pageSize: 20,
+  pageSize: 50,
   initialSort: { field: 'created_at', direction: 'DESC' },
 });
 ```
