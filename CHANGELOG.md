@@ -10,7 +10,7 @@ Date: Aug 30, 2026
 * [UPDATE]
   * Request the next page only when the user scrolls near the bottom; the Table no longer auto-fetches extra pages to fill empty viewport space
   * Default `useTableInfiniteScroll` `pageSize` is 50
-  * Ignore layout and horizontal scroll: require user intent, `scrollTop > 0`, and overflow larger than the 80px prefetch margin so a first paint does not look like "already at the bottom"
+  * Document `fetchCursorPage` and the other `cursorPagination` helpers in `docs/infinite-scroll-table.md`
 
 ## V 1.18.28
 Date: Aug 12, 2026

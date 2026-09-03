@@ -11,7 +11,7 @@ Las piezas son:
 - **`Table`:** el componente de tabla. Avisa cuando el scroll llega al final (`onReachBottom`).
 - **`useTableInfiniteScroll`:** el hook de `table-pkg` que guarda las filas ya cargadas, el orden y el cursor. Lo usas en el componente de la ruta (por ejemplo `precalificacion/index.js`).
 - **`fetchPage`:** la función que escribes en ese mismo componente. Habla con la action de Redux / el endpoint y traduce la respuesta.
-- **Endpoint (fivebim-api o el microservicio):** arma la tanda con filtros, sort y cursor, y devuelve `next_cursor`.
+- **Endpoint (fivebim-api o el microservicio):** arma la tanda con `fetchCursorPage` (utils-pkg): filtros, sort y cursor, y devuelve `next_cursor`.
 
 El flujo:
 
@@ -29,6 +29,8 @@ El flujo:
 
 ### 1. Backend
 
+Requisito: `@hermosillo-i3/utils-pkg` **≥ 1.22.16**.
+
 1. Haz que el endpoint acepte, además de los filtros de la ruta, `limit` (típicamente 50), `cursor` (`null` en la primera tanda) y `sort.field` / `sort.direction` (`ASC` o `DESC`).
 2. Devuelve siempre este contrato. `next_cursor` va en `null` cuando no hay más filas:
 
@@ -42,9 +44,34 @@ El flujo:
 
 3. En la action de Redux, reenvía `filters`, `limit`, `cursor` y `sort`. Si el cursor va por query (GET), serialízalo con `JSON.stringify`. Si va en body (POST), mándalo como objeto.
 
+#### Helpers de `cursorPagination` (utils-pkg)
+
+Importa desde `@hermosillo-i3/utils-pkg/src/cursorPagination`.
+
+`fetchCursorPage` ya hace el `count`, el `findAll` y arma el `next_cursor`. En tu módulo solo pasas el modelo, los filtros (`where`) y el sort. Si vuelves a escribir `count` / `findAll` / `next_cursor` a mano, estás duplicando lo que el helper ya cubre.
+
+| Función | Qué hace |
+|---|---|
+| **`fetchCursorPage`** | Arma una tanda: cuenta **sin** cursor (`total_count`), aplica el `where` del cursor, `findAll` con `limit + 1`, recorta la página y devuelve `{ items, next_cursor, total_count }`. |
+| **`resolveListSortConfig`** | Traduce `sort.field` / `sort.direction` con el mapa `sortFields`. Si el campo no existe, usa el default (p. ej. `created_at`). |
+| **`buildCursorWhere`** | `where` que continúa después del cursor. En DESC incluye filas sin valor (`NULL`, p. ej. estatus abierto). |
+| **`buildSortOrder`** | `ORDER BY` de la columna o el join, siempre desempatando por `id`. |
+| **`buildNextCursor`** | Cursor de la siguiente tanda a partir de la última fila (`field`, `direction`, `value`, `id`). |
+
+Cuando el sort **no** es una columna de la tabla ni un join, `fetchCursorPage` no puede armar el `ORDER BY` ni el cursor solo. En ese caso le pasas **hooks**: funciones opcionales que sustituyen el comportamiento por default.
+
+| Hook | Cuándo pasarlo |
+|---|---|
+| `buildOrder` | El `ORDER BY` no es una columna/join (SQL literal). |
+| `buildCursorWhere` | El `where` del cursor tampoco es una columna/join. |
+| `resolveNextCursorValue` | El valor del cursor no está en la fila (está en un join) o hay que serializarlo (fecha ISO, etiqueta de catálogo). |
+| `formatPage` | Hay que aplanar o hidratar las filas antes de responder. |
+
+Opciones de Sequelize que también se pasan a `fetchCursorPage` (no son hooks): `include`, `attributes`, `findAllOptions` (p. ej. `subQuery: false` cuando hay join).
+
 #### Mapa de columnas ordenables
 
-4. Crea un mapa `sortFields` en el util del listado: cada `field` que el usuario pueda ordenar se traduce a columna o join de Sequelize.
+4. En el módulo, crea un mapa `sortFields`: cada `field` que el usuario pueda ordenar se traduce a columna o join de Sequelize.
 
 ```js
 const sortFields = {
@@ -56,32 +83,37 @@ const sortFields = {
 
 #### Función de listado
 
-5. En el util del controller (por ejemplo `fetchReportesForGlobalSearch`), implementa la tanda con `{ filters, limit, cursor, sort }`:
-
-   1. Resuelve el sort con el mapa. Si el campo no existe, usa el default (p. ej. `created_at`).
-   2. Cuenta **antes** de aplicar el cursor, para que `total_count` cubra todo el filtro.
-   3. Arma el `where` del cursor con `buildCursorWhere({ cursor, sortConfig })` y combínalo (AND) con los filtros.
-   4. Ordena con `buildSortOrder({ sortConfig })`. Siempre desempata por `id`.
-   5. Haz `findAll` con `limit`.
-   6. Si vinieron `limit` filas, arma `next_cursor` con `buildNextCursor({ lastRow, sortConfig })`. Si no, devuelve `null`.
+5. El controller (o un util corto del módulo) arma los **filtros** y llama a `fetchCursorPage`. Un listado de columnas reales queda así:
 
 ```js
 const {
-  buildCursorWhere,
-  buildSortOrder,
-  buildNextCursor,
+  fetchCursorPage,
+  resolveListSortConfig,
 } = require('@hermosillo-i3/utils-pkg/src/cursorPagination');
+
+const sortConfig = resolveListSortConfig({
+  sort: { field: query.sort_field, direction: query.sort_direction },
+  sortFields,
+});
+
+const { items, next_cursor, total_count } = await fetchCursorPage({
+  model: ChangeOrder,
+  where: { project_id: query.project_id },
+  sortConfig,
+  cursor: query.cursor,
+  limit: query.limit,
+});
 ```
 
-`buildCursorWhere` incluye filas sin valor cuando el orden es DESC (p. ej. estatus abierto / `NULL`).
+Preca y reportes de seguridad usan el mismo `fetchCursorPage`. En esos utils solo queda lo de dominio: `where` de filtros, mapa `sortFields`, y los hooks de sort especial (SQL de `form_data` en preca, ranking de riesgo en reportes).
 
 #### Columnas especiales
 
-Usa `cursorPagination` cuando el valor es **una columna o un join** (fecha, código, tipo, UEN, estatus que es una fecha/`NULL`).
+Usa el default de `fetchCursorPage` (`buildCursorWhere` / `buildSortOrder`) cuando el valor es **una columna o un join** (fecha, código, tipo, UEN, estatus que es una fecha/`NULL`).
 
-Si una columna ordena con SQL especial o un valor especifico del modelo (como el nivel de riesgo en los Reportes de Seguridad), deja ese `where`/`order` en el util del listado y usa los helpers en el resto. Fechas ISO del cursor y etiquetas de catálogo también se quedan en ese util.
+Si una columna ordena con SQL especial o un valor específico del modelo (nivel de riesgo en Reportes de Seguridad, nombre en preca), pásalo en los hooks `buildOrder` / `buildCursorWhere` del módulo. Fechas ISO del cursor y etiquetas de catálogo también se resuelven ahí (`resolveNextCursorValue`).
 
-Si el valor del cursor vive en una asociación (no en la fila), pásalo a `buildNextCursor` con `value`.
+Si el valor del cursor vive en una asociación (no en la fila), pásalo con el hook `resolveNextCursorValue`.
 
 ### 2. Front (fivebim-app)
 
