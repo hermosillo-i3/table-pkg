@@ -1,6 +1,17 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.29
+Date: Aug 30, 2026
+* [NEW]
+  * Add optional `onReachBottom`, `hasMore`, `isLoadingMore`, and `reachBottomThresholdPx` so the same Table can opt into infinite scroll
+  * Export `useTableInfiniteScroll` for cursor-based page state (`fetchPage`, `loadMore`, `applySort`, `applySearch`)
+  * Document how to opt a module into infinite scroll in `docs/infinite-scroll-table.md`, including when to keep special sorts in the module instead of `cursorPagination`
+* [UPDATE]
+  * Request the next page only when the user scrolls near the bottom; the Table no longer auto-fetches extra pages to fill empty viewport space
+  * Default `useTableInfiniteScroll` `pageSize` is 50
+  * Document `fetchCursorPage` and the other `cursorPagination` helpers in `docs/infinite-scroll-table.md`
+
 ## V 1.18.28
 Date: Aug 12, 2026
 * [FIX]

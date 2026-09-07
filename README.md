@@ -12,6 +12,10 @@ Para linkear, únicamente es necesario realizar lo siguiente:
 
 A partir de ahora, se pueden realizar cambios en los componentes de la carpeta src dentro de la aplicacion sin necesidad de ejecutar run build-ws o run build.
 
+## Scroll infinito
+
+Para cablear el Table con carga al llegar al final (hook, props opt-in, cursor en servidor y sort), ver [docs/infinite-scroll-table.md](docs/infinite-scroll-table.md).
+
 ## Storybook
 
 Este componente cuenta con una página en storybook para mostrar casos de uso.
