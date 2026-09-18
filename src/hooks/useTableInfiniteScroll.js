@@ -5,10 +5,10 @@ const DEFAULT_SORT = {field: 'created_at', direction: 'DESC'};
 
 /**
  * Cursor-based infinite list state for a table-pkg Table.
- * Pair `loadMore` with Table `onReachBottom`, and `isLoadingMore` / `hasMore` with the matching Table props.
+ * Pair `loadMore` with Table `onReachBottom`.
  *
  * @param {Object} params
- * @param {(args: {cursor: Object|null, limit: number, filters: Object, sort: {field: string, direction: string}}) => Promise<{items: Object, orderedIds?: string[], nextCursor: Object|null, total_count?: number|null}>} params.fetchPage
+ * @param {(args: {cursor: Object|null, limit: number, filters: Object, sort: {field: string, direction: string}, focusId?: string|number|null}) => Promise<{items: Object, orderedIds?: string[], nextCursor?: Object|null, total_count?: number|null}>} params.fetchPage
  *        Fetches one page. `items` is an id-keyed map merged on load-more.
  * @param {number} [params.pageSize=50] - Page size sent to `fetchPage`.
  * @param {{field: string, direction: string}} [params.initialSort] - Default server sort.
@@ -20,9 +20,10 @@ const DEFAULT_SORT = {field: 'created_at', direction: 'DESC'};
  *   isFetching: boolean,
  *   isLoadingMore: boolean,
  *   hasMore: boolean,
- *   applySearch: (filters: Object) => Promise<Object>,
+ *   applySearch: (filters: Object, options?: {focusId?: string|number|null}) => Promise<Object>,
  *   applySort: (sort: {field: string, direction: string}) => Promise<Object>,
  *   loadMore: () => Promise<void>,
+ *   ensureFocusedItem: (focusId: string|number|null) => Promise<Object>,
  *   updateItem: (id: string|number, patch: Object) => void,
  *   removeItems: (ids: Array<string|number>) => void,
  * }}
@@ -41,33 +42,35 @@ const useTableInfiniteScroll = ({
    const [isLoadingMore, setIsLoadingMore] = useState(false);
 
    const nextCursorRef = useRef(null);
-   const isLoadingMoreRef = useRef(false);
+   const isPagingRef = useRef(false);
    const isFetchingRef = useRef(false);
    const filtersRef = useRef({});
    const sortRef = useRef(initialSort);
+   const itemsRef = useRef({});
    const fetchPageRef = useRef(fetchPage);
    const listGenerationRef = useRef(0);
 
    useEffect(() => {
       nextCursorRef.current = nextCursor;
-      isLoadingMoreRef.current = isLoadingMore;
       isFetchingRef.current = isFetching;
       fetchPageRef.current = fetchPage;
       sortRef.current = sort;
-   }, [nextCursor, isLoadingMore, isFetching, fetchPage, sort]);
+      itemsRef.current = items;
+   }, [nextCursor, isFetching, fetchPage, sort, items]);
 
    /**
-    * @description Invalidates in-flight load-more requests and clears the loaded list.
+    * @description Invalidates in-flight page requests and clears the loaded list.
     * @returns {number} New list generation token.
     */
    const resetListState = useCallback(() => {
       const nextGeneration = listGenerationRef.current + 1;
       listGenerationRef.current = nextGeneration;
-      isLoadingMoreRef.current = false;
+      isPagingRef.current = false;
       setIsLoadingMore(false);
       setNextCursor(null);
       nextCursorRef.current = null;
       setItems({});
+      itemsRef.current = {};
       setItemOrder([]);
       return nextGeneration;
    }, []);
@@ -76,9 +79,10 @@ const useTableInfiniteScroll = ({
     * @description Loads the first page for the given filters and sort, replacing the list.
     * @param {Object} filters - Filter payload forwarded to `fetchPage`.
     * @param {{field: string, direction: string}} sortToApply - Server sort forwarded to `fetchPage`.
+    * @param {{focusId?: string|number|null}} [options] - Optional deep-link id; loads every page through that row's batch.
     * @returns {Promise<Object>} Normalized first-page items map.
     */
-   const loadFirstPage = useCallback(async (filters, sortToApply) => {
+   const loadFirstPage = useCallback(async (filters, sortToApply, options = {}) => {
       const generation = resetListState();
       filtersRef.current = filters;
       sortRef.current = sortToApply;
@@ -89,13 +93,14 @@ const useTableInfiniteScroll = ({
          const {
             items: pageItems,
             orderedIds,
-            nextCursor: pageCursor,
+            nextCursor: pageNextCursor,
             total_count: totalCount,
          } = await fetchPageRef.current({
             cursor: null,
             limit: pageSize,
             filters,
             sort: sortToApply,
+            focusId: options.focusId ?? null,
          });
 
          if (generation !== listGenerationRef.current) {
@@ -104,9 +109,10 @@ const useTableInfiniteScroll = ({
 
          const nextOrder = Array.isArray(orderedIds) ? orderedIds : Object.keys(pageItems);
          setItems(pageItems);
+         itemsRef.current = pageItems;
          setItemOrder(nextOrder);
-         setNextCursor(pageCursor);
-         nextCursorRef.current = pageCursor;
+         setNextCursor(pageNextCursor ?? null);
+         nextCursorRef.current = pageNextCursor ?? null;
          setItemCount(totalCount ?? 0);
          return pageItems;
       } finally {
@@ -120,10 +126,11 @@ const useTableInfiniteScroll = ({
    /**
     * Resets the list and loads the first page for the given filters (keeps current sort).
     * @param {Object} filters - Filter payload forwarded to `fetchPage`.
+    * @param {{focusId?: string|number|null}} [options] - Optional deep-link id; loads every page through that row's batch.
     * @returns {Promise<Object>} Normalized first-page items map.
     */
-   const applySearch = useCallback(async (filters) => {
-      return loadFirstPage(filters, sortRef.current);
+   const applySearch = useCallback(async (filters, options = {}) => {
+      return loadFirstPage(filters, sortRef.current, options);
    }, [loadFirstPage]);
 
    /**
@@ -136,23 +143,38 @@ const useTableInfiniteScroll = ({
    }, [loadFirstPage]);
 
    /**
-    * Appends the next page using the current cursor, filters, and sort.
+    * Reloads the list through `focusId`'s batch when that row is not already loaded.
+    * @param {string|number|null} focusId - Row id from a deep link.
+    * @returns {Promise<Object>} Current or reloaded items map.
+    */
+   const ensureFocusedItem = useCallback(async (focusId) => {
+      if (focusId == null || `${focusId}`.trim() === '') {
+         return itemsRef.current;
+      }
+      if (itemsRef.current[String(focusId)]) {
+         return itemsRef.current;
+      }
+      return loadFirstPage(filtersRef.current, sortRef.current, {focusId});
+   }, [loadFirstPage]);
+
+   /**
+    * Appends the next page using the current next cursor, filters, and sort.
     * @returns {Promise<void>}
     */
    const loadMore = useCallback(async () => {
-      if (!nextCursorRef.current || isLoadingMoreRef.current || isFetchingRef.current) {
+      if (!nextCursorRef.current || isPagingRef.current || isFetchingRef.current) {
          return;
       }
 
       const generation = listGenerationRef.current;
-      isLoadingMoreRef.current = true;
+      isPagingRef.current = true;
       setIsLoadingMore(true);
       const cursor = nextCursorRef.current;
       try {
          const {
             items: pageItems,
             orderedIds,
-            nextCursor: pageCursor,
+            nextCursor: pageNextCursor,
             total_count: totalCount,
          } = await fetchPageRef.current({
             cursor,
@@ -164,20 +186,24 @@ const useTableInfiniteScroll = ({
             return;
          }
          const pageOrder = Array.isArray(orderedIds) ? orderedIds : Object.keys(pageItems);
-         setItems((prev) => ({...prev, ...pageItems}));
+         setItems((prev) => {
+            const nextItems = {...prev, ...pageItems};
+            itemsRef.current = nextItems;
+            return nextItems;
+         });
          setItemOrder((prev) => {
             const seen = new Set(prev);
             const appended = pageOrder.filter((id) => !seen.has(id));
             return [...prev, ...appended];
          });
-         setNextCursor(pageCursor);
-         nextCursorRef.current = pageCursor;
+         setNextCursor(pageNextCursor ?? null);
+         nextCursorRef.current = pageNextCursor ?? null;
          if (totalCount != null) {
             setItemCount(totalCount);
          }
       } finally {
          if (generation === listGenerationRef.current) {
-            isLoadingMoreRef.current = false;
+            isPagingRef.current = false;
             setIsLoadingMore(false);
          }
       }
@@ -195,13 +221,15 @@ const useTableInfiniteScroll = ({
          if (!prev[normalizedId]) {
             return prev;
          }
-         return {
+         const nextItems = {
             ...prev,
             [normalizedId]: {
                ...prev[normalizedId],
                ...patch,
             },
          };
+         itemsRef.current = nextItems;
+         return nextItems;
       });
    }, []);
 
@@ -218,6 +246,7 @@ const useTableInfiniteScroll = ({
          normalizedIds.forEach((itemId) => {
             delete nextItems[itemId];
          });
+         itemsRef.current = nextItems;
          return nextItems;
       });
       setItemOrder((prev) => prev.filter((itemId) => !idsToRemove.has(itemId)));
@@ -235,6 +264,7 @@ const useTableInfiniteScroll = ({
       applySearch,
       applySort,
       loadMore,
+      ensureFocusedItem,
       updateItem,
       removeItems,
    };
