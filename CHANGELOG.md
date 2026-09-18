@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.30
+Date: Sep 17, 2026
+* [NEW]
+  * `useTableInfiniteScroll` accepts `focusId` on `applySearch` and exposes `ensureFocusedItem` so a deep link can load every page through that row's batch
+
 ## V 1.18.29
 Date: Aug 30, 2026
 * [NEW]
