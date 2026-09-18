@@ -1,6 +1,6 @@
 # Scroll infinito en Table
 
-Requisito: `@hermosillo-i3/table-pkg` **≥ 1.18.29**.
+Requisito: `@hermosillo-i3/table-pkg` **≥ 1.18.30**.
 
 ## Cómo funciona
 
@@ -11,15 +11,15 @@ Las piezas son:
 - **`Table`:** el componente de tabla. Avisa cuando el scroll llega al final (`onReachBottom`).
 - **`useTableInfiniteScroll`:** el hook de `table-pkg` que guarda las filas ya cargadas, el orden y el cursor. Lo usas en el componente de la ruta (por ejemplo `precalificacion/index.js`).
 - **`fetchPage`:** la función que escribes en ese mismo componente. Habla con la action de Redux / el endpoint y traduce la respuesta.
-- **Endpoint (fivebim-api o el microservicio):** arma la tanda con `fetchCursorPage` (utils-pkg): filtros, sort y cursor, y devuelve `next_cursor`.
+- **Endpoint (fivebim-api o el microservicio):** arma la tanda con `fetchCursorPage` (utils-pkg): filtros, sort, cursor y `focusId` opcional, y devuelve `next_cursor`.
 
 El flujo:
 
-1. El componente de la ruta llama `applySearch` (primera carga o filtros) o `applySort` (clic en una columna). `useTableInfiniteScroll` pide la **primera tanda** con `cursor: null` a través de `fetchPage`.
-2. El endpoint responde con esas filas, un `total_count` y un `next_cursor` (o `null` si ya no hay más).
+1. El componente de la ruta llama `applySearch` (primera carga o filtros) o `applySort` (clic en una columna). `useTableInfiniteScroll` pide la **primera tanda** con `cursor: null` a través de `fetchPage`. Si hay un enlace directo (`?id=`), pasa `focusId` para pedir **todas las tandas desde el inicio hasta el lote** que contiene ese registro.
+2. El endpoint responde con esas filas, un `total_count` y un `next_cursor` (o `null` si no hay más).
 3. `useTableInfiniteScroll` guarda las filas **por id** y el **orden** que mandó el endpoint. El `Table` las muestra así, sin reordenarlas.
-4. Cuando el usuario **baja** (rueda, teclas o scrollbar) y llega al final, el `Table` llama `onReachBottom` → `useTableInfiniteScroll` pide la siguiente tanda. Un `scroll` de layout o solo horizontal no pide otra tanda.
-5. Las filas nuevas se **agregan** debajo. Un clic en columna vuelve al paso 1 con el nuevo sort: el endpoint reordena **todo** el listado, no solo lo que ya se ve.
+4. Cuando el usuario **baja** y llega al final, el `Table` llama `onReachBottom` → `loadMore`. Un `scroll` de layout o solo horizontal no pide otra tanda. Subir no pide otra tanda: lo de arriba ya llegó en la primera carga.
+5. Las filas nuevas se **agregan** debajo. Un clic en columna vuelve al paso 1 con el nuevo sort.
 
 `table-pkg` no conoce modelos, Redux ni URLs. Cada ruta aporta filtros, `fetchPage` y el mapa de columnas ordenables.
 
@@ -29,9 +29,9 @@ El flujo:
 
 ### 1. Backend
 
-Requisito: `@hermosillo-i3/utils-pkg` **≥ 1.22.16**.
+Requisito: `@hermosillo-i3/utils-pkg` **≥ 1.22.18**.
 
-1. Haz que el endpoint acepte, además de los filtros de la ruta, `limit` (típicamente 50), `cursor` (`null` en la primera tanda) y `sort.field` / `sort.direction` (`ASC` o `DESC`).
+1. Haz que el endpoint acepte, además de los filtros de la ruta, `limit` (típicamente 50), `cursor` (`null` en la primera tanda), `sort.field` / `sort.direction` (`ASC` o `DESC`) y `focus_id` (opcional, solo en la primera tanda).
 2. Devuelve siempre este contrato. `next_cursor` va en `null` cuando no hay más filas:
 
 ```js
@@ -52,7 +52,7 @@ Importa desde `@hermosillo-i3/utils-pkg/src/cursorPagination`.
 
 | Función | Qué hace |
 |---|---|
-| **`fetchCursorPage`** | Arma una tanda: cuenta **sin** cursor (`total_count`), aplica el `where` del cursor, `findAll` con `limit + 1`, recorta la página y devuelve `{ items, next_cursor, total_count }`. |
+| **`fetchCursorPage`** | Arma una tanda: cuenta **sin** cursor (`total_count`), aplica el `where` del cursor, `findAll` con `limit + 1`, recorta la página y devuelve `{ items, next_cursor, total_count }`. Con `focusId` (sin cursor) carga desde el inicio hasta el lote que contiene ese id. |
 | **`resolveListSortConfig`** | Traduce `sort.field` / `sort.direction` con el mapa `sortFields`. Si el campo no existe, usa el default (p. ej. `created_at`). |
 | **`buildCursorWhere`** | `where` que continúa después del cursor. En DESC incluye filas sin valor (`NULL`, p. ej. estatus abierto). |
 | **`buildSortOrder`** | `ORDER BY` de la columna o el join, siempre desempatando por `id`. |
@@ -122,15 +122,21 @@ Si el valor del cursor vive en una asociación (no en la fila), pásalo con el h
 6. En el componente de la ruta, escribe `fetchPage`. `useTableInfiniteScroll` espera:
 
 ```
-{ cursor, limit, filters, sort }
+{ cursor, limit, filters, sort, focusId }
   → { items, orderedIds, nextCursor, total_count }
 ```
 
 `items` es un mapa por id (`{ [id]: row }`), no un array. `orderedIds` es el orden que devolvió el endpoint.
 
 ```js
-const fetchPage = useCallback(async ({ cursor, limit, filters, sort }) => {
-  const result = await dispatch(getMiListado({ ...filters, limit, cursor, sort }));
+const fetchPage = useCallback(async ({ cursor, limit, filters, sort, focusId }) => {
+  const result = await dispatch(getMiListado({
+    ...filters,
+    limit,
+    cursor,
+    sort,
+    focus_id: focusId,
+  }));
   const list = result?.response?.items ?? [];
   return {
     items: normalizeToIdMap(list),
@@ -151,7 +157,7 @@ import Table, { useTableInfiniteScroll } from '@hermosillo-i3/table-pkg';
 const {
   items, itemOrder, itemCount, sort: activeSort,
   isFetching, isLoadingMore, hasMore,
-  applySearch, applySort, loadMore, updateItem, removeItems,
+  applySearch, applySort, loadMore, ensureFocusedItem, updateItem, removeItems,
 } = useTableInfiniteScroll({
   fetchPage,
   pageSize: 50,
@@ -162,6 +168,7 @@ const {
 | Quieres… | Llamas |
 |---|---|
 | Primera carga / filtros | `applySearch(filters)` |
+| Enlace directo a un id | `applySearch(filters, { focusId })` o `ensureFocusedItem(id)` |
 | Clic en columna | `applySort({ field, direction })` |
 | Llegar al final | `loadMore` (el `Table` lo dispara con `onReachBottom`) |
 | Editar o borrar filas ya cargadas | `updateItem` / `removeItems` |

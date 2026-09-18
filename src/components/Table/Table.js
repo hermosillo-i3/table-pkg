@@ -51,7 +51,7 @@ const KEY_EVENT = {
 const defaultOnRowSelect = () => {
 };
 
-const DEFAULT_REACH_BOTTOM_THRESHOLD_PX = 80;
+const DEFAULT_REACH_EDGE_THRESHOLD_PX = 80;
 const REACH_BOTTOM_VERTICAL_KEYS = new Set(['ArrowDown', 'PageDown', 'End', ' ']);
 
 const generateRowsToExpand = (expandRows) => {
@@ -111,8 +111,8 @@ class Table extends React.Component {
       this.tableHeader = React.createRef();
       this.tableToolbar = React.createRef();
       this.horizontalScrollRef = React.createRef();
-      this.hasUserScrollIntent = false;
-      this.lastReachBottomScrollTop = 0;
+      this.hasUserScrollDownIntent = false;
+      this.lastReachEdgeScrollTop = 0;
 
       // Cache for navigable cells performance optimization
       this._tabIndexCache = new Map();
@@ -337,7 +337,10 @@ class Table extends React.Component {
          return true
       }
 
-      if (this.props.isLoadingMore !== nextProps.isLoadingMore || this.props.hasMore !== nextProps.hasMore) {
+      if (
+         this.props.isLoadingMore !== nextProps.isLoadingMore
+         || this.props.hasMore !== nextProps.hasMore
+      ) {
          return true
       }
 
@@ -433,14 +436,38 @@ class Table extends React.Component {
 
 
    /**
+    * @description Tells whether the table has at least one infinite-scroll callback.
+    * @returns {boolean}
+    */
+   hasInfiniteScroll = () => (
+      typeof this.props.onReachBottom === 'function'
+   );
+
+   /**
+    * @description Tells whether another page request is already in flight.
+    * @returns {boolean}
+    */
+   isPaging = () => (
+      Boolean(this.props.isLoading)
+      || Boolean(this.props.isLoadingMore)
+   );
+
+   /**
+    * @description Distance from the scroll edges that triggers a page request.
+    * @returns {number}
+    */
+   getReachEdgeThresholdPx = () => (
+      this.props.reachBottomThresholdPx ?? DEFAULT_REACH_EDGE_THRESHOLD_PX
+   );
+
+   /**
     * @description Tells whether the table should request another page from onReachBottom.
     * @returns {boolean}
     */
    canReachBottom = () => (
       typeof this.props.onReachBottom === 'function'
       && this.props.hasMore !== false
-      && !this.props.isLoading
-      && !this.props.isLoadingMore
+      && !this.isPaging()
    );
 
    /**
@@ -448,7 +475,7 @@ class Table extends React.Component {
     * @returns {void}
     */
    armReachBottomFromUser = () => {
-      this.hasUserScrollIntent = true;
+      this.hasUserScrollDownIntent = true;
    };
 
    /**
@@ -457,14 +484,14 @@ class Table extends React.Component {
     * @returns {void}
     */
    tryReachBottom = () => {
-      if (!this.hasUserScrollIntent || !this.canReachBottom()) {
+      if (!this.hasUserScrollDownIntent || !this.canReachBottom()) {
          return;
       }
       const scrollContainer = this.horizontalScrollRef?.current;
       if (!scrollContainer) {
          return;
       }
-      const thresholdPx = this.props.reachBottomThresholdPx ?? DEFAULT_REACH_BOTTOM_THRESHOLD_PX;
+      const thresholdPx = this.getReachEdgeThresholdPx();
       const overflowPx = scrollContainer.scrollHeight - scrollContainer.clientHeight;
       // An empty or not-yet-measured body has overflow <= 80px, so "near bottom" is true at scrollTop 0.
       if (overflowPx <= thresholdPx || scrollContainer.scrollTop <= 0) {
@@ -477,29 +504,27 @@ class Table extends React.Component {
    };
 
    /**
-    * @description Arms reach-bottom when the user wheels down.
+    * @description Arms reach-bottom when the user wheels downward.
     * @param {WheelEvent} event Wheel event from the table scroll container.
     * @returns {void}
     */
-   handleReachBottomWheel = (event) => {
-      if (event.deltaY <= 0) {
-         return;
+   handleReachEdgeWheel = (event) => {
+      if (event.deltaY > 0) {
+         this.armReachBottomFromUser();
+         this.tryReachBottom();
       }
-      this.armReachBottomFromUser();
-      this.tryReachBottom();
    };
 
    /**
-    * @description Arms reach-bottom when the user presses a vertical scroll key.
+    * @description Arms reach-bottom when the user presses a downward scroll key.
     * @param {KeyboardEvent} event Keydown on the table scroll container.
     * @returns {void}
     */
-   handleReachBottomKeyDown = (event) => {
-      if (!REACH_BOTTOM_VERTICAL_KEYS.has(event.key)) {
-         return;
+   handleReachEdgeKeyDown = (event) => {
+      if (REACH_BOTTOM_VERTICAL_KEYS.has(event.key)) {
+         this.armReachBottomFromUser();
+         this.tryReachBottom();
       }
-      this.armReachBottomFromUser();
-      this.tryReachBottom();
    };
 
    /**
@@ -507,7 +532,7 @@ class Table extends React.Component {
     * @param {PointerEvent} event Pointer down on the table scroll container.
     * @returns {void}
     */
-   handleReachBottomPointerDown = (event) => {
+   handleReachEdgePointerDown = (event) => {
       const scrollContainer = event.currentTarget;
       if (event.offsetX >= scrollContainer.clientWidth) {
          this.armReachBottomFromUser();
@@ -515,48 +540,47 @@ class Table extends React.Component {
    };
 
    /**
-    * @description Checks the bottom edge after a downward vertical scroll. Horizontal-only scroll is ignored.
+    * @description Checks the bottom edge after a vertical scroll. Horizontal-only scroll is ignored.
     * @param {Event} event Scroll event from the table body container.
     * @returns {void}
     */
-   handleReachBottomScroll = (event) => {
+   handleReachEdgeScroll = (event) => {
       const scrollTop = event.currentTarget.scrollTop;
-      const scrolledDown = scrollTop > this.lastReachBottomScrollTop;
-      this.lastReachBottomScrollTop = scrollTop;
-      if (!scrolledDown) {
-         return;
+      const scrolledDown = scrollTop > this.lastReachEdgeScrollTop;
+      this.lastReachEdgeScrollTop = scrollTop;
+      if (scrolledDown) {
+         this.tryReachBottom();
       }
-      this.tryReachBottom();
    };
 
    /**
     * @description Wires the optional infinite-scroll listeners on the real scroll container.
     * @returns {void}
     */
-   bindReachBottomListener = () => {
+   bindReachEdgeListener = () => {
       const scrollContainer = this.horizontalScrollRef?.current;
-      if (!scrollContainer || typeof this.props.onReachBottom !== 'function') {
+      if (!scrollContainer || !this.hasInfiniteScroll()) {
          return;
       }
-      scrollContainer.addEventListener('scroll', this.handleReachBottomScroll);
-      scrollContainer.addEventListener('wheel', this.handleReachBottomWheel, {passive: true});
-      scrollContainer.addEventListener('keydown', this.handleReachBottomKeyDown);
-      scrollContainer.addEventListener('pointerdown', this.handleReachBottomPointerDown);
+      scrollContainer.addEventListener('scroll', this.handleReachEdgeScroll);
+      scrollContainer.addEventListener('wheel', this.handleReachEdgeWheel, {passive: true});
+      scrollContainer.addEventListener('keydown', this.handleReachEdgeKeyDown);
+      scrollContainer.addEventListener('pointerdown', this.handleReachEdgePointerDown);
    };
 
    /**
     * @description Removes the optional infinite-scroll listeners.
     * @returns {void}
     */
-   unbindReachBottomListener = () => {
+   unbindReachEdgeListener = () => {
       const scrollContainer = this.horizontalScrollRef?.current;
       if (!scrollContainer) {
          return;
       }
-      scrollContainer.removeEventListener('scroll', this.handleReachBottomScroll);
-      scrollContainer.removeEventListener('wheel', this.handleReachBottomWheel);
-      scrollContainer.removeEventListener('keydown', this.handleReachBottomKeyDown);
-      scrollContainer.removeEventListener('pointerdown', this.handleReachBottomPointerDown);
+      scrollContainer.removeEventListener('scroll', this.handleReachEdgeScroll);
+      scrollContainer.removeEventListener('wheel', this.handleReachEdgeWheel);
+      scrollContainer.removeEventListener('keydown', this.handleReachEdgeKeyDown);
+      scrollContainer.removeEventListener('pointerdown', this.handleReachEdgePointerDown);
    };
 
    componentDidMount = () => {
@@ -574,7 +598,7 @@ class Table extends React.Component {
       if (this.props.isExpandByDefault) {
          this.expandRows()
       }
-      this.bindReachBottomListener();
+      this.bindReachEdgeListener();
    };
 
    createDefaultValues = () => {
@@ -676,13 +700,13 @@ class Table extends React.Component {
       }
 
       if (this.props.isLoading && !prevProps.isLoading) {
-         this.hasUserScrollIntent = false;
-         this.lastReachBottomScrollTop = 0;
+         this.hasUserScrollDownIntent = false;
+         this.lastReachEdgeScrollTop = 0;
       }
 
       if (prevProps.onReachBottom !== this.props.onReachBottom) {
-         this.unbindReachBottomListener();
-         this.bindReachBottomListener();
+         this.unbindReachEdgeListener();
+         this.bindReachEdgeListener();
       }
 
       updateFreezeCells(this.state.name);
@@ -711,7 +735,7 @@ class Table extends React.Component {
       window.removeEventListener('keyup', this.handleCtrlKeyUp);
       window.removeEventListener('click', this.onClickOnDocument);
       window.removeEventListener('paste', this.onPaste);
-      this.unbindReachBottomListener();
+      this.unbindReachEdgeListener();
       // Clear tab index cache to prevent memory leaks
       this._tabIndexCache?.clear();
    }
@@ -1961,7 +1985,7 @@ class Table extends React.Component {
                   <div
                      className="the-table-horizontal-scroll"
                      ref={this.horizontalScrollRef}
-                     tabIndex={typeof this.props.onReachBottom === 'function' ? 0 : undefined}
+                     tabIndex={this.hasInfiniteScroll() ? 0 : undefined}
                   >
                      <div className="the-table-horizontal-scroll-inner">
                         <table className={`the-table-header ${this.state.name}`} ref={this.tableHeader} style={{
@@ -2274,7 +2298,7 @@ Table.propTypes = {
    isExpandRowsButtonActive: PropTypes.bool,
    isCollapseRowsButtonActive: PropTypes.bool,
    isExpandByDefault: PropTypes.bool,
-   scrollToRow: PropTypes.number,
+   scrollToRow: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
    allowToDownloadCVS: PropTypes.bool,
    filterOptions: PropTypes.object,
    ignoreItemStyle: PropTypes.bool,
@@ -2326,7 +2350,7 @@ Table.defaultProps = {
    pastedRowsValidator: [],
    allowNewRowSelectionProcess: false,
    isLoadingMore: false,
-   reachBottomThresholdPx: DEFAULT_REACH_BOTTOM_THRESHOLD_PX,
+   reachBottomThresholdPx: DEFAULT_REACH_EDGE_THRESHOLD_PX,
 };
 
 export default Table;
