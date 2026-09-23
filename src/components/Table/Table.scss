@@ -1577,6 +1577,21 @@ input.InputField {
   }
 }
 
+/* fixHeaderToTopOfTable: header sticks to the top of the scroll container so the columns stay visible.
+   The z-index has to beat the body frozen cells, which use `3 + column index`. */
+.the-table-horizontal-scroll-inner > .the-table-header--fixed-top {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: white;
+}
+
+/* Only once the header actually detaches from the top of the body, mark the edge against the rows.
+   An outer box-shadow keeps the row heights untouched, so nothing jumps when it appears. */
+.the-table-horizontal-scroll-inner > .the-table-header--stuck {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+}
+
 /* Sticky freeze: compositor-aligned with scroll: avoid overflow:hidden on body cells breaking sticky. */
 .the-table .Table-Row td.freeze_horizontal {
   flex-shrink: 0;
