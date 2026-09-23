@@ -98,7 +98,6 @@ class Table extends React.Component {
             y: 0,
             actions: []
          },
-         isHeaderStuck: false,
          pendingFocusRowId: null,
          errorModal: {
             visible: false,
@@ -584,43 +583,6 @@ class Table extends React.Component {
       scrollContainer.removeEventListener('pointerdown', this.handleReachEdgePointerDown);
    };
 
-   /**
-    * @description Tracks when the sticky header has detached from the top of the body so it can be
-    * separated from the rows with a stronger bottom line.
-    * @param {Event} event Scroll event from the table scroll container.
-    * @returns {void}
-    */
-   handleFixedHeaderScroll = (event) => {
-      const isHeaderStuck = event.currentTarget.scrollTop > 0;
-      if (isHeaderStuck !== this.state.isHeaderStuck) {
-         this.setState({isHeaderStuck});
-      }
-   };
-
-   /**
-    * @description Wires the scroll listener that flags the header as stuck.
-    * @returns {void}
-    */
-   bindFixedHeaderListener = () => {
-      const scrollContainer = this.horizontalScrollRef?.current;
-      if (!scrollContainer || !this.props.fixHeaderToTopOfTable) {
-         return;
-      }
-      scrollContainer.addEventListener('scroll', this.handleFixedHeaderScroll, {passive: true});
-   };
-
-   /**
-    * @description Removes the stuck-header scroll listener.
-    * @returns {void}
-    */
-   unbindFixedHeaderListener = () => {
-      const scrollContainer = this.horizontalScrollRef?.current;
-      if (!scrollContainer) {
-         return;
-      }
-      scrollContainer.removeEventListener('scroll', this.handleFixedHeaderScroll);
-   };
-
    componentDidMount = () => {
 
       this.updateColumnsWidth();
@@ -637,7 +599,6 @@ class Table extends React.Component {
          this.expandRows()
       }
       this.bindReachEdgeListener();
-      this.bindFixedHeaderListener();
    };
 
    createDefaultValues = () => {
@@ -748,14 +709,6 @@ class Table extends React.Component {
          this.bindReachEdgeListener();
       }
 
-      if (prevProps.fixHeaderToTopOfTable !== this.props.fixHeaderToTopOfTable) {
-         this.unbindFixedHeaderListener();
-         this.bindFixedHeaderListener();
-         if (!this.props.fixHeaderToTopOfTable && this.state.isHeaderStuck) {
-            this.setState({isHeaderStuck: false});
-         }
-      }
-
       updateFreezeCells(this.state.name);
    };
 
@@ -783,7 +736,6 @@ class Table extends React.Component {
       window.removeEventListener('click', this.onClickOnDocument);
       window.removeEventListener('paste', this.onPaste);
       this.unbindReachEdgeListener();
-      this.unbindFixedHeaderListener();
       // Clear tab index cache to prevent memory leaks
       this._tabIndexCache?.clear();
    }
@@ -2037,7 +1989,7 @@ class Table extends React.Component {
                      tabIndex={this.hasInfiniteScroll() ? 0 : undefined}
                   >
                      <div className="the-table-horizontal-scroll-inner">
-                        <table className={`the-table-header ${fixHeaderToTopOfTable ? 'the-table-header--fixed-top' : ''} ${fixHeaderToTopOfTable && this.state.isHeaderStuck ? 'the-table-header--stuck' : ''} ${this.state.name}`} ref={this.tableHeader} style={{
+                        <table className={`the-table-header ${fixHeaderToTopOfTable ? 'the-table-header--fixed-top' : ''} ${this.state.name}`} ref={this.tableHeader} style={{
                            display: 'flex',
                            flexDirection: 'column',
                         }}>
