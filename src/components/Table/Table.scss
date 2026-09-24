@@ -1530,11 +1530,12 @@ input.InputField {
   flex-direction: column;
 }
 
+/* This is the containing block of the sticky header, so it must never shrink below its content:
+   a shrunk box would stop the header from sticking past the first screenful of rows. */
 .the-table-horizontal-scroll-inner {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 1 0 auto;
   min-width: min-content;
 }
 
