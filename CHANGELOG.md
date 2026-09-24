@@ -5,6 +5,8 @@ This file is used to explain in detail changes made to the Table.
 Date: Sep 24, 2026
 * [UPDATE]
   * Allow header to stick to the top of the table when scrolling
+* [FIX]
+  * Added InputField class to percentage editable cells, this fixes style issues
 
 ## V 1.18.30
 Date: Sep 17, 2026
