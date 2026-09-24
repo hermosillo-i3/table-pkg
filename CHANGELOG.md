@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.31
+Date: Sep 24, 2026
+* [UPDATE]
+  * Allow header to stick to the top of the table when scrolling
+
 ## V 1.18.30
 Date: Sep 17, 2026
 * [NEW]
