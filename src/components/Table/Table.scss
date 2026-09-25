@@ -1530,11 +1530,12 @@ input.InputField {
   flex-direction: column;
 }
 
+/* This is the containing block of the sticky header, so it must never shrink below its content:
+   a shrunk box would stop the header from sticking past the first screenful of rows. */
 .the-table-horizontal-scroll-inner {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 1 0 auto;
   min-width: min-content;
 }
 
@@ -1575,6 +1576,15 @@ input.InputField {
   tr.Table-Row-Header-Groups {
     background-color: white;
   }
+}
+
+/* fixHeaderToTopOfTable: header sticks to the top of the scroll container so the columns stay visible.
+   The z-index has to beat the body frozen cells, which use `3 + column index`. */
+.the-table-horizontal-scroll-inner > .the-table-header--fixed-top {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: white;
 }
 
 /* Sticky freeze: compositor-aligned with scroll: avoid overflow:hidden on body cells breaking sticky. */
