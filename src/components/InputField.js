@@ -599,7 +599,7 @@ class InputField extends React.Component {
         case "percentage": {
           return (
             <Cleave
-              className={this.props.allowNewRowSelectionProcess ? customColumnClass : `InputField ${customColumnClass}`}
+              className={`InputField ${customColumnClass}`}
               value={this.state.currentValue || "0"}
               htmlRef={(input) => {
                 this.input = input;

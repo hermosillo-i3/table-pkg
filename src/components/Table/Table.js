@@ -1774,6 +1774,7 @@ class Table extends React.Component {
          paddingBodyTable,
          isTableHeaderHidden,
          tableWrapperStyle,
+         fixHeaderToTopOfTable,
       } = this.props;
       const loadingMoreToolbar = bottomToolbar != null
          ? bottomToolbar
@@ -1988,7 +1989,7 @@ class Table extends React.Component {
                      tabIndex={this.hasInfiniteScroll() ? 0 : undefined}
                   >
                      <div className="the-table-horizontal-scroll-inner">
-                        <table className={`the-table-header ${this.state.name}`} ref={this.tableHeader} style={{
+                        <table className={`the-table-header ${fixHeaderToTopOfTable ? 'the-table-header--fixed-top' : ''} ${this.state.name}`} ref={this.tableHeader} style={{
                            display: 'flex',
                            flexDirection: 'column',
                         }}>
@@ -2310,6 +2311,7 @@ Table.propTypes = {
       columnType: PropTypes.string, // The type of the column data to be validated when pasting rows
    })),
    allowNewRowSelectionProcess: PropTypes.bool,
+   fixHeaderToTopOfTable: PropTypes.bool,
 };
 
 Table.defaultProps = {
@@ -2349,6 +2351,7 @@ Table.defaultProps = {
    allowTabNavigationForChildren: false,
    pastedRowsValidator: [],
    allowNewRowSelectionProcess: false,
+   fixHeaderToTopOfTable: false,
    isLoadingMore: false,
    reachBottomThresholdPx: DEFAULT_REACH_EDGE_THRESHOLD_PX,
 };
