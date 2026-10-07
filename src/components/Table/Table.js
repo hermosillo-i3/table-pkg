@@ -54,6 +54,21 @@ const defaultOnRowSelect = () => {
 const DEFAULT_REACH_EDGE_THRESHOLD_PX = 80;
 const REACH_BOTTOM_VERTICAL_KEYS = new Set(['ArrowDown', 'PageDown', 'End', ' ']);
 
+/**
+ * @description Deep-compares two values, skipping serialization when both share the same reference.
+ * Serializing large row sets on every update is what made expand/collapse slow.
+ * @param {*} prev Previous value.
+ * @param {*} next Next value.
+ * @returns {boolean} `true` when the serialized values differ.
+ */
+const hasChanged = (prev, next) => {
+   if (prev === next) {
+      return false;
+   }
+
+   return JSON.stringify(prev) !== JSON.stringify(next);
+};
+
 const generateRowsToExpand = (expandRows) => {
    // Construct the object to expand the rows
    return expandRows.reduce((acum, row_id) => {
@@ -313,7 +328,7 @@ class Table extends React.Component {
          return true
       }
 
-      if (JSON.stringify(this.props.rows) !== JSON.stringify(nextProps.rows)) {
+      if (hasChanged(this.props.rows, nextProps.rows)) {
          return true
       }
 
@@ -344,11 +359,11 @@ class Table extends React.Component {
          return true
       }
 
-      if (JSON.stringify(this.state.rows_extended) !== JSON.stringify(nextState.rows_extended)) {
+      if (hasChanged(this.state.rows_extended, nextState.rows_extended)) {
          return true
       }
 
-      if (JSON.stringify(this.state.structure) !== JSON.stringify(nextState.structure)) {
+      if (hasChanged(this.state.structure, nextState.structure)) {
          return true
       }
 
@@ -619,7 +634,7 @@ class Table extends React.Component {
       // }
 
       if (
-         JSON.stringify(prevProps.rows) !== JSON.stringify(this.props.rows) ||
+         hasChanged(prevProps.rows, this.props.rows) ||
          prevProps.sortChange !== this.props.sortChange ||
          prevState.sortMethod !== this.state.sortMethod ||
          JSON.stringify(prevState.column_extended) !== JSON.stringify(this.state.column_extended)
@@ -680,8 +695,8 @@ class Table extends React.Component {
 
 
       if (
-         JSON.stringify(prevState.rows_extended) !== JSON.stringify(this.state.rows_extended) ||
-         JSON.stringify(prevState.structure) !== JSON.stringify(this.state.structure)
+         hasChanged(prevState.rows_extended, this.state.rows_extended) ||
+         hasChanged(prevState.structure, this.state.structure)
       ) {
          this.setRenderedRows();
       }
