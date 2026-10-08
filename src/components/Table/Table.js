@@ -182,13 +182,12 @@ class Table extends React.Component {
          return -1;
       }
 
-      // Create a cache key based on current state
-      const cacheKey = `${this.state.rendered_rows.length}-${columns.length}-${JSON.stringify(this.state.column_extended)}`;
-      
-      // If cache is invalid, rebuild it
-      if (this._lastCacheKey !== cacheKey) {
+      // Rebuild the cache only when rendered rows or columns change (compared by reference)
+      const deps = [this.state.rendered_rows, columns];
+      const isCacheValid = this._lastCacheKey?.every((dep, index) => dep === deps[index]);
+      if (!isCacheValid) {
          this._rebuildTabIndexCache();
-         this._lastCacheKey = cacheKey;
+         this._lastCacheKey = deps;
       }
 
       // Return cached value
@@ -1376,8 +1375,21 @@ class Table extends React.Component {
       return extendedColumn.hasOwnProperty(name) ? (extendedColumn[name].hasOwnProperty('is_visible') ? extendedColumn[name].is_visible : true) : true
    };
 
+   /**
+    * @description Visible columns, memoized by input references. Called per editable cell
+    * (via calculateTabIndex), so rebuilding it on every call was expensive on large tables.
+    * @returns {Object[]} Visible columns merged with their extended properties.
+    */
    getVisibleColumns = () => {
-      return this.getColumns().filter(colum => this.isColumnVisible(colum.assesor))
+      const deps = [this.props.columns, this.props.includeCodeColumm, this.state.column_extended];
+      const isCacheValid = this._visibleColumnsCache?.deps.every((dep, index) => dep === deps[index]);
+      if (isCacheValid) {
+         return this._visibleColumnsCache.result;
+      }
+
+      const result = this.getColumns().filter(colum => this.isColumnVisible(colum.assesor));
+      this._visibleColumnsCache = { deps, result };
+      return result;
    };
 
    getColumns = (column_extended) => {
