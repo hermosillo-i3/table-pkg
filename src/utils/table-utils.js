@@ -66,15 +66,23 @@ export const updateFreezeCells = (tableClassName) => {
       if (tableCells != null) {
          for (let i = 0; i < tableCells.length; i++) {
             const cell = tableCells[i];
-            cell.style.removeProperty('transform')   
+            if (cell.style.transform) {
+               cell.style.removeProperty('transform')
+            }
          }
       }
+
+      // Read every color before writing any, so the browser recalculates styles once instead of once per cell
+      const shadedCells = [];
       for (const item of fixed_horizontal_elements) {
          const parent_tr = parent_elt("TR", item);
 
          if (parent_tr.className.match("tr_shaded")) {
-            item.style.backgroundColor = getElementBackgroundColor(item);
+            shadedCells.push({ item, backgroundColor: getElementBackgroundColor(item) });
          }
       }
+      shadedCells.forEach(({ item, backgroundColor }) => {
+         item.style.backgroundColor = backgroundColor;
+      });
    }
 }

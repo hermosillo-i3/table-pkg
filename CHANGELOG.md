@@ -1,6 +1,13 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.32
+Date: Oct 9, 2026
+* [UPDATE]
+  * Skip rows, structure and expanded rows serialization when references match
+  * Memoize visible columns and key the tab index cache by row and column counts
+  * Batch frozen cells style reads and writes to avoid forced layouts
+
 ## V 1.18.31
 Date: Sep 24, 2026
 * [UPDATE]
