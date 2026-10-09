@@ -182,8 +182,9 @@ class Table extends React.Component {
          return -1;
       }
 
-      // Rebuild the cache only when rendered rows or columns change (compared by reference)
-      const deps = [this.state.rendered_rows, columns];
+      // Rebuild the cache only when row/column counts or extended columns change.
+      // Counts instead of references: parents often rebuild `columns` on every render.
+      const deps = [this.state.rendered_rows.length, columns.length, this.state.column_extended];
       const isCacheValid = this._lastCacheKey?.every((dep, index) => dep === deps[index]);
       if (!isCacheValid) {
          this._rebuildTabIndexCache();
