@@ -1,6 +1,11 @@
 # FIVEBIM-TABLE.
 This file is used to explain in detail changes made to the Table.
 
+## V 1.18.33
+Date: October 14, 2026
+* [FIX]
+  * Bump GitHub Actions to Node 24-compatible versions to clear Node 20 deprecation warnings
+
 ## V 1.18.32
 Date: Oct 9, 2026
 * [UPDATE]

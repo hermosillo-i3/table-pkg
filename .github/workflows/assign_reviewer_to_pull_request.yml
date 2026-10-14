@@ -194,11 +194,14 @@ jobs:
       - name: Post to a Slack channel
         if: always()
         id: slack
-        uses: slackapi/slack-github-action@v1.26.0
+        uses: slackapi/slack-github-action@v3.0.1
         with:
-          channel-id: '${{ vars.SLACK_PULL_REQUEST_CHANNEL_ID }}'
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload: |
             {
+              "channel": "${{ vars.SLACK_PULL_REQUEST_CHANNEL_ID }}",
+              "text": "Pull request review notification",
                "blocks": [
                   {
                      "type": "context",
