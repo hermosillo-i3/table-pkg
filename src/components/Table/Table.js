@@ -2379,7 +2379,7 @@ Table.defaultProps = {
    allowTabNavigationForChildren: false,
    pastedRowsValidator: [],
    allowNewRowSelectionProcess: false,
-   fixHeaderToTopOfTable: false,
+   fixHeaderToTopOfTable: true,
    isLoadingMore: false,
    reachBottomThresholdPx: DEFAULT_REACH_EDGE_THRESHOLD_PX,
 };

@@ -23,3 +23,14 @@ Este componente cuenta con una página en storybook para mostrar casos de uso.
 URL: https://hermosillo-i3.github.io/table-pkg
 
 Pará más información revisa esta documentación: https://www.evernote.com/shard/s683/sh/d6971c8b-a9cf-112f-7333-97805c1cb8b6/VU7FSmRXOu4qyu40JPc6yGBerNIFGEGf27SMIMB5ticOkTTH_WfEvrXUXg
+
+## Publicar versión beta
+
+Para publicar una versión beta, se debe ejecutar el siguiente comando:
+```bash
+npm run publish-beta
+```
+
+Esta acción aumentará la minor version del paquete automáticamente agregando el sufijo beta y un identificador, quedará algo como: `{version}-beta.{id}`.
+
+Ejemplo de versión: 1.18.32 -> 1.18.33-beta.0

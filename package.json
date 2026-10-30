@@ -1,6 +1,6 @@
 {
   "name": "@hermosillo-i3/table-pkg",
-  "version": "1.18.32",
+  "version": "1.18.33-beta.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,9 @@
     "compile": "babel src --out-dir dist --copy-files",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o docs-build",
-    "build-gitlab": "npm run compile && npm run copy"
+    "build-gitlab": "npm run compile && npm run copy",
+    "publish-beta-ws": "npm version prerelease --preid=beta --no-git-tag-version && npm run build-ws && npm publish ./dist --tag beta --access public",
+    "publish-beta": "npm version prerelease --preid=beta --no-git-tag-version && npm run build && npm publish ./dist --tag beta --access public"
   },
   "repository": {
     "type": "git",
